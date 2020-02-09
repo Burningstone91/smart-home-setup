@@ -1,0 +1,23 @@
+homeassistant:
+  packages: !include_dir_named packages/
+
+# Core configuration
+cloud:
+config:
+frontend:
+history:
+http:
+  server_port: 3123
+logbook:
+map:
+person:
+sun:
+system_health:
+
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Text to speech
+tts:
+  - platform: google_translate
+
