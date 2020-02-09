@@ -2,7 +2,7 @@
 *.pyc
 .DS_Store
 docker-compose.yml
-home-assistant/.HA_VERSION
+.HA_VERSION
 home-assistant/tts
 home-assistant/deps
 home-assistant/.storage
