@@ -12,7 +12,7 @@ My "Server" is an Intel NUC with an i3-7100U CPU, 8 GB of RAM and a 1 TB SSD (I 
 
 If you find any information here useful feel free to buy me a coffee :)
 
-<a href="https://www.buymeacoffee.com/OJfxe78" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" style="height: 25px !important;width: 108px !important;" ></a>
+<a href="https://www.buymeacoff.ee/u89Ao5n" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" style="height: 25px !important;width: 108px !important;" ></a>
 
 ## Overview
 I will explain here the different parts of my home automation system and how I set them up. For each part, I will talk about the hardware involved and how I integrated it into the system and I will also give an explanation on the automations and the corresponding code related to this part. 
