@@ -78,7 +78,7 @@ And create a directory "packages" in the same directory as configuration.yaml:
 mkdir packages
 ```
 
-Like this, all configuration such as switch:, input_boolean:, etc. that belong to the same logical group (e.g. room) can be put inside a separate file instead of defining everything in the designated block inside configuration.yaml.
+Like this, all configuration such as ```switch:```, ```input_boolean:```, etc. that belong to the same logical group (e.g. room) can be put inside a separate file instead of defining everything in the designated block inside configuration.yaml.
 
 Due to this the following lines from configuration.yaml can be removed:
 
@@ -89,24 +89,41 @@ script: !include scripts.yaml
 scene: !include scenes.yaml
 ```
 
-And the corresponding files groups.yaml, automations.yaml, scripts.yaml and scenes.yaml can be removed as well.
+And the corresponding files groups.yaml, automations.yaml, scripts.yaml and scenes.yaml can be removed as well. 
 
+The following lines can be removed as well:
+
+```yaml
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Text to speech
+tts:
+  - platform: google_translate
+```
 
 Remove default_config: from configuration.yaml and instead add the following lines:
 
 ```yaml
 config:
 frontend:
-history:
-logbook:
-map:
 person:
 sun:
 system_health:
-
 ```
 
-These configuration entries will later be put into packages.
+The final file should look something like this:
+
+```yaml
+homeassistant:
+  packages: !include_dir_named packages/
+
+config:
+frontend:
+person:
+sun:
+system_health:
+```
 
 Restart the Home Assistant container with:
 
