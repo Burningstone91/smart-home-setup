@@ -40,14 +40,14 @@ Add the following to docker-compose.yml to configure the Home Assistant Core doc
 version: "3"
 services:
   hass:
-  container_name: hass
-  image: homeassistant/home-assistant:0.105.2
-  network_mode: host
-  restart: unless-stopped
-  volumes:
-    - /etc/localtime:/etc/localtime:ro
-    - /var/run/docker.sock:/var/run/docker.sock
-    - ./home-assistant:/config
+    container_name: hass
+    image: homeassistant/home-assistant:0.105.2
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./home-assistant:/config
 ```
 
 ### Start the docker stack for the first time
@@ -65,6 +65,8 @@ After the install is finished, Home Assistant should be available under http://i
 Follow the instructions on the screen to setup the first user, your home location, elevation, time zone and unit system. 
 
 ### Structuring the Home Assistant configuration
+Packages allow to split up the configuration.yaml. Like this, all configuration such as ```switch:```, ```input_boolean:```, etc. that belong to the same logical group (e.g. room) can be put inside a separate file instead of defining everything in the designated block inside configuration.yaml. You can also easily share your configuration for e.g. an alarm clock, including all input_selects, input_booleans, sensors and whatever else you need to setup an alarm clock. 
+
 Enable the usage of packages by adding the following to configuration.yaml:
 
 ```yaml
@@ -77,8 +79,6 @@ And create a directory "packages" in the same directory as configuration.yaml:
 ```
 mkdir packages
 ```
-
-Like this, all configuration such as ```switch:```, ```input_boolean:```, etc. that belong to the same logical group (e.g. room) can be put inside a separate file instead of defining everything in the designated block inside configuration.yaml.
 
 Due to this the following lines from configuration.yaml can be removed:
 
@@ -132,3 +132,128 @@ docker restart hass
 ```
 
 Now the initial configuration is done and Home Assistant is up and running.
+
+## Setup MQTT Broker
+The MQTT broker is the server that hosts the MQTT network. It provides the infrastructure for devices to publish/subscribe to topics. In this setup [Mosquitto](https://mosquitto.org/) is the broker of choice.
+
+On the host machine create a directory that will contain the configuration for mosquitto:
+
+```
+mkdir mosquitto
+```
+
+Create sub directories, that will contain the configuration, persistence storage and the logs.
+
+```
+cd mosquitto
+mkdir config
+mkdir data
+mkdir log
+```
+
+Create a file called mosquitto.conf inside the config directory:
+
+```
+cd config
+touch mosquitto.conf
+```
+
+and add the following to the file:
+
+
+```
+pid_file /var/run/mosquitto.pid
+
+persistence true
+persistence_location /mosquitto/data/
+
+log_dest file /mosquitto/log/mosquitto.log
+log_dest stdout
+
+password_file /mosquitto/config/passwd
+allow_anonymous false
+```
+
+Stop the docker stack:
+
+```
+docker-compose down
+```
+
+Add the following to the docker-compose.yml to configure the Mosquitto docker container:
+
+```yaml
+  mqtt:
+    container_name: mqtt
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/log:/mosquitto/log
+      - ./mosquitto/data:/mosquitto/data
+```
+
+Start the docker stack again:
+
+```
+docker-compose up -d
+```
+
+Bash into the mosquitto container:
+
+```
+docker exec -it mqtt /bin/sh
+```
+
+Enter the following command to create a password file:
+
+```
+mosquitto_passwd -c /mosquitto/config/passwd [username]
+```
+
+You will be promted to enter your password twice.
+Restart the mqtt broker with:
+
+```
+docker restart mqtt
+```
+
+To test the MQTT broker, install mosquitto-clients on any other machine:
+
+```
+sudo apt-get install mosquitto-clients
+```
+
+Subscribe to the topic "test" in one terminal:
+
+```
+mosquitto_sub -h localhost -t "test" -u "[username]" -P "[password]"
+```
+
+Publish to the same topic in another terminal:
+
+```
+mosquitto_pub -h localhost -t "test" -m "Hello World" -u "[username]" -P "[password]"
+```
+
+You should now see "Hello World" showing up on the first terminal.
+
+### Configure MQTT Broker in Home Assistant
+#### Configure via UI
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "MQTT" and click on it.
+Enter "127.0.0.1" in the field "broker".
+Enter your username and password. Tick the box next to "Enable Discovery".
+
+#### Configure via configuration files
+Create a file called "core.yaml" inside the directory config/packages. Add the following to the file:
+
+```yaml
+mqtt:
+  broker: 127.0.0.1
+  username: [username]
+  password: [password]
+  discovery: true
+```

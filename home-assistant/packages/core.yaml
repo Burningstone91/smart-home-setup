@@ -1,0 +1,6 @@
+# Configuration for MQTT Broker
+mqtt:
+  broker: 127.0.0.1
+  username: !secret mqtt_user
+  password: !secret mqtt_pass
+  discovery: true

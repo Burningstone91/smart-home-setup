@@ -12,3 +12,4 @@ home-assistant.log
 options.xml
 secrets.yaml
 zwcfg_*
+mosquitto/config/passwd
