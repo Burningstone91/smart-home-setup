@@ -13,3 +13,5 @@ options.xml
 secrets.yaml
 zwcfg_*
 mosquitto/config/passwd
+appdaemon/logs
+appdaemon/dashboards

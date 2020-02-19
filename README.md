@@ -19,7 +19,7 @@ I will explain here the different parts of my home automation system and how I s
 
 
 ## Start of my Jouney
-First some preparations and the install of Home Assistant, which will be the core of the home automation system.
+First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
 
 ### Preparations
 First install Docker and Docker-Compose on the host machine following the official instructions online.
@@ -136,13 +136,13 @@ Now the initial configuration is done and Home Assistant is up and running.
 ## Setup MQTT Broker
 The MQTT broker is the server that hosts the MQTT network. It provides the infrastructure for devices to publish/subscribe to topics. In this setup [Mosquitto](https://mosquitto.org/) is the broker of choice.
 
-On the host machine create a directory that will contain the configuration for mosquitto:
+On the host machine create a directory that will contain the configuration for Mosquitto:
 
 ```
 mkdir mosquitto
 ```
 
-Create sub directories, that will contain the configuration, persistence storage and the logs.
+Create sub directories, that will contain the configuration, persistence storage and the logs:
 
 ```
 cd mosquitto
@@ -256,4 +256,98 @@ mqtt:
   username: [username]
   password: [password]
   discovery: true
+```
+
+## Setup AppDaemon - Automation Engine
+[AppDaemon](https://appdaemon.readthedocs.io/en/latest/) can be used to write Home Automation apps for Home Assistant in Python. It's an alternative to Home Assistant's inbuilt automations. You can create more complicated automations and reuse the same code for multiple apps. The official AppDaemon documentation provides a [detailed explanation](https://appdaemon.readthedocs.io/en/latest/APPGUIDE.html) on how to create your first app
+
+First create a long-lived access token for authentication with Home Assistant.
+
+In Home Assistant on the sidebar click on the username in the bottom left corner. In the section "Long-Lived Access Tokens", click on "Create Token", give it a meaningful and save the token somewhere.
+
+On the host machine create a directory that will contain the configuration for AppDaemon:
+
+```
+mkdir appdaemon
+```
+
+Create sub directories, that will contain the apps and the logs:
+
+```
+cd appdaemon
+mkdir apps
+mkdir logs
+```
+
+Create a file called appdaemon.yaml:
+
+```
+touch appdaemon.yaml
+```
+
+and add the following to the file:
+
+```yaml
+logs:
+  main_log:
+    filename: /conf/logs/appdaemon.log
+  error_log:
+    filename: /conf/logs/error.log
+  access_log:
+    filename: /conf/logs/access.log
+appdaemon:
+  app_dir: /conf/apps
+  elevation: 12
+  latitude: 234
+  longitude: 567
+  missing_app_warnings: 1
+  production_mode: False
+  time_zone: 'Europe/Zurich'
+  plugins:
+    HASS:
+      type: hass
+      namespace: hass
+      token: ey123-...g789ft790 # token generated in previous step
+      ha_url: http://ip-of-host:8123 
+    MQTT:
+      type: mqtt
+      namespace: mqtt
+      client_id: AD_4
+      client_host: ip-of-host
+      client_user: mqtt_username
+      client_password: super_secret_mqtt_password
+http:
+  url: http://ip-of-host:5050
+api:
+admin:
+  title: AppDaemon
+  stats_update: realtime
+```
+
+Stop the docker stack:
+
+```
+docker-compose down
+```
+
+Add the following to the docker-compose.yml to configure the AppDaemon docker container:
+
+```yaml
+  appdaemon:
+    container_name: appdaemon
+    image: acockburn/appdaemon:4.0.1
+    depends_on:
+      - hass
+    ports:
+      - "5050:5050"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./appdaemon:/conf
+```
+
+Start the docker stack again:
+
+```
+docker-compose up -d
 ```

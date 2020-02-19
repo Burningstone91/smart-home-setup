@@ -1,0 +1,35 @@
+secrets: /conf/secrets.yaml
+logs:
+  main_log:
+    filename: /conf/logs/appdaemon.log
+  error_log:
+    filename: /conf/logs/error.log
+  access_log:
+    filename: /conf/logs/access.log
+appdaemon:
+  app_dir: /conf/apps
+  elevation: !secret elevation
+  latitude: !secret latitude
+  longitude: !secret longitude
+  missing_app_warnings: 1
+  production_mode: False
+  time_zone: 'Europe/Zurich'
+  plugins:
+    HASS:
+      type: hass
+      namespace: hass
+      token: !secret appdaemon_token
+      ha_url: http://192.168.0.30:3123
+    MQTT:
+      type: mqtt
+      namespace: mqtt
+      client_id: AD_4
+      client_host: 192.168.0.30
+      client_user: !secret mqtt_user
+      client_password: !secret mqtt_password
+http:
+  url: http://192.168.0.30:5050
+api:
+admin:
+  title: AppDaemon
+  stats_update: realtime
