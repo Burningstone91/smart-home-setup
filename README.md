@@ -18,10 +18,10 @@ If you find any information here useful feel free to buy me a coffee :)
 I will explain here the different parts of my home automation system and how I set them up. For each part, I will talk about the hardware involved and how I integrated it into the system and I will also give an explanation on the automations and the corresponding code related to this part. 
 
 * <a href="https://github.com/Burningstone91/smart-home-setup#start">
-      Start of my Journey
+      Start of my Journey and Basic Setup
   </a>
 
-## Start of my Jouney <a name="networking" href="https://github.com/Burningstone91/smart-home-setup#start">
+## Start of my Jouney and Basic Setup<a name="start" href="https://github.com/Burningstone91/smart-home-setup#start">
 First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
 
 ### Preparations
