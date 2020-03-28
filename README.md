@@ -17,8 +17,11 @@ If you find any information here useful feel free to buy me a coffee :)
 ## Overview
 I will explain here the different parts of my home automation system and how I set them up. For each part, I will talk about the hardware involved and how I integrated it into the system and I will also give an explanation on the automations and the corresponding code related to this part. 
 
+* <a href="https://github.com/Burningstone91/smart-home-setup#start">
+      Start of my Journey
+  </a>
 
-## Start of my Jouney
+## Start of my Jouney <a name="networking" href="https://github.com/Burningstone91/smart-home-setup#start">
 First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
 
 ### Preparations
@@ -353,8 +356,17 @@ docker-compose up -d
 ```
 
 
-## Presence Detection on Room Level
-### Hardware used
+## Presence Detection
+### Basic Explanation of Setup
+I use the [person integration](https://www.home-assistant.io/integrations/person/) from Home Assistant to combine a bluetooth device tracker (device attached to my keys) and a gps device tracker (my phone). The docs give a detailed explanation on how the location is determined when multiple device trackers are used. Long story short, when I'm at home, my position is determined first by keys and then by phone. When I'm not home, my position is determined first by phone then by keys.
+I also use the [zone integration](https://www.home-assistant.io/integrations/zone/) from Home Assistant to show in which place (work, grocery store, etc.) we are, when we are not home. And I use [Room Assistant](https://www.room-assistant.io/) and the [MQTT Room Presence integration](https://www.home-assistant.io/integrations/mqtt_room/) from Home Assistant to show in which room we are, when we are home.
+I'm using the bluetooth device trackers now for around 2 years and I did not have a single false trigger in 2 years. Home Assistant marks us as home before we open the front door and marks us as left 3 min after we left the house.
+I adapted the method from Phil Hawthorne for [making presence detection not so binary](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/) in an AppDaemon app. This is used for example when we leave the house and come back a few minutes later, that it will not trigger any arrival automations.
+I also have a presence state for the house which can be "someone home", "everyone home", "no one home" or "vacation". 
+I'm going to explain each part of the presence detection system in detail including Hardware and Software used and how to set it up.
+
+### Bluetooth Device Tracker - Presence on Room Level
+#### Hardware used
 <table align="center" border="0">
 
 <tr><td align="center" colspan="1">
@@ -362,7 +374,7 @@ Raspberry Pi Zero W
 </td><td align="center" colspan="1">
 Nut Mini
 </td></tr>
-<tr><td align="center" colspan="1"><a target="_blank" href="https://www.amazon.de/gp/product/B072TN5KFN/ref=as_li_tl?ie=UTF8&camp=1638&creative=6742&creativeASIN=B072TN5KFN&linkCode=as2&tag=burningstone9-21&linkId=4f7b63c61bb319a363869c2bf8d8b1ce"><img border="0" src="//ws-eu.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=DE&ASIN=B072TN5KFN&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=burningstone9-21" ></a><img src="//ir-de.amazon-adsystem.com/e/ir?t=burningstone9-21&l=am2&o=3&a=B072TN5KFN" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+<tr><td align="center" colspan="1"><a target="_blank"  href="https://www.amazon.de/gp/product/B072TN5KFN/ref=as_li_tl?ie=UTF8&camp=1638&creative=6742&creativeASIN=B072TN5KFN&linkCode=as2&tag=burningstone9-21&linkId=c90a64f7b56fce952882d81753e27a5b"><img border="0" src="//ws-eu.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=DE&ASIN=B072TN5KFN&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=burningstone9-21" ></a><img src="//ir-de.amazon-adsystem.com/e/ir?t=burningstone9-21&l=am2&o=3&a=B072TN5KFN" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
 </td><td align="center" colspan="1"><a target="_blank"  href="https://www.amazon.de/gp/product/B07MFBL64S/ref=as_li_tl?ie=UTF8&camp=1638&creative=6742&creativeASIN=B07MFBL64S&linkCode=as2&tag=burningstone9-21&linkId=91360e22a9b0f592f54d7bccde154e4d"><img border="0" src="//ws-eu.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=DE&ASIN=B07MFBL64S&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=burningstone9-21" ></a><img src="//ir-de.amazon-adsystem.com/e/ir?t=burningstone9-21&l=am2&o=3&a=B07MFBL64S" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
 </td></tr>
 <tr><td colspan="2">
