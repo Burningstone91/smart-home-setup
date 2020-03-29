@@ -20,8 +20,17 @@ I will explain here the different parts of my home automation system and how I s
 * <a href="https://github.com/Burningstone91/smart-home-setup#start">
       Start of my Journey and Basic Setup
   </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#mqtt">
+      Setup of MQTT Broker
+  </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#appdaemon">
+      Setup AppDaemon - Automation Engine
+  </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#presence-detection">
+      Presence Detection
+  </a>
 
-## Start of my Jouney and Basic Setup<a name="start" href="https://github.com/Burningstone91/smart-home-setup#start">
+## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start">
 First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
 
 ### Preparations
@@ -136,7 +145,7 @@ docker restart hass
 
 Now the initial configuration is done and Home Assistant is up and running.
 
-## Setup MQTT Broker
+## Setup MQTT Broker <a name="mqtt" href="https://github.com/Burningstone91/smart-home-setup#mqtt">
 The MQTT broker is the server that hosts the MQTT network. It provides the infrastructure for devices to publish/subscribe to topics. In this setup [Mosquitto](https://mosquitto.org/) is the broker of choice.
 
 On the host machine create a directory that will contain the configuration for Mosquitto:
@@ -261,7 +270,7 @@ mqtt:
   discovery: true
 ```
 
-## Setup AppDaemon - Automation Engine
+## Setup AppDaemon - Automation Engine <a name="appdaemon" href="https://github.com/Burningstone91/smart-home-setup#appdaemon">
 [AppDaemon](https://appdaemon.readthedocs.io/en/latest/) can be used to write Home Automation apps for Home Assistant in Python. It's an alternative to Home Assistant's inbuilt automations. You can create more complicated automations and reuse the same code for multiple apps. The official AppDaemon documentation provides a [detailed explanation](https://appdaemon.readthedocs.io/en/latest/APPGUIDE.html) on how to create your first app.
 
 Now to the setup. First create a long-lived access token for authentication with Home Assistant.
@@ -327,6 +336,18 @@ admin:
   stats_update: realtime
 ```
 
+Create a file called requirements.txt:
+
+```
+touch requirements.txt
+```
+
+and add the following to the file:
+```
+voluptuous==0.11.5
+```
+This will install Voluptuous, which is used for config validation later on.
+
 Stop the docker stack:
 
 ```
@@ -338,7 +359,7 @@ Add the following to the docker-compose.yml to configure the AppDaemon docker co
 ```yaml
   appdaemon:
     container_name: appdaemon
-    image: acockburn/appdaemon:4.0.1
+    image: acockburn/appdaemon:4.0.3
     depends_on:
       - hass
     ports:
@@ -354,9 +375,133 @@ Start the docker stack again:
 ```
 docker-compose up -d
 ```
+Now we are going to create a kind of "Base App", from which all other apps can inherit from. I got this idea from [this](https://github.com/bachya/smart-home/blob/master/appdaemon/settings/apps/core.py) repo of Aaron Bach.
+
+Create a file called appbase.py inside the apps directory of AppDaemon.
+
+Add the following to the file:
+
+```python
+"""Define a generic object which  all apps/automations inherit from."""
+from datetime import datetime as dt
+from typing import Union, Optional
+import adbase as ad
+import voluptuous as vol
+
+from helpers import voluptuous_helper as vol_help
 
 
-## Presence Detection
+APP_SCHEMA = vol.Schema(
+    {
+        vol.Required("module"): str,
+        vol.Required("class"): str,
+        vol.Optional("dependencies"): vol_help.ensure_list,
+        vol.Optional("manager"): str,
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+
+
+class AppBase(ad.ADBase):
+    """Define a base automation object."""
+
+    APP_SCHEMA = APP_SCHEMA
+
+    def initialize(self) -> None:
+        """Initialize."""
+        self.adbase = self.get_ad_api()
+        self.hass = self.get_plugin_api("HASS")
+        self.mqtt = self.get_plugin_api("MQTT")
+
+        # Validate app configuration
+        try:
+            self.APP_SCHEMA(self.args)
+        except vol.Invalid as err:
+            self.adbase.log(f"Invalid configuration: {err}", log="error_log")
+            return
+
+        # Define holding place for timers
+        self.handles = {}
+
+        # Create a reference to every dependency in the configuration
+        for app in self.args.get("dependencies", {}):
+            if not getattr(self, app, None):
+                setattr(self, app, self.adbase.get_app(app))
+
+        # Create a reference to the manager app
+        if self.args.get("manager"):
+            self.manager = getattr(self, self.args["manager"])
+
+        # Run the app configuration if specified
+        if hasattr(self, "configure"):
+            self.configure()
+```
+In addition create a folder called helpers and put a file called voluptuous_helper.py inside this folder with the following content:
+
+```python
+"""Define methods to validate configuration for voluptuous."""
+
+import datetime
+from typing import Any, Sequence, TypeVar, Union
+
+import voluptuous as vol
+
+T = TypeVar("T")  # pylint: disable=invalid-name
+
+
+def ensure_list(value: Union[T, Sequence[T]]) -> Sequence[T]:
+    """Validate if a given object is a list."""
+    if value is None:
+        return []
+    return value if isinstance(value, list) else [value]
+
+
+def entity_id(value: Any) -> str:
+    """Validate if a given object is an entity ID."""
+    value = str(value).lower()
+    if "." in value:
+        return value
+
+    raise vol.Invalid("Invalid entity ID: {0}".format(value))
+
+
+def valid_date(value: Any) -> datetime.date:
+    """Validate if a given object is a date."""
+    try:
+        return datetime.datetime.strptime(value, "%d.%m.%Y")
+    except ValueError:
+        raise vol.Invalid(f"Invalid Date: {value}")
+
+
+def valid_time(value: Any) -> datetime.datetime:
+    """Validate if a given object is a time."""
+    try:
+        return datetime.datetime.strptime(value, "%H:%M:%S")
+    except ValueError:
+        raise vol.Invalid(f"Invalid Time: {value}")
+
+
+class existing_entity_id(object):
+    """Validate if a given object is an existing HA entity"""
+
+    def __init__(self, hass):
+        """Init."""
+        self._hass = hass
+
+    def __call__(self, value: Any) -> str:
+        value = str(value).lower()
+        if '.' not in value:
+            raise vol.Invalid(f'Invalid entity-id: {value}')
+        if not self._hass.entity_exists(value):
+            raise vol.Invalid(f'Entity-id {value} does not exist')
+        return value
+```
+
+Now when we create an app that usese the AppBase, it will automatically create a reference to every dependency in the app configuration. This way way we can use the methods and variables of the apps that our app depends on, to avoid redundant code. It will also do some basic config validation with Voluptuous and raise an error when you wrote "modle" instead of "module" for example. As we have multiple namespaces (HASS and MQTT), there are some variables that represent the MQTT and HASS namespace. This way you don't need to put "namespace=hass" when you call a method, instead you start the function call with "self.hass", if you want to do something in HASS namespace. Start it with "self.mqtt" to do something in MQTT namespace and start it with "self.adbase" do do something in the AppDaemon namespace (logging etc.).
+
+This file is going to be extended later on with more functionality.
+
+## Presence Detection <a name="presence-detection" href="https://github.com/Burningstone91/smart-home-setup#presence-detection">
 ### Basic Explanation of Setup
 I use the [person integration](https://www.home-assistant.io/integrations/person/) from Home Assistant to combine a bluetooth device tracker (device attached to my keys) and a gps device tracker (my phone). The docs give a detailed explanation on how the location is determined when multiple device trackers are used. Long story short, when I'm at home, my position is determined first by keys and then by phone. When I'm not home, my position is determined first by phone then by keys.
 I also use the [zone integration](https://www.home-assistant.io/integrations/zone/) from Home Assistant to show in which place (work, grocery store, etc.) we are, when we are not home. And I use [Room Assistant](https://www.room-assistant.io/) and the [MQTT Room Presence integration](https://www.home-assistant.io/integrations/mqtt_room/) from Home Assistant to show in which room we are, when we are home.

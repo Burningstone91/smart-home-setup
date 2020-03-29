@@ -1,0 +1,18 @@
+input_select:
+  # Input selects to represent non-binary presence state of persons
+  presence_dimitri:
+    name: Präsenz Dimitri
+    options:
+      - zu Hause
+      - gerade gegangen
+      - gerade angekommen
+      - weg
+      - lange weg
+  presence_sabrina:
+    name: Präsenz Sabrina
+    options:
+      - zu Hause
+      - gerade gegangen
+      - gerade angekommen
+      - weg
+      - lange weg

@@ -1,0 +1,9 @@
+input_select:
+  # Input select to represent presence state of the house
+  presence_house:
+    name: Status Haus
+    options:
+      - Alle sind zu Hause
+      - Ferien
+      - Jemand ist zu Hause
+      - Niemand ist zu Hause

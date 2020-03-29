@@ -1,0 +1,82 @@
+First some preparations in Home Assistant:
+Create three files inside the packages directory in the Home Assistant configuration called " modes.yaml", "persons.yaml" and "presence.yaml".
+
+In the modes.yaml file add the following:
+
+```yaml
+input_boolean:
+  # Input booleans to represent state of modes
+  mode_guest:
+    name: Gastmodus
+    icon: mdi:account-group
+  mode_cleaning:
+    name: Reinigungsmodus
+    icon: mdi:robot-vacuum
+  mode_sleep:
+    name: Schlafmodus
+    icon: mdi:sleep
+```
+This creates three input booleans which represent the state of the respective mode. I use guest mode, sleep mode and cleaning mode but you can choose whatever modes you want for your system.
+
+In the persons.yaml file add the following:
+
+```yaml
+input_select:
+  # Input selects to represent non-binary presence state of persons
+  presence_dimitri:
+    name: Präsenz Dimitri
+    options:
+      - zu Hause # home
+      - gerade gegangen # just arrived
+      - gerade angekommen # just left
+      - weg # away
+      - lange weg # extended away
+  presence_sabrina:
+    name: Präsenz Sabrina
+    options:
+      - zu Hause # home
+      - gerade gegangen # just arrived
+      - gerade angekommen # just left
+      - weg # away
+      - lange weg # extended away
+```
+This creates an input select for each person in the household (two in my case), which represent the non-binary presence state. Replace the options with the naming you like, just be consistent between persons.
+
+In the presence.yaml file add the following:
+
+```yaml
+input_select:
+  # Input select to represent presence state of the house
+  presence_house:
+    name: Status Haus
+    options:
+      - Alle sind zu Hause # everyone home
+      - Ferien # vacation
+      - Jemand ist zu Hause # someone home
+      - Niemand ist zu Hause # no one home
+```
+This creates an input select, which represents the presence state of the house.
+Create a python dictionary that contains the base configuration of the home. Such as the presence state of the house, the notifiers of the phones etc. This dictionary will be appended later on when more apps are added.
+
+In the AppDaemon directory should be a folder called "apps". Create a new file called "house_config.py" inside this folder. Add the following to this file:
+
+The code for the base app can be found here [appbase.py](https://github.com/Burningstone91/smart-home-setup/tree/master/appdaemon/apps/appbase.py). Why did we create this app? This app defines some base configuration for each app, this way it doesn't have to be repeated in every new app. 
+It checks if the app configuration is valid using Voluptuous. 
+It creates a reference to each app that is listed under dependencies in the app configuration. This allows the app to use methods from the app it depends on in order to not rewrite code. 
+Each app can be enabled/disabled using an input boolean in Home Assistant. The name of the input boolean can be defined in the app configuration. In case there's no configuration, the name of the input boolean will be ```input_boolean.app_name```.
+Each app can be configured to be disabled based on presence, modes or days. 
+Presence:
+App can be disabled based on the state of the house. Possible states are the ones defines in the house input_select
+```yaml
+disabled_states:
+  presence:
+    - someone
+    - everyone
+```
+Presence:
+App can be disabled based on whether a mode is currently on. The different modes are defined in the house_config.py above
+```yaml
+disabled_states:
+  modes:
+    sleep_mode: 'on'
+```
