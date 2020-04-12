@@ -64,7 +64,7 @@ version: "3"
 services:
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:0.105.2
+    image: homeassistant/home-assistant:0.108.0
     network_mode: host
     restart: unless-stopped
     volumes:
@@ -271,7 +271,7 @@ Enter "127.0.0.1" in the field "broker".
 Enter your username and password. Tick the box next to "Enable Discovery".
 
 #### Configure via configuration files
-Create a file called "core.yaml" inside the directory config/packages. Add the following to the file:
+Create a file called "core.yaml" inside the directory config/packages. This file will be used for all config relating to the core. Add the following to the file:
 
 ```yaml
 mqtt:
@@ -515,10 +515,17 @@ This file is going to be extended later on with more functionality.
 ## Presence Detection <a name="presence-detection" href="https://github.com/Burningstone91/smart-home-setup#presence-detection">
 ### Basic Explanation of Setup
 I use the [person integration](https://www.home-assistant.io/integrations/person/) from Home Assistant to combine a bluetooth device tracker (device attached to my keys) and a gps device tracker (my phone). The docs give a detailed explanation on how the location is determined when multiple device trackers are used. Long story short, when I'm at home, my position is determined first by keys and then by phone. When I'm not home, my position is determined first by phone then by keys.
-I also use the [zone integration](https://www.home-assistant.io/integrations/zone/) from Home Assistant to show in which place (work, grocery store, etc.) we are, when we are not home. And I use [Room Assistant](https://www.room-assistant.io/) and the [MQTT Room Presence integration](https://www.home-assistant.io/integrations/mqtt_room/) from Home Assistant to show in which room we are, when we are home.
-I'm using the bluetooth device trackers now for around 2 years and I did not have a single false trigger in 2 years. Home Assistant marks us as home before we open the front door and marks us as left 3 min after we left the house.
+
+I use the phone device tracker together with the [zone integration](https://www.home-assistant.io/integrations/zone/) from Home Assistant to show in which place (work, grocery store, etc.) we are, when we are not home. This is reflected in the state of the person.
+
+And I use the bluetooth device tracker together with [Room Assistant](https://www.room-assistant.io/) to show in which room we are when we are home. This is not reflected in the state of the person.
+
+I'm using the bluetooth device trackers now for around 2 years and I did not have a single false trigger in this time. Home Assistant marks us as home before we open the front door and marks us as left 3 min after we left the house.
+
 I adapted the method from Phil Hawthorne for [making presence detection not so binary](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/) in an AppDaemon app. This is used for example when we leave the house and come back a few minutes later, that it will not trigger any arrival automations.
+
 I also have a presence state for the house which can be "someone home", "everyone home", "no one home" or "vacation". 
+
 I'm going to explain each part of the presence detection system in detail including Hardware and Software used and how to set it up.
 
 ### Bluetooth Device Tracker - Presence on Room Level
@@ -535,6 +542,338 @@ Nut Mini
 </td></tr>
 <tr><td colspan="2">
 
-The Nut Mini's are attatched to our keys and I'm soon going to buy some Fitness Bands to replace them. They send a Bluetooth Low Energy (BLE) signal every 3 seconds. There's one Raspberry Pi's as central as possible in every room that I want to automate. The Pi's run [Room Assistant](https://www.room-assistant.io/), which catches these signals and determines the location of the Nut Mini based on the strength of the signal. It talks to Home Assistant through MQTT and if discovery is enabled it will be detected automatically.
+The Nut Mini's are attatched to our keys and I'm soon going to buy some Fitness Bands to replace them. They send a Bluetooth Low Energy (BLE) signal every 3 seconds. There's one Raspberry Pi's as central as possible in every room that I want to automate and one close to the entrance door. The Pi's run [Room Assistant](https://www.room-assistant.io/), which catches these signals and determines the location of the Nut Mini based on the strength of the signal. It talks to Home Assistant through MQTT and if discovery is enabled it will be detected automatically.
+Due to the fact that only device tracker entities can be linked to a person, I use an AppDaemon app that updates the status of an MQTT device tracker whenever the state of the keys changes.
 
 <tr><td colspan="2">
+
+#### Creating a person
+After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
+To create an additional person click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".
+
+#### Room assistant Setup
+Now we are going to install and configure Room-Assistant on the Pi's. There are excellent guides on how to install it on Pi 3/4 or Pi Zero W on the page of the creator (https://www.room-assistant.io/). Because I have 6 Pi Zero W's in total and didn't want to install and configure each one separately, I use [Ansible](https://www.ansible.com/) to deploy it on all machines at once from my desktop. 
+
+Install Raspbian Buster Lite on each Raspberry Pi Zero W with SSH enabled.
+
+On the host that runs Ansible, add the following to "/etc/ansible/hosts":
+
+```yaml
+[room_assistant]
+10.10.70.7
+10.10.70.8
+10.10.70.9
+10.10.70.10
+10.10.70.11
+10.10.70.12
+```
+This creates a group containing the ip-adresses of the Pi Zero W's.
+
+Create a public ssh key with:
+
+```bash
+ssh-keygen
+```
+
+Copy the public key to a Pi with:
+
+```bash
+ssh-copy-id pi@10.10.70.7
+```
+
+Repeat this for each Pi.
+
+Login to each Pi with:
+
+ssh pi@10.10.70.7
+
+Confirm the promt about RSA key fingerprint by typing "yes".
+
+Create a directory that will contain the configuration for Room Assistant.
+
+In this directory execute the following:
+
+```bash
+git clone https://github.com/mKeRix/ansible-playbooks.git
+```
+
+Change to the newly created directory and install the requirements with:
+
+```bash
+ansible-galaxy install -r requirements.yml
+```
+
+Create a file called "hosts.yaml", which will hold the configuration for Room Assistant. 
+Add the following to the file:
+
+```yaml
+all:
+  hosts:
+    10.10.70.7:
+      room_assistant_config: 
+        global:
+          instanceName: buero
+    10.10.70.8:
+      room_assistant_config: 
+        global:
+          instanceName: ankleidezimmer
+    10.10.70.9:
+      room_assistant_config: 
+        global:
+          instanceName: wohnzimmer
+    10.10.70.10:
+      room_assistant_config: 
+        global:
+          instanceName: schlafzimmer
+    10.10.70.11:
+      room_assistant_config: 
+        global:
+          instanceName: kueche
+    10.10.70.12:
+      room_assistant_config: 
+        global:
+          instanceName: balkon
+  vars:
+    room_assistant_global_config:
+      global:
+        integrations:
+          - homeAssistant
+          - bluetoothLowEnergy
+      homeAssistant:
+        mqttUrl: 'mqtt://ip-of-host:1883'
+        mqttOptions:
+          username: mqtt_username
+          password: super_secret_mqtt_password
+      bluetoothLowEnergy:
+        whitelist:
+          - ab6dg90dg0fg
+          - ig8daf7s0dfd
+        tagOverrides:
+          ble-ab6dg90dg0fg:
+            name: dimitri
+          ble-ig8daf7s0dfd:
+            name: sabrina
+```
+
+In the "homeAssistant" part we configure the user credentials for the MQTT broker we configured before.
+The "tagOverrides" are used to give the tags a human readable name, this name will also be used for the sensor created in Home Assistant. Here the sensor in Home Assistant for my tag will be called "sensor.dimitri_room_presence".
+The strings whitelisted under "bluetoothLowEnergy" are the mac adresses (lowercase and without colons) of the Nut Mini key tags. To get the mac adress of the Nut Mini's run the following commands on a machine that has a bluetooth adapter and bluetoothctl is installed (you can also do this from the Pi Zero W):
+
+```bash
+sudo bluetoothctl
+scan on
+```
+It'll show the mac adress of any detected bluetooth device nearby.
+
+Now run the Ansible playbook with:
+
+```bash
+ansible-playbook -i hosts.yml -u pi room-assistant.yml
+```
+
+And wait until the process is completed, it takes quite some time on the Pi Zero W.
+
+SSH into each Pi and execute the following command:
+
+```bash
+sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
+```
+
+There should be one new sensor in Home Assistant for each device configured in Room-Assistant. This sensor will show the name of the room that istance that is closest to the Bluetooth tag. If none of the Room-Assistant instances sees the Bluetooth tag, it will show "not_home".
+
+As of now, the sensor will probably often change state, depending on the strenght of the BLE signal. For example for me it jumps between 3 rooms in certain places. To eliminate this we set the parameter "maxDistance" in the different rooms. To get the value, I took the BLE tag and walked to multiple places in each room and stood there for a few seconds. I then look at the distances sent in MQTT with [MQTT explorer](http://mqtt-explorer.com/). I take the largest of these values and add a bit more for safety. Repeat for every room and then add them like this:
+
+```yaml
+all:
+  hosts:
+    10.10.70.7:
+      room_assistant_config: 
+        global:
+          instanceName: buero
+        bluetoothLowEnergy:
+          maxDistance: 7.2
+        cluster:
+          weight: 6
+    10.10.70.8:
+      room_assistant_config: 
+        global:
+          instanceName: ankleidezimmer
+        bluetoothLowEnergy:
+          maxDistance: 4
+        cluster:
+          weight: 5
+    10.10.70.9:
+      room_assistant_config: 
+        global:
+          instanceName: wohnzimmer
+        bluetoothLowEnergy:
+          maxDistance: 8
+        cluster:
+          weight: 2
+    10.10.70.10:
+      room_assistant_config: 
+        global:
+          instanceName: schlafzimmer
+        bluetoothLowEnergy:
+          maxDistance: 7
+        cluster:
+          weight: 3
+    10.10.70.11:
+      room_assistant_config: 
+        global:
+          instanceName: kueche
+        bluetoothLowEnergy:
+          maxDistance: 6
+        cluster:
+          weight: 4
+    10.10.70.12:
+      room_assistant_config: 
+        global:
+          instanceName: garderobe
+        cluster:
+          weight: 1 
+  vars:
+    room_assistant_global_config:
+      global:
+        integrations:
+          - homeAssistant
+          - bluetoothLowEnergy
+      homeAssistant:
+        mqttUrl: 'mqtt://10.10.40.6:1884'
+        mqttOptions:
+          username: mosquitto
+          password: kCL5*RkP
+      bluetoothLowEnergy:
+        timeout: 8
+        whitelist:
+          - cd1381f62e7d
+          - f913395bc892
+        tagOverrides:
+          cd1381f62e7d:
+            name: dimitri
+          f913395bc892:
+            name: sabrina
+```
+
+I also added weights for the different instances. If two instances send that they see a tag, the instance with the higher weight will win.
+
+#### MQTT device tracker
+Because the sensor can not be used with the person integration, we use the[MQTT device tracker integration](https://www.home-assistant.io/integrations/device_tracker.mqtt/) and bind the resulting device tracker to the person integration. 
+
+To add an MQTT device tracker, create a file called "persons.yaml" in the folder "packages". This file will be used for all configuration related to persons.
+
+Add the following to the file:
+
+```yaml
+device_tracker:
+  platform: mqtt
+  devices:
+    room_presence_dimitri: 'location/dimitri_room_presence'
+    room_presence_sabrina: 'location/sabrina_room_presence'
+  source_type: bluetooth_le
+```
+
+This will create two device trackers. By publishing "home" or "not_home" to the MQTT topic 'location/dimitri_room_presence', the state of "device_tracker.room_presence_dimitri" will be updated accordingly.
+
+Restart Home Assistant. There should be two new device_trackers under "Developer Tools" -> "States".
+
+#### Device Tracker Update App
+Create a python dictionary that contains the base configuration of the home. Such as the presence state of the house, the notifiers of the phones etc. This dictionary will be appended later on when more apps are added.
+
+In the AppDaemon directory should be a folder called "apps". Create a new file called "globals.py" inside this folder. Add the following to this file:
+
+```python
+PERSONS = {
+    "Dimitri": {
+        "sensor_room_presence": "sensor.dimitri_room_presence",
+        "topic_room_device_tracker": "location/dimitri_room_presence",
+    },
+    "Sabrina": {
+        "sensor_room_presence": "sensor.sabrina_room_presence",
+        "topic_room_device_tracker": "location/sabrina_room_presence",
+    },
+}
+```
+where keys_presence is the sensor that shows the location of the keys (sensor created by room-assistant) and keys_topic is the MQTT topic that controls the MQTT device tracker that has been created in the previous step.
+
+Now add a file called "presence.py" to the same directory and add the following:
+
+```python
+from appbase import AppBase, APP_SCHEMA
+from globals import PERSONS
+
+class BleDeviceTrackerUpdater(AppBase):
+    """Define a base class for the BLE updater."""
+
+    def configure(self):
+        """Configure."""
+        for person, attribute in PERSONS.items():
+            presence_sensor = attribute['sensor_room_presence']
+            topic = attribute['topic_room_device_tracker']
+
+            # set initial state of device tracker
+            if self.hass.get_state(presence_sensor) =="not_home":
+                self.update_device_tracker(topic, "not_home")
+            else:
+                self.update_device_tracker(topic, "home")
+
+            # set device tracker to not_home after 5 minutes of no activity
+            self.hass.listen_state(
+                self.on_presence_change, 
+                presence_sensor,
+                new="not_home",
+                duration=5*60,
+                target_state="not_home",
+                topic=topic,
+            )
+
+            # update state of device tracker whenever presence sensor changes
+            self.hass.listen_state(
+                self.on_presence_change, 
+                presence_sensor,
+                topic=topic,
+            )
+
+    def on_presence_change(self, entity, attribute, old, new, kwargs):
+        """Take action on presence change."""
+        if kwargs.get("target_state") == "not_home":
+            self.update_device_tracker(kwargs["topic"], "not_home")
+        elif new != "not_home":
+            self.update_device_tracker(kwargs["topic"], "home")
+
+    def update_device_tracker(self, topic, target_state):
+        """Update the location of the MQTT device tracker."""
+        self.mqtt.mqtt_publish(
+            topic,
+            target_state,
+            namespace="mqtt",
+        )
+```
+This looks complicated for such a simple task, however the app is prepared to be extended later on.
+
+At the top we import the person information we created in the globals.py file with:
+
+```python
+from globals import PERSONS
+```
+
+In the configure section it loops through the dictionary of each person and checks the presence sensor and the topic. Then it initially sets the state of the MQTT device tracker by checking the state of the presence sensor. Afterwards there's one listener that triggers the "on_presence_change" method when the presence sensor is "not_home" for 5 minutes (duration=5*60) and there's another listener that triggers the "on_presence_change" method whenever the presence sensor changes state.
+The "on_presence_change" method checks if the target_state "not_home" has been provided. In this case it updates the MQTT device tracker to "not_home", otherwise it checks the value of the presence sensor and if it is something else than "not_home" it updates the MQTT device tracker to "home"
+
+Finally create a file called "presence.yaml" in the apps directory and add the following:
+
+```yaml
+ble_tracker_app:
+  module: presence
+  class: BleDeviceTrackerUpdater
+```
+This will create an app called "ble_tracker_app" using the ble_tracker module we just created.
+
+At the end of all this we should now have for each person a device tracker that shows whether the person is home or not and a sensor that shows in which room the person is in case the person is home.
+
+
+
+
+
+
+

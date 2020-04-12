@@ -1,0 +1,3 @@
+ble_tracker_app:
+  module: presence
+  class: BleDeviceTrackerUpdater

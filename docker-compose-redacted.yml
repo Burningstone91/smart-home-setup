@@ -13,7 +13,7 @@ services:
       - ./appdaemon:/conf
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:0.107.3
+    image: homeassistant/home-assistant:0.108.0
     network_mode: host
     restart: unless-stopped
     volumes:

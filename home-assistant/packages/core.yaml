@@ -1,4 +1,4 @@
-# Configuration for MQTT Broker
+#Configuration for MQTT Broker
 mqtt:
   broker: 127.0.0.1
   username: !secret mqtt_user
