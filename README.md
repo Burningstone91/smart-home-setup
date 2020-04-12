@@ -42,6 +42,9 @@ I will explain here the different parts of my home automation system and how I s
   </a>
 
 ## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start">
+<details>
+  <summary>Step-by-step Guide</summary>
+
 First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
 
 ### Preparations
@@ -155,6 +158,7 @@ docker restart hass
 ```
 
 Now the initial configuration is done and Home Assistant is up and running.
+</details>
 
 ## Setup MQTT Broker <a name="mqtt" href="https://github.com/Burningstone91/smart-home-setup#mqtt">
 The MQTT broker is the server that hosts the MQTT network. It provides the infrastructure for devices to publish/subscribe to topics. In this setup [Mosquitto](https://mosquitto.org/) is the broker of choice.
