@@ -41,12 +41,12 @@ I will explain here the different parts of my home automation system and how I s
       Presence Detection
   </a>
 
-## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start">
+## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"></a>
+
+First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
 
 <details><summary>Step-by-step Guide</summary>
 <p>
-
-First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
 
 ### Preparations
 Install Docker and Docker-Compose on the host machine following the official instructions online.
@@ -163,8 +163,11 @@ Now the initial configuration is done and Home Assistant is up and running.
 </p>
 </details>
 
-## Setup MQTT Broker <a name="mqtt" href="https://github.com/Burningstone91/smart-home-setup#mqtt">
+## Setup MQTT Broker <a name="mqtt" href="https://github.com/Burningstone91/smart-home-setup#mqtt"></a>
 The MQTT broker is the server that hosts the MQTT network. It provides the infrastructure for devices to publish/subscribe to topics. In this setup [Mosquitto](https://mosquitto.org/) is the broker of choice.
+
+<details><summary>Step-by-step Guide</summary>
+<p>
 
 On the host machine create a directory that will contain the configuration for Mosquitto:
 
@@ -288,8 +291,14 @@ mqtt:
   discovery: true
 ```
 
-## Setup AppDaemon - Automation Engine <a name="appdaemon" href="https://github.com/Burningstone91/smart-home-setup#appdaemon">
+</p>
+</details>
+
+## Setup AppDaemon - Automation Engine <a name="appdaemon" href="https://github.com/Burningstone91/smart-home-setup#appdaemon"></a>
 [AppDaemon](https://appdaemon.readthedocs.io/en/latest/) can be used to write Home Automation apps for Home Assistant in Python. It's an alternative to Home Assistant's inbuilt automations. You can create more complicated automations and reuse the same code for multiple apps. The official AppDaemon documentation provides a [detailed explanation](https://appdaemon.readthedocs.io/en/latest/APPGUIDE.html) on how to create your first app.
+
+<details><summary>Step-by-step Guide</summary>
+<p>
 
 Now to the setup. First create a long-lived access token for authentication with Home Assistant.
 
@@ -519,7 +528,10 @@ Now when we create an app that usese the AppBase, it will automatically create a
 
 This file is going to be extended later on with more functionality.
 
-## Presence Detection <a name="presence-detection" href="https://github.com/Burningstone91/smart-home-setup#presence-detection">
+</p>
+</details>
+
+## Presence Detection <a name="presence-detection" href="https://github.com/Burningstone91/smart-home-setup#presence-detection"></a>
 ### Basic Explanation of Setup
 I use the [person integration](https://www.home-assistant.io/integrations/person/) from Home Assistant to combine a bluetooth device tracker (device attached to my keys) and a gps device tracker (my phone). The docs give a detailed explanation on how the location is determined when multiple device trackers are used. Long story short, when I'm at home, my position is determined first by keys and then by phone. When I'm not home, my position is determined first by phone then by keys.
 
@@ -553,6 +565,9 @@ Nut Mini
 The Nut Mini's are attatched to our keys and I'm soon going to buy some Fitness Bands to replace them. They send a Bluetooth Low Energy (BLE) signal every 3 seconds. There's one Raspberry Pi's as central as possible in every room that I want to automate and one close to the entrance door. The Pi's run [Room Assistant](https://www.room-assistant.io/), which catches these signals and determines the location of the Nut Mini based on the strength of the signal. It talks to Home Assistant through MQTT and if discovery is enabled it will be detected automatically.
 Due to the fact that only device tracker entities can be linked to a person, I use an AppDaemon app that updates the status of an MQTT device tracker whenever the state of the keys changes.
 </td></tr>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
 
 #### Creating a person
 After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
@@ -874,13 +889,11 @@ ble_tracker_app:
   module: presence
   class: BleDeviceTrackerUpdater
 ```
-This will create an app called "ble_tracker_app" using the ble_tracker module we just created.
+This will create an app called "ble_tracker_app" using the presence module we just created.
 
 At the end of all this we should now have for each person a device tracker that shows whether the person is home or not and a sensor that shows in which room the person is in case the person is home.
 
+</p>
+</details>
 
-
-
-
-
-
+### GPS Device Tracker - Presence outside Home
