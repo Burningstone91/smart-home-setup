@@ -537,15 +537,15 @@ Raspberry Pi Zero W
 </td><td align="center" colspan="1">
 Nut Mini
 </td></tr>
+
 <tr><td align="center" colspan="1"><a target="_blank"  href="https://www.amazon.de/gp/product/B072TN5KFN/ref=as_li_tl?ie=UTF8&camp=1638&creative=6742&creativeASIN=B072TN5KFN&linkCode=as2&tag=burningstone9-21&linkId=c90a64f7b56fce952882d81753e27a5b"><img border="0" src="//ws-eu.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=DE&ASIN=B072TN5KFN&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=burningstone9-21" ></a><img src="//ir-de.amazon-adsystem.com/e/ir?t=burningstone9-21&l=am2&o=3&a=B072TN5KFN" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
 </td><td align="center" colspan="1"><a target="_blank"  href="https://www.amazon.de/gp/product/B07MFBL64S/ref=as_li_tl?ie=UTF8&camp=1638&creative=6742&creativeASIN=B07MFBL64S&linkCode=as2&tag=burningstone9-21&linkId=91360e22a9b0f592f54d7bccde154e4d"><img border="0" src="//ws-eu.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=DE&ASIN=B07MFBL64S&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=burningstone9-21" ></a><img src="//ir-de.amazon-adsystem.com/e/ir?t=burningstone9-21&l=am2&o=3&a=B07MFBL64S" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
 </td></tr>
-<tr><td colspan="2">
 
+<tr><td colspan="2">
 The Nut Mini's are attatched to our keys and I'm soon going to buy some Fitness Bands to replace them. They send a Bluetooth Low Energy (BLE) signal every 3 seconds. There's one Raspberry Pi's as central as possible in every room that I want to automate and one close to the entrance door. The Pi's run [Room Assistant](https://www.room-assistant.io/), which catches these signals and determines the location of the Nut Mini based on the strength of the signal. It talks to Home Assistant through MQTT and if discovery is enabled it will be detected automatically.
 Due to the fact that only device tracker entities can be linked to a person, I use an AppDaemon app that updates the status of an MQTT device tracker whenever the state of the keys changes.
-
-<tr><td colspan="2">
+</td></tr>
 
 #### Creating a person
 After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
