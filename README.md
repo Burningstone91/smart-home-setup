@@ -565,6 +565,7 @@ Nut Mini
 The Nut Mini's are attatched to our keys and I'm soon going to buy some Fitness Bands to replace them. They send a Bluetooth Low Energy (BLE) signal every 3 seconds. There's one Raspberry Pi's as central as possible in every room that I want to automate and one close to the entrance door. The Pi's run [Room Assistant](https://www.room-assistant.io/), which catches these signals and determines the location of the Nut Mini based on the strength of the signal. It talks to Home Assistant through MQTT and if discovery is enabled it will be detected automatically.
 Due to the fact that only device tracker entities can be linked to a person, I use an AppDaemon app that updates the status of an MQTT device tracker whenever the state of the keys changes.
 </td></tr>
+</table>
 
 <details><summary>Step-by-step Guide</summary>
 <p>
