@@ -45,119 +45,119 @@ I will explain here the different parts of my home automation system and how I s
 <details>
   <summary>Step-by-step Guide</summary>
 
-First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
+  First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
 
-### Preparations
-Install Docker and Docker-Compose on the host machine following the official instructions online.
+  ### Preparations
+  Install Docker and Docker-Compose on the host machine following the official instructions online.
 
-Create the docker-compose file and a directory which will contain the Home Assistant configuration:
+  Create the docker-compose file and a directory which will contain the Home Assistant configuration:
 
-```
-touch docker-compose.yml
-mkdir home-assistant
-```
+  ```
+  touch docker-compose.yml
+  mkdir home-assistant
+  ```
 
-The docker-compose file contains the configuration for the different docker containers that will be running in the stack.
+  The docker-compose file contains the configuration for the different docker containers that will be running in the stack.
 
-### Configure Home Assistant Docker container
-Add the following to docker-compose.yml to configure the Home Assistant Core docker container:
+  ### Configure Home Assistant Docker container
+  Add the following to docker-compose.yml to configure the Home Assistant Core docker container:
 
-```yaml
-version: "3"
-services:
-  hass:
-    container_name: hass
-    image: homeassistant/home-assistant:0.108.0
-    network_mode: host
-    restart: unless-stopped
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./home-assistant:/config
-```
+  ```yaml
+  version: "3"
+  services:
+    hass:
+      container_name: hass
+      image: homeassistant/home-assistant:0.108.0
+      network_mode: host
+      restart: unless-stopped
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./home-assistant:/config
+  ```
 
-### Start the docker stack for the first time
-Enter the following command while you are in the same directory as the docker-compose.yml file:
+  ### Start the docker stack for the first time
+  Enter the following command while you are in the same directory as the docker-compose.yml file:
 
-```
-docker-compose up -d
-```
+  ```
+  docker-compose up -d
+  ```
 
-This will read the config from the docker-compose.yml file and start the docker stack in the background. This will take some time as it will now download and install Home Assistant Core.
+  This will read the config from the docker-compose.yml file and start the docker stack in the background. This will take some time as it will now download and install Home Assistant Core.
 
-After the install is finished, Home Assistant should be available under http://ip-of-host:8123
+  After the install is finished, Home Assistant should be available under http://ip-of-host:8123
 
-### Initial Home Assistant Configuration
-Follow the instructions on the screen to setup the first user, your home location, elevation, time zone and unit system. 
+  ### Initial Home Assistant Configuration
+  Follow the instructions on the screen to setup the first user, your home location, elevation, time zone and unit system. 
 
-### Structuring the Home Assistant configuration
-Packages allow to split up the configuration.yaml. Like this, all configuration such as ```switch:```, ```input_boolean:```, etc. that belong to the same logical group (e.g. room) can be put inside a separate file instead of defining everything in the designated block inside configuration.yaml. You can also easily share your configuration for e.g. an alarm clock, including all input_selects, input_booleans, sensors and whatever else you need to setup an alarm clock. 
+  ### Structuring the Home Assistant configuration
+  Packages allow to split up the configuration.yaml. Like this, all configuration such as ```switch:```, ```input_boolean:```, etc. that belong to the same logical group (e.g. room) can be put inside a separate file instead of defining everything in the designated block inside configuration.yaml. You can also easily share your configuration for e.g. an alarm clock, including all input_selects, input_booleans, sensors and whatever else you need to setup an alarm clock. 
 
-Enable the usage of packages by adding the following to configuration.yaml:
+  Enable the usage of packages by adding the following to configuration.yaml:
 
-```yaml
-homeassistant:
-  packages: !include_dir_named packages/
-```
+  ```yaml
+  homeassistant:
+    packages: !include_dir_named packages/
+  ```
 
-And create a directory "packages" in the same directory as configuration.yaml:
+  And create a directory "packages" in the same directory as configuration.yaml:
 
-```
-mkdir packages
-```
+  ```
+  mkdir packages
+  ```
 
-Due to this the following lines from configuration.yaml can be removed:
+  Due to this the following lines from configuration.yaml can be removed:
 
-```yaml
-group: !include groups.yaml
-automation: !include automations.yaml
-script: !include scripts.yaml
-scene: !include scenes.yaml
-```
+  ```yaml
+  group: !include groups.yaml
+  automation: !include automations.yaml
+  script: !include scripts.yaml
+  scene: !include scenes.yaml
+  ```
 
-And the corresponding files groups.yaml, automations.yaml, scripts.yaml and scenes.yaml can be removed as well. 
+  And the corresponding files groups.yaml, automations.yaml, scripts.yaml and scenes.yaml can be removed as well. 
 
-The following lines can be removed as well:
+  The following lines can be removed as well:
 
-```yaml
-# http:
-#   base_url: example.duckdns.org:8123
+  ```yaml
+  # http:
+  #   base_url: example.duckdns.org:8123
 
-# Text to speech
-tts:
-  - platform: google_translate
-```
+  # Text to speech
+  tts:
+    - platform: google_translate
+  ```
 
-Remove default_config: from configuration.yaml and instead add the following lines:
+  Remove default_config: from configuration.yaml and instead add the following lines:
 
-```yaml
-config:
-frontend:
-person:
-sun:
-system_health:
-```
+  ```yaml
+  config:
+  frontend:
+  person:
+  sun:
+  system_health:
+  ```
 
-The final file should look something like this:
+  The final file should look something like this:
 
-```yaml
-homeassistant:
-  packages: !include_dir_named packages/
+  ```yaml
+  homeassistant:
+    packages: !include_dir_named packages/
 
-config:
-frontend:
-person:
-sun:
-system_health:
-```
+  config:
+  frontend:
+  person:
+  sun:
+  system_health:
+  ```
 
-Restart the Home Assistant container with:
+  Restart the Home Assistant container with:
 
-```
-docker restart hass
-```
+  ```
+  docker restart hass
+  ```
 
-Now the initial configuration is done and Home Assistant is up and running.
+  Now the initial configuration is done and Home Assistant is up and running.
 </details>
 
 ## Setup MQTT Broker <a name="mqtt" href="https://github.com/Burningstone91/smart-home-setup#mqtt">
