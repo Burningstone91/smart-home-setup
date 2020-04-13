@@ -575,11 +575,11 @@ After the onboarding process Home Assistant will automatically create a person w
 To create an additional person click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".
 
 #### Room assistant Setup
-Now we are going to install and configure Room-Assistant on the Pi's. There are excellent guides on how to install it on Pi 3/4 or Pi Zero W on the page of the creator (https://www.room-assistant.io/). Because I have 6 Pi Zero W's in total and didn't want to install and configure each one separately, I use [Ansible](https://www.ansible.com/) to deploy it on all machines at once from my desktop. 
+Now we are going to install and configure Room-Assistant on the Pi's. There are excellent guides on how to install it on Pi 3/4 or Pi Zero W on the page of the creator (https://www.room-assistant.io/). Because I have 6 Pi Zero W's in total and didn't want to install and configure each one separately, I use [Ansible](https://www.ansible.com/) to deploy it on all machines at once from my desktop (there's a tutorial as well for this on the site of the creator). 
 
 Install Raspbian Buster Lite on each Raspberry Pi Zero W with SSH enabled.
 
-On the host that runs Ansible, add the following to "/etc/ansible/hosts":
+On the host that runs Ansible, add the following to the file "/etc/ansible/hosts":
 
 ```yaml
 [room_assistant]
@@ -590,9 +590,9 @@ On the host that runs Ansible, add the following to "/etc/ansible/hosts":
 10.10.70.11
 10.10.70.12
 ```
-This creates a group containing the ip-adresses of the Pi Zero W's.
+This creates a group containing the ip-adresses of the room-assistant instances.
 
-Create a public ssh key with:
+Create a public ssh key on the host that runs Ansible with:
 
 ```bash
 ssh-keygen
@@ -610,7 +610,7 @@ Login to each Pi with:
 
 ssh pi@10.10.70.7
 
-Confirm the promt about RSA key fingerprint by typing "yes".
+Confirm the promt about RSA key fingerprint by typing "yes" and pressing "Enter".
 
 Create a directory that will contain the configuration for Room Assistant.
 
@@ -620,7 +620,7 @@ In this directory execute the following:
 git clone https://github.com/mKeRix/ansible-playbooks.git
 ```
 
-Change to the newly created directory and install the requirements with:
+This will download the ansible playbook from the room-assistant creator. Change to the newly created directory and install the requirements with:
 
 ```bash
 ansible-galaxy install -r requirements.yml
@@ -779,6 +779,12 @@ all:
 ```
 
 I also added weights for the different instances. If two instances send that they see a tag, the instance with the higher weight will win.
+
+Now run the Ansible playbook again to update the configuration with:
+
+```bash
+ansible-playbook -i hosts.yml -u pi room-assistant.yml
+```
 
 #### MQTT device tracker
 Because the sensor can not be used with the person integration, we use the[MQTT device tracker integration](https://www.home-assistant.io/integrations/device_tracker.mqtt/) and bind the resulting device tracker to the person integration. 
