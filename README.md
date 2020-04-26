@@ -925,7 +925,7 @@ I have one user per device that access Home Assistant in order to serve differen
 Setup Nabu Casa by following the official instructions [here](https://www.nabucasa.com/config/) and [here](https://www.nabucasa.com/config/remote/). Home Assistant should now be accessible outside the network through the address that has been generated in the setup of Nabu Casa, e.g. https://abcdefghijklmnopqrstuvwxyz.ui.nabu.casa
 
 #### Phone App Setup
-Add the following to configuration.yaml to enable the [mobile_app integration](https://www.home-assistant.io/integrations/mobile_app/), which is needed to connect the phone app to Home Assistant.
+Add the following to persons.yaml to enable the [mobile_app integration](https://www.home-assistant.io/integrations/mobile_app/), which is needed to connect the phone app to Home Assistant.
 
 ```yaml
 mobile_app:
@@ -942,11 +942,3 @@ To configure a zone go to the Sidebar in Home Assistant and click on "Configurat
 </p>
 </details>
 
-### Bind device trackers to a person
-
-#### Creating a person
-After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
-To create an additional person click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".
-
-
-### Customize Entities
