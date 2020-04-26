@@ -77,7 +77,7 @@ services:
       - ./home-assistant:/config
 ```
 
-### Start the docker stack for the first time
+### Start Docker Stack for the First Time
 Enter the following command while you are in the same directory as the docker-compose.yml file:
 
 ```
@@ -91,7 +91,7 @@ After the install is finished, Home Assistant should be available under http://i
 ### Initial Home Assistant Configuration
 Follow the instructions on the screen to setup the first user, your home location, elevation, time zone and unit system. 
 
-### Structuring the Home Assistant configuration
+### Structuring the Home Assistant Configuration
 Packages allow to split up the configuration.yaml. Like this, all configuration such as ```switch:```, ```input_boolean:```, etc. that belong to the same logical group (e.g. room) can be put inside a separate file instead of defining everything in the designated block inside configuration.yaml. You can also easily share your configuration for e.g. an alarm clock, including all input_selects, input_booleans, sensors and whatever else you need to setup an alarm clock. 
 
 Enable the usage of packages by adding the following to configuration.yaml:
@@ -280,7 +280,7 @@ In Home Assistant on the sidebar click on "Configuration" then on "Integrations"
 Enter "127.0.0.1" in the field "broker".
 Enter your username and password. Tick the box next to "Enable Discovery".
 
-#### Configure via configuration files
+#### Configure via Configuration Files
 Create a file called "core.yaml" inside the directory config/packages. This file will be used for all config relating to the core. Add the following to the file:
 
 ```yaml
@@ -570,7 +570,7 @@ Nut Mini
 </tr>
 
 <tr><td colspan="2">
-The Nut Mini's are attatched to our keys and I'm soon going to buy some Fitness Bands to replace them. They send a Bluetooth Low Energy (BLE) signal every 3 seconds. There's one Raspberry Pi's as central as possible in every room that I want to automate and one close to the entrance door. The Pi's run [Room Assistant](https://www.room-assistant.io/), which catches these signals and determines the location of the Nut Mini based on the strength of the signal. It talks to Home Assistant through MQTT and if discovery is enabled it will be detected automatically.
+The Nut Mini's are attatched to our keys and I'm soon going to buy some Fitness Bands to replace them. They send a Bluetooth Low Energy (BLE) signal every 3 seconds. There's one Raspberry Pi's as central as possible in every room that I want to automate and one close to the entrance door. The Pi's run <a href="https://companion.home-assistant.io/">Room Assistant</a>, which catches these signals and determines the location of the Nut Mini based on the strength of the signal. It talks to Home Assistant through MQTT and if discovery is enabled it will be detected automatically.
 Due to the fact that only device tracker entities can be linked to a person, I use an AppDaemon app that updates the status of an MQTT device tracker whenever the state of the keys changes.
 </td></tr>
 </table>
@@ -578,7 +578,7 @@ Due to the fact that only device tracker entities can be linked to a person, I u
 <details><summary>Step-by-step Guide</summary>
 <p>
 
-#### Room assistant Setup
+#### Room Assistant Setup
 Now we are going to install and configure Room-Assistant on the Pi's. There are excellent guides on how to install it on Pi 3/4 or Pi Zero W on the page of the creator (https://www.room-assistant.io/). Because I have 6 Pi Zero W's in total and didn't want to install and configure each one separately, I use [Ansible](https://www.ansible.com/) to deploy it on all machines at once from my desktop (there's a tutorial as well for this on the site of the creator). 
 
 Install Raspbian Buster Lite on each Raspberry Pi Zero W with SSH enabled.
@@ -790,8 +790,8 @@ Now run the Ansible playbook again to update the configuration with:
 ansible-playbook -i hosts.yml -u pi room-assistant.yml
 ```
 
-#### MQTT device tracker
-Because the sensor can not be used with the person integration, we use the[MQTT device tracker integration](https://www.home-assistant.io/integrations/device_tracker.mqtt/) and bind the resulting device tracker to the person integration. 
+#### MQTT Device Tracker
+Because the sensor can not be used with the person integration, we use the [MQTT device tracker integration](https://www.home-assistant.io/integrations/device_tracker.mqtt/) and bind the resulting device tracker to the person integration. 
 
 To add an MQTT device tracker, create a file called "persons.yaml" in the folder "packages". This file will be used for all configuration related to persons.
 
@@ -907,7 +907,7 @@ At the end of all this we should now have for each person a device tracker that 
 </p>
 </details>
 
-### GPS Device Tracker - Presence outside Home
+### GPS Device Tracker - Presence Outside Home
 #### Hardware used
 <table align="center" border="0">
 
@@ -920,14 +920,14 @@ Samsung Galaxy S20
 </td></tr>
 
 <tr><td colspan="1">
-We use the official [Home Assistant Companion App](https://companion.home-assistant.io/) on our phones. In order to connect remotely to Home Assistant, we use [Nabu Casa](https://www.nabucasa.com/) (I actually use NGINX as a reverse proxy in my production environment and I'll eventually explain this setup at a later stage).
+      We use the official <a href="https://companion.home-assistant.io/">Room Assistant</a> on our phones. In order to connect remotely to Home Assistant, we use <a href="https://www.nabucasa.com/">Nabu Casa</a> (I actually use NGINX as a reverse proxy in my production environment and I'll eventually explain this setup at a later stage).
 </td></tr>
 </table>
 
 <details><summary>Step-by-step Guide</summary>
 <p>
 
-#### Creating additional users
+#### Creating Additional Users
 I have one user per device that access Home Assistant in order to serve different frontends based on the used device. To create an additional user click on "Configuration" in the sidebar of Home Assistant and then click on "Users". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE". Enter the Name (name shown in the frontend), Username (name used to login) and a Password. Toggle if the user should be in the Administrator group or not.
 
 #### Remote Access Setup (Nabu Casa)
