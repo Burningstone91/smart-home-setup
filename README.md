@@ -558,9 +558,9 @@ Nut Mini
 </td></tr>
 
 <tr><td align="center" colspan="1">
-<img src="https://github.com/Burningstone91/smart-home-setup/tree/master/git-pictures/device_pictures/pi_zero_w.jpg" width="200"/>
+![Alt text](/git-pictures/device_pictures/pi_zero_w.jpg?raw=true "Pi Zero W")
 </td><td align="center" colspan="1">
-<img src="https://github.com/Burningstone91/smart-home-setup/tree/master/git-pictures/device_pictures/nut_mini.jpg" width="200"/>
+![Alt text](/git-pictures/device_pictures/nut_mini.jpg?raw=true "Nut Mini")
 </td></tr>
 
 <tr><td colspan="2">
@@ -910,7 +910,7 @@ Samsung Galaxy S20
 </td></tr>
 
 <tr><td align="center" colspan="1">
-<img src="https://github.com/Burningstone91/smart-home-setup/tree/master/git-pictures/device_pictures/galaxy_s20.jpg" height="250"/>
+![Alt text](/git-pictures/device_pictures/galaxy_s20.jpg?raw=true "Galaxy S 20")
 </td></tr>
 
 <tr><td colspan="1">
