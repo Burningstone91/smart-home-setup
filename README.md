@@ -551,14 +551,22 @@ I'm going to explain each part of the presence detection system in detail includ
 #### Hardware used
 <table align="center" border="0">
 
-<tr><td align="center" colspan="1">
+<tr>
+<td align="center" style="width:50%;">
 Raspberry Pi Zero W
-</td><td align="center" colspan="1">
+</td>
+<td align="center" style="width:50%;">
 Nut Mini
-</td></tr>
+</td>
+</tr>
 
 <tr>
-| <img src="https://github.com/Burningstone91/smart-home-setup/tree/master/git-pictures/device_pictures/pi_zero_w.jpg" width="500"/> | <img src="https://github.com/Burningstone91/smart-home-setup/tree/master/git-pictures/device_pictures/nut_mini.jpg" width="500"/> |
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/pi_zero_w.jpg" raw=true height="250" alt="Pi Zero W"/>
+</td>
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/nut_mini.jpg" raw=true height="250" alt="Nut mini" />
+</td>
 </tr>
 
 <tr><td colspan="2">
@@ -908,7 +916,7 @@ Samsung Galaxy S20
 </td></tr>
 
 <tr><td align="center" colspan="1">
-![Alt text](/git-pictures/device_pictures/galaxy_s20.jpg?raw=true "Galaxy S 20")
+<img src="git-pictures/device_pictures/galaxy_s20.jpg" raw=true height="250" alt="Galaxy S 20" style="margin-right: 10px;"/>
 </td></tr>
 
 <tr><td colspan="1">
