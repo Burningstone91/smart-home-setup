@@ -524,7 +524,7 @@ class existing_entity_id(object):
         return value
 ```
 
-Now when we create an app that usese the AppBase, it will automatically create a reference to every dependency in the app configuration. This way way we can use the methods and variables of the apps that our app depends on, to avoid redundant code. It will also do some basic config validation with Voluptuous and raise an error when you wrote "modle" instead of "module" for example. As we have multiple namespaces (HASS and MQTT), there are some variables that represent the MQTT and HASS namespace. This way you don't need to put "namespace=hass" when you call a method, instead you start the function call with "self.hass", if you want to do something in HASS namespace. Start it with "self.mqtt" to do something in MQTT namespace and start it with "self.adbase" do do something in the AppDaemon namespace (logging etc.).
+Now when we create an app that usese the AppBase, it will automatically create a reference to every dependency in the app configuration. This way way we can use the methods and variables of the apps that our app depends on, to avoid redundant code. It will also do some basic config validation with Voluptuous and raise an error when you wrote "modle" instead of "module" for example. As we have multiple namespaces (HASS and MQTT), there are some variables that represent the MQTT and HASS namespace. This way you don't need to put "namespace=hass" when you call a method, instead you start the function call with "self.hass", if you want to do something in HASS namespace. Start it with "self.mqtt" to do something in MQTT namespace and start it with "self.adbase" to do something in the AppDaemon namespace (logging etc.).
 
 This file is going to be extended later on with more functionality.
 
@@ -570,16 +570,12 @@ Due to the fact that only device tracker entities can be linked to a person, I u
 <details><summary>Step-by-step Guide</summary>
 <p>
 
-#### Creating a person
-After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
-To create an additional person click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".
-
 #### Room assistant Setup
-Now we are going to install and configure Room-Assistant on the Pi's. There are excellent guides on how to install it on Pi 3/4 or Pi Zero W on the page of the creator (https://www.room-assistant.io/). Because I have 6 Pi Zero W's in total and didn't want to install and configure each one separately, I use [Ansible](https://www.ansible.com/) to deploy it on all machines at once from my desktop. 
+Now we are going to install and configure Room-Assistant on the Pi's. There are excellent guides on how to install it on Pi 3/4 or Pi Zero W on the page of the creator (https://www.room-assistant.io/). Because I have 6 Pi Zero W's in total and didn't want to install and configure each one separately, I use [Ansible](https://www.ansible.com/) to deploy it on all machines at once from my desktop (there's a tutorial as well for this on the site of the creator). 
 
 Install Raspbian Buster Lite on each Raspberry Pi Zero W with SSH enabled.
 
-On the host that runs Ansible, add the following to "/etc/ansible/hosts":
+On the host that runs Ansible, add the following to the file "/etc/ansible/hosts":
 
 ```yaml
 [room_assistant]
@@ -590,9 +586,9 @@ On the host that runs Ansible, add the following to "/etc/ansible/hosts":
 10.10.70.11
 10.10.70.12
 ```
-This creates a group containing the ip-adresses of the Pi Zero W's.
+This creates a group containing the ip-adresses of the room-assistant instances.
 
-Create a public ssh key with:
+Create a public ssh key on the host that runs Ansible with:
 
 ```bash
 ssh-keygen
@@ -610,7 +606,7 @@ Login to each Pi with:
 
 ssh pi@10.10.70.7
 
-Confirm the promt about RSA key fingerprint by typing "yes".
+Confirm the promt about RSA key fingerprint by typing "yes" and pressing "Enter".
 
 Create a directory that will contain the configuration for Room Assistant.
 
@@ -620,7 +616,7 @@ In this directory execute the following:
 git clone https://github.com/mKeRix/ansible-playbooks.git
 ```
 
-Change to the newly created directory and install the requirements with:
+This will download the ansible playbook from the room-assistant creator. Change to the newly created directory and install the requirements with:
 
 ```bash
 ansible-galaxy install -r requirements.yml
@@ -780,6 +776,12 @@ all:
 
 I also added weights for the different instances. If two instances send that they see a tag, the instance with the higher weight will win.
 
+Now run the Ansible playbook again to update the configuration with:
+
+```bash
+ansible-playbook -i hosts.yml -u pi room-assistant.yml
+```
+
 #### MQTT device tracker
 Because the sensor can not be used with the person integration, we use the[MQTT device tracker integration](https://www.home-assistant.io/integrations/device_tracker.mqtt/) and bind the resulting device tracker to the person integration. 
 
@@ -898,3 +900,53 @@ At the end of all this we should now have for each person a device tracker that 
 </details>
 
 ### GPS Device Tracker - Presence outside Home
+#### Hardware used
+<table align="center" border="0">
+
+<tr><td align="center" colspan="1">
+Samsung Galaxy S20
+</td></tr>
+
+<tr><td align="center" colspan="1"><a target="_blank"  href="https://www.amazon.de/gp/product/B072TN5KFN/ref=as_li_tl?ie=UTF8&camp=1638&creative=6742&creativeASIN=B072TN5KFN&linkCode=as2&tag=burningstone9-21&linkId=c90a64f7b56fce952882d81753e27a5b"><img border="0" src="//ws-eu.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=DE&ASIN=B072TN5KFN&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=burningstone9-21" ></a><img src="//ir-de.amazon-adsystem.com/e/ir?t=burningstone9-21&l=am2&o=3&a=B072TN5KFN" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+</td></tr>
+
+<tr><td colspan="1">
+We use the official [Home Assistant Companion App](https://companion.home-assistant.io/) on our phones. In order to connect remotely to Home Assistant, we use [Nabu Casa](https://www.nabucasa.com/) (I actually use NGINX as a reverse proxy in my production environment and I'll eventually explain this setup at a later stage).
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+#### Creating additional users
+I have one user per device that access Home Assistant in order to serve different frontends based on the used device. To create an additional user click on "Configuration" in the sidebar of Home Assistant and then click on "Users". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE". Enter the Name (name shown in the frontend), Username (name used to login) and a Password. Toggle if the user should be in the Administrator group or not.
+
+#### Remote Access Setup (Nabu Casa)
+Setup Nabu Casa by following the official instructions [here](https://www.nabucasa.com/config/) and [here](https://www.nabucasa.com/config/remote/). Home Assistant should now be accessible outside the network through the address that has been generated in the setup of Nabu Casa, e.g. https://abcdefghijklmnopqrstuvwxyz.ui.nabu.casa
+
+#### Phone App Setup
+Add the following to configuration.yaml to enable the [mobile_app integration](https://www.home-assistant.io/integrations/mobile_app/), which is needed to connect the phone app to Home Assistant.
+
+```yaml
+mobile_app:
+```
+
+Download and install the official Home Assistant Companion app. Give the app all the necessary permissions, like location etc. If you are connected to your home network, it should automatically detect your instance. Otherwise enter the Nabu Casa address from above manually. Login with the user credentials you created for this phone. In the app open the sidebar by swiping from the left edge to the right. Click on "App configuration". Enable the toggles for zone based and location based tracking. Optionally choose a name for the device (highly recommended as two phones of the same model will have the same name, but the second one has _2 appended). Restart Home Assistant.
+
+You should now see a bunch of new entities, a device_tracker and some sensors such as battery_level and location (different depending on whether you use iOS or Android). When you are in the home zone (defined during onboarding process) the device_tracker shows "home", otherwise it shows "not_home" or the name of the zone (see next step) the phone is currently in.
+
+#### Zone Setup
+The [zone integration](https://www.home-assistant.io/integrations/zone/) is used to define different zones outside your home such as workplace or shopping mall. This way if the phone is inside the radius of one of the defined zones, the device tracker will show the name of this zone. This enables automations like "Send notification when Husband leaves work". 
+To configure a zone go to the Sidebar in Home Assistant and click on "Configuration" and then click on "Zones". You should see a map with your home in a circle. To add a new zone, press the orange plus sign at the bottom right. Enter a name for the zone, move the pin to the desired location (or enter longitude and latitude) and choose a radius. Press create. Repeat for as many zones as needed.
+
+</p>
+</details>
+
+### Bind device trackers to a person
+
+#### Creating a person
+After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
+To create an additional person click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".
+
+
+### Customize Entities

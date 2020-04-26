@@ -3,9 +3,11 @@ homeassistant:
   packages: !include_dir_named packages/
 cloud:
 config:
+
 frontend:
+
 http:
   server_port: 3123 #needed in my setup due to production running on default port 8123
-person:
+
 sun:
 system_health:

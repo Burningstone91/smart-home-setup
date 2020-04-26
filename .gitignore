@@ -16,3 +16,4 @@ mosquitto/config/passwd
 appdaemon/logs
 appdaemon/dashboards
 scratch
+home-assistant/www/person_pictures/
