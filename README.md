@@ -766,10 +766,10 @@ all:
           - homeAssistant
           - bluetoothLowEnergy
       homeAssistant:
-        mqttUrl: 'mqtt://10.10.40.6:1884'
+        mqttUrl: 'mqtt://ip-of-host:1883'
         mqttOptions:
-          username: mosquitto
-          password: kCL5*RkP
+          username: mqtt_username
+          password: super_secret_mqtt_password
       bluetoothLowEnergy:
         timeout: 8
         whitelist:
