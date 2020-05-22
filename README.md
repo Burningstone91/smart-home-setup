@@ -925,6 +925,27 @@ I have one user per device that access Home Assistant in order to serve differen
 #### Remote Access Setup (Nabu Casa)
 Setup Nabu Casa by following the official instructions [here](https://www.nabucasa.com/config/) and [here](https://www.nabucasa.com/config/remote/). Home Assistant should now be accessible outside the network through the address that has been generated in the setup of Nabu Casa, e.g. https://abcdefghijklmnopqrstuvwxyz.ui.nabu.casa
 
+
+#### Configure separate internal and external URL
+UPDATE: Since version 0.110.x an internal and extenal url can be configured separately. This allows for easier configuration for certain more complex integrations.
+#### Configure via UI
+First enable "advanced mode" by clicking on your username in the sidebar. Toggle the setting "Advanced Mode".
+Now go to "Configuration" then to "General". Enter the internal and external url respectively e.g.
+
+```
+Internal URL: http://192.168.0.30:8123
+External URL: https://abcdefghijklmnopqrstuvwxzy.ui.nabu.casa
+```
+
+#### Configure via configuration files
+Add the following to the file "core.yaml":
+
+```yaml
+homeassistant:
+  internal_url: http://192.168.0.30.3123
+  external_url: https://abcdefghijklmnopqrstuvwxzy.ui.nabu.casa
+```
+
 #### Phone App Setup
 Add the following to persons.yaml to enable the [mobile_app integration](https://www.home-assistant.io/integrations/mobile_app/), which is needed to connect the phone app to Home Assistant.
 
@@ -943,3 +964,51 @@ To configure a zone go to the Sidebar in Home Assistant and click on "Configurat
 </p>
 </details>
 
+### Customizing Entities
+This does not belong to the presence detection system, it's more a general thing, however it's the first time during this journey that I use it, so I'll quickly explain it. 
+I use the entity_id to identify my entities and the friendly_name for the name that should be shown in the frontend. 
+
+I structure the name of my entities like this, domain.what_where or domain.what_owner. E.g. "switch.tv_livingroom", "sensor.temperature_kitchen", "sensor.battery_level_phone_dimitri". I do this for easier maintenance and consistency reasons.
+
+You can [customize](https://www.home-assistant.io/docs/configuration/customizing-devices/) entities through the UI or through YAML. For lots of entites, especially similar entities, it's way easier and faster to do this through customization  in YAML. I use this for setting a friendly_name, icon, device_class and entity_picture where applicable. 
+
+Here's my customization section for all entities that are part of the presence detection setup. I put this in the package persons.yaml:
+
+```yaml
+homeassistant:
+  customize:
+    zone.home:
+      friendly_name: Zu Hause
+      icon: mdi:home
+    person.dimitri:
+      friendly_name: Dimitri
+      entity_picture: /local/person_pictures/dimitri_home.jpg
+      icon: mdi:account
+    sensor.battery_level_phone_dimitri:
+      friendly_name: Handy Dimitri
+    device_tracker.gps_presence_dimitri:
+      friendly_name: Standort Dimitri
+      icon: mdi:map-marker
+    device_tracker.room_presence_dimitri:
+      friendly_name: Schlüssel Dimitri
+      icon: mdi:key
+    zone.work_dimitri:
+      friendly_name: Arbeit
+      icon: mdi:office-building
+    person.sabrina:
+      friendly_name: Sabrina
+      entity_picture: /local/person_pictures/sabrina_home.jpg
+      icon: mdi:account
+    device_tracker.room_presence_sabrina:
+      friendly_name: Schlüssel Sabrina
+      icon: mdi:key
+```
+
+### Combining Device Trackers
+
+#### Creating a Person
+After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
+To create an additional person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".
+
+#### Binding Device Trackers to Persons
+To bind a device tracker to a person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Click on the person you want to assign the device trackers to. In the field below "Select the devices that belong to this person" pick one of the device trackers, a second field to choose a device will appear, choose the second device tracker and then press "Update" in the bottom right.

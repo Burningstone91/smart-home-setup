@@ -4,3 +4,8 @@ mqtt:
   username: !secret mqtt_user
   password: !secret mqtt_pass
   discovery: true
+
+#Internal and External URL configuration
+homeassistant:
+  internal_url: http://192.168.0.30.3123
+  external_url: !secret external_HA_URL

@@ -1,45 +1,5 @@
-# Customization
-homeassistant:
-  customize:
-    zone.home:
-      friendly_name: Zu Hause
-      icon: mdi:home
-    person.dimitri:
-      friendly_name: Dimitri
-      entity_picture: /local/person_pictures/dimitri_home.jpg
-      icon: mdi:account
-    sensor.battery_level_phone_dimitri:
-      friendly_name: Handy Dimitri
-    device_tracker.gps_presence_dimitri:
-      friendly_name: Standort Dimitri
-      icon: mdi:map-marker
-    device_tracker.room_presence_dimitri:
-      friendly_name: Schlüssel Dimitri
-      icon: mdi:key
-    zone.work_dimitri:
-      friendly_name: Arbeit
-      icon: mdi:office-building
-    person.sabrina:
-      friendly_name: Sabrina
-      entity_picture: /local/person_pictures/sabrina_home.jpg
-      icon: mdi:account
-    device_tracker.room_presence_sabrina:
-      friendly_name: Schlüssel Sabrina
-      icon: mdi:key
-
-### Bind device trackers to a person
-
-#### Creating a person
-After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
-To create an additional person click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".
-
 
 ######################nonbinary state and house presence state app, use sensors with set state instead of input select
-
-
-
-
-
 First some preparations in Home Assistant:
 Create a file called "modes.yaml" inside the packages directory in the Home Assistant configuration.
 
@@ -60,3 +20,104 @@ input_boolean:
 ```
 This creates three input booleans which represent the state of the respective mode. I use guest mode, sleep mode and cleaning mode but you can choose whatever modes you want for your system.
 
+
+################################################33
+System Monitoring
+################################################
+# COMMANDLine
+  - platform: command_line
+    name: NUC CPU Temperature Core Zone 0
+    command: "cat /sys/devices/virtual/thermal/thermal_zone0/temp"
+    value_template: '{{ value | multiply(0.001) | round(2) }}'
+    unit_of_measurement: '°C'
+  - platform: command_line
+    name: NUC CPU Temperature Core Zone 2
+    command: "cat /sys/devices/virtual/thermal/thermal_zone2/temp"
+    value_template: '{{ value | multiply(0.001) | round(2) }}'
+    unit_of_measurement: '°C'
+  - platform: command_line
+    name: NUC CPU Frequency 0
+    command: "cat /sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq"
+    value_template: '{{ value | multiply(0.000001) | round(2) }}'
+    unit_of_measurement: 'GHz'
+  - platform: command_line
+    name: NUC CPU Frequency 1
+    command: "cat /sys/devices/system/cpu/cpufreq/policy1/scaling_cur_freq"
+    value_template: '{{ value | multiply(0.000001) | round(2) }}'
+    unit_of_measurement: 'GHz'
+  - platform: command_line
+    name: Linux version
+    command: "cat /proc/version"
+    value_template: '{{value|truncate(30,True)}}'
+  - platform: command_line
+    name: NUC CPU Governor
+    command: "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
+  - platform: command_line
+    name: NUC CPU min. frequency
+    command: "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq"
+    value_template: '{{ value | multiply(0.001) | round(2) }}'
+    unit_of_measurement: 'MHz - Min Freq'
+  - platform: command_line
+    name: NUC CPU max. frequency
+    command: "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"
+    value_template: '{{ value | multiply(0.001) | round(2) }}'
+    unit_of_measurement: 'MHz - Max Freq'
+  - platform: command_line
+    name: BIOS Vendor
+    command: "cat /sys/class/dmi/id/bios_vendor"
+    value_template: '{{value|truncate(45,True)}}'
+  - platform: command_line
+    name: SYS Vendor
+    command: "cat /sys/class/dmi/id/product_name"
+    value_template: '{{value|truncate(45,True)}}'
+  - platform: command_line
+    name: CPU online
+    command: "cat /sys/devices/system/cpu/online"
+    value_template: '{{value|truncate(45,True)}}'
+  - platform: command_line
+    name: CPU offline
+    command: "cat /sys/devices/system/cpu/offline"
+    value_template: '{{value|truncate(45,True)}}'
+  - platform: command_line
+    name: NUC Bios version
+    command: "cat /sys/class/dmi/id/bios_version"
+  - platform: command_line
+    name: NUC board name
+    command: "cat /sys/class/dmi/id/board_name"
+
+# SystemMonitor
+  - platform: systemmonitor
+    resources:
+      - type: disk_use_percent
+        arg: /home
+      - type: disk_use
+        arg: /home
+      - type: disk_free
+        arg: /home
+      - type: memory_free
+      - type: memory_use
+      - type: memory_use_percent
+      - type: swap_use_percent
+      - type: swap_use
+      - type: swap_free
+      - type: load_1m
+      - type: load_5m
+      - type: load_15m
+      - type: network_in
+        arg: enp3s0
+      - type: network_out
+        arg: enp3s0
+      - type: throughput_network_in
+        arg: enp3s0
+      - type: throughput_network_out
+        arg: enp3s0
+      - type: packets_in
+        arg: enp3s0
+      - type: packets_out
+        arg: enp3s0
+      - type: processor_use
+      - type: last_boot
+      - type: ipv6_address
+        arg: enp3s0      
+      - type: ipv4_address
+        arg: enp3s0
