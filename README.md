@@ -1027,6 +1027,9 @@ To bind a device tracker to a person, click on "Configuration" in the sidebar of
 ### Make Presence Detection not so binary
 This is based on a method of Phil Hawthorne, more details can be found in his tutorial [Making Home Assistant's Presence Detection not so Binary](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). At the end of this part we're going to have a presence sensor with the states "just left", "away" "extended away", "just arrived" and "home", instead of just "home" and "not_home". Like this we can avoid an arriving home automation getting triggered, when a person just left quickly for getting some bread at the bakery.
 
+<details><summary>Step-by-step Guide</summary>
+<p>
+
 First create an input_select to represent the non-binary state for each person, and while you're at it, one for the house as well.
 Add the following to the persons.yaml file in Home Assistant:
 
@@ -1287,4 +1290,5 @@ Now the input selects for the persons and the house will behave as follows:
 * All persons' non-binary presence state neither "home" nor just arrived -> house presence state = "noone home"
 * All persons' non-binary presence state = "extended away" -> house presence state = "vacation"
 
-
+</p>
+</details>
