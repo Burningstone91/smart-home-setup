@@ -12,3 +12,62 @@ device_tracker:
 # GPS Presence Tracker (Phone App)
 mobile_app:
 
+# Input Selects for non-binary Presence State
+input_select:
+  sabrina_non_binary_presence:
+    name: Sabrina Präsenz
+    options:
+      - zu Hause
+      - gerade angekommen
+      - gerade gegangen
+      - weg
+      - lange weg
+  dimitri_non_binary_presence:
+    name: Dimitri Präsenz
+    options:
+      - zu Hause
+      - gerade angekommen
+      - gerade gegangen
+      - weg
+      - lange weg
+
+# Input Selects for House Presence State
+  house_presence_state:
+    name: Haus Präsenz
+    options:
+      - Jemand ist zu Hause
+      - Alle sind zu Hause
+      - Niemand ist zu Hause
+      - Ferien
+
+#Entity Customization
+homeassistant:
+  customize:
+    zone.home:
+      friendly_name: Zu Hause
+      icon: mdi:home
+    person.dimitri:
+      friendly_name: Dimitri
+      entity_picture: /local/person_pictures/dimitri_home.jpg
+      icon: mdi:account
+    sensor.battery_level_phone_dimitri:
+      friendly_name: Handy Dimitri
+    sensor.charging_phone_dimitri:
+      friendly_name: Handy Dimitri
+      icon: mdi:cellphone-charging
+    device_tracker.gps_presence_dimitri:
+      friendly_name: Standort Dimitri
+      icon: mdi:map-marker
+    device_tracker.room_presence_dimitri:
+      friendly_name: Schlüssel Dimitri
+      icon: mdi:key
+    zone.work_dimitri:
+      friendly_name: Arbeit
+      icon: mdi:office-building
+    person.sabrina:
+      friendly_name: Sabrina
+      entity_picture: /local/person_pictures/sabrina_home.jpg
+      icon: mdi:account
+    device_tracker.room_presence_sabrina:
+      friendly_name: Schlüssel Sabrina
+      icon: mdi:key

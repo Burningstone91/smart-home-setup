@@ -936,7 +936,7 @@ Setup Nabu Casa by following the official instructions [here](https://www.nabuca
 
 #### Configure separate internal and external URL
 UPDATE: Since version 0.110.x an internal and extenal url can be configured separately. This allows for easier configuration for certain more complex integrations.
-#### Configure via UI
+##### Configure via UI
 First enable "advanced mode" by clicking on your username in the sidebar. Toggle the setting "Advanced Mode".
 Now go to "Configuration" then to "General". Enter the internal and external url respectively e.g.
 
@@ -945,7 +945,7 @@ Internal URL: http://192.168.0.30:8123
 External URL: https://abcdefghijklmnopqrstuvwxzy.ui.nabu.casa
 ```
 
-#### Configure via configuration files
+##### Configure via configuration files
 Add the following to the file "core.yaml":
 
 ```yaml
@@ -994,6 +994,9 @@ homeassistant:
       icon: mdi:account
     sensor.battery_level_phone_dimitri:
       friendly_name: Handy Dimitri
+    sensor.charging_phone_dimitri:
+      friendly_name: Handy Dimitri
+      icon: mdi:cellphone-charging
     device_tracker.gps_presence_dimitri:
       friendly_name: Standort Dimitri
       icon: mdi:map-marker
@@ -1020,3 +1023,268 @@ To create an additional person, click on "Configuration" in the sidebar of Home 
 
 #### Binding Device Trackers to Persons
 To bind a device tracker to a person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Click on the person you want to assign the device trackers to. In the field below "Select the devices that belong to this person" pick one of the device trackers, a second field to choose a device will appear, choose the second device tracker and then press "Update" in the bottom right.
+
+### Make Presence Detection not so binary
+This is based on a method of Phil Hawthorne, more details can be found in his tutorial [Making Home Assistant's Presence Detection not so Binary](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). At the end of this part we're going to have a presence sensor with the states "just left", "away" "extended away", "just arrived" and "home", instead of just "home" and "not_home". Like this we can avoid an arriving home automation getting triggered, when a person just left quickly for getting some bread at the bakery.
+
+First create an input_select to represent the non-binary state for each person, and while you're at it, one for the house as well.
+Add the following to the persons.yaml file in Home Assistant:
+
+```yaml
+# Input Selects for Persons non-binary Presence State
+input_select:
+  person_a_non_binary_presence:
+    name: Person A non-binary state
+    options:
+      - Home
+      - just arrived
+      - just left
+      - away
+      - extended away
+  person_b_non_binary_presence:
+    name: Person B non-binary state
+    options:
+      - Home
+      - just arrived
+      - just left
+      - away
+      - extended away
+
+# Input Selects for House Presence State
+input_select:
+  house_presence_state:
+    name: Haus Präsenz
+    options:
+      - Someone is Home
+      - Everyone is Home
+      - No one is Home
+      - Vacation
+```
+
+Adjust the globals.py file to include the input selects for the persons and the house and the person entities created in a previous step:
+
+```python
+PERSONS = {
+    "Dimitri": {
+        "person": "person.dimitri",
+        "sensor_room_presence": "sensor.dimitri_room_presence",
+        "topic_room_device_tracker": "location/dimitri_room_presence",
+        "input_select_non_binary_state": "input_select.dimitri_non_binary_presence",
+    },
+    "Sabrina": {
+        "person": "person.sabrina",
+        "sensor_room_presence": "sensor.sabrina_room_presence",
+        "topic_room_device_tracker": "location/sabrina_room_presence",
+        "input_select_non_binary_state": "input_select.sabrina_non_binary_presence",
+    },
+}
+
+HOUSE = {
+    "input_select_presence": "input_select.house_presence_state"
+}
+```
+
+Now add the the following class "NonBinaryPresence" to the presence.py AppDaemon app:
+
+```python
+class NonBinaryPresence(AppBase):
+    """Define a base class for Non Binary Presence."""
+
+    class PresenceStates(Enum):
+        """Define an enum for person related presence states."""
+
+        home = "zu Hause"
+        just_arrived = "gerade angekommen"
+        just_left = "gerade gegangen"
+        away = "weg"
+        extended_away = "lange weg"
+
+    class HouseStates(Enum):
+        """Define an enum for house related presence states."""
+
+        someone = "Jemand ist zu Hause"
+        everyone = "Alle sind zu Hause"
+        noone = "Niemand ist zu Hause"
+        vacation = "Ferien"
+
+    def configure(self) -> None:
+        """Configure."""
+        # set initial state for the house
+        self.update_house_presence_state()
+
+        for person, attribute in PERSONS.items():
+            input_select = attribute["input_select_non_binary_state"]
+            person_sensor = attribute["person"]
+
+            # away/extended away -> just arrived
+            self.hass.listen_state(
+                self.on_presence_change,
+                person_sensor,
+                new="home",
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.just_arrived.value,
+            )
+
+            # home -> just left
+            self.hass.listen_state(
+                self.on_presence_change,
+                person_sensor,
+                old="home",
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.just_left.value,
+            )
+
+            # just arrived -> home, after 5 min
+            self.hass.listen_state(
+                self.on_presence_change,
+                input_select,
+                new=self.PresenceStates.just_arrived.value,
+                duration=5 * 60,
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.home.value,
+            )
+
+            # just left -> away, after 5 min
+            self.hass.listen_state(
+                self.on_presence_change,
+                input_select,
+                new=self.PresenceStates.just_left.value,
+                duration=5 * 60,
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.away.value,
+            )
+
+            # away -> extended away, after 24 hours
+            self.hass.listen_state(
+                self.on_presence_change,
+                input_select,
+                new=self.PresenceStates.away.value,
+                duration=24 * 60 * 60,
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.extended_away.value,
+            )
+
+    def on_presence_change(
+        self, entity: Union[str, dict], attribute: str, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Take action on person's presence change."""
+        input_select = kwargs["input_select"]
+        old_state = self.hass.get_state(input_select)
+        target_state = kwargs["non_binary_state"]
+
+        # just left -> just arrived = home
+        if (old_state == self.PresenceStates.just_left.value) and (
+            target_state == self.PresenceStates.just_arrived.value
+        ):
+            target_state = self.PresenceStates.home.value
+
+        # set person non-binary presence state
+        if old_state != target_state:
+            self.hass.select_option(input_select, target_state)
+            self.adbase.log(
+                f"{kwargs['person']} war {old_state}, ist jetzt {target_state}"
+            )
+
+        # set house non-binary presence state
+        self.update_house_presence_state()
+
+    def update_house_presence_state(self) -> None:
+        """Update the presence state of the house."""
+        old_state = self.house_presence_state
+        if self.everyone_home:
+            new_state = self.HouseStates.everyone.value
+        elif self.everyone_extended_away:
+            new_state = self.HouseStates.vacation.value
+        elif self.noone_home:
+            new_state = self.HouseStates.noone.value
+        else:
+            new_state = self.HouseStates.someone.value
+
+        if old_state != new_state:
+            self.hass.select_option(HOUSE["input_select_presence"], new_state)
+            self.adbase.log(f"Vorher: {old_state}, Jetzt: {new_state}")
+
+    def whos_in_state(self, *presence_states: Enum) -> list:
+        """Return list of person in given state."""
+        presence_state_list = [
+            presence_state.value for presence_state in presence_states
+        ]
+        return [
+            person
+            for person, attribute in PERSONS.items()
+            if self.hass.get_state(attribute["input_select_non_binary_state"])
+            in presence_state_list
+        ]
+
+    @property
+    def whos_just_arrived(self) -> bool:
+        """Return true if everyone is *home*."""
+        return self.whos_in_state(self.PresenceStates.just_arrived)
+
+    @property
+    def whos_home(self) -> list:
+        """Return list of persons *home*."""
+        return self.whos_in_state(
+            self.PresenceStates.home, self.PresenceStates.just_arrived
+        )
+
+    @property
+    def everyone_home(self) -> bool:
+        """Return true if everyone is *home*."""
+        return self.whos_home == list(PERSONS.keys())
+
+    @property
+    def someone_home(self) -> bool:
+        """Return true if someone is *home*."""
+        return len(self.whos_home) != 0
+
+    @property
+    def noone_home(self) -> bool:
+        """Return true if no one is *home*."""
+        return not self.whos_home
+
+    @property
+    def everyone_extended_away(self) -> bool:
+        """Return true if everyone is *extended away*."""
+        return self.whos_in_state(self.PresenceStates.extended_away) == list(
+            PERSONS.keys()
+        )
+
+    @property
+    def house_presence_state(self) -> str:
+        """Return current state of the house presence."""
+        return self.hass.get_state(HOUSE["input_select_presence"])
+```
+
+Add the following to the presence.yaml AppDaemon configuration file to enable the Non-binary presence state app:
+
+```yaml
+non_binary_presence_app:
+  module: presence
+  class: NonBinaryPresence
+```
+
+Now the input selects for the persons and the house will behave as follows:
+
+**Person Presence Input Selects:**
+* Person entity changes to home
+    * old non-binary state = "just left" -> non-binary presence state = "home" (this awoids retriggering just arrived automations when the person just left quickly, in this example less than 5 minutes)
+    * old non-binary state != "just left" -> non-binary presence state = "just arrived"
+* Person entity changes from "home" to anything else-> non-binary presence state = "just left"
+* Non-binary presence state = "just arrived" for 5 minutes -> non-binary presence state = "home"
+* Non-binary presence state = "just left" for 5 minutes -> non-binary presence state = "away"
+* Non-binary presence state = "away" for 24 hours -> non-binary presence state = "extended "away"
+
+**House Presence Input Selects:**
+* At least one persons' non-binary presence state = "home" or "just arrived"
+    * All -> house presence state = "everyone home"
+    * At least one but not all -> house presence state = "someone home"
+* All persons' non-binary presence state neither "home" nor just arrived -> house presence state = "noone home"
+* All persons' non-binary presence state = "extended away" -> house presence state = "vacation"
+
+

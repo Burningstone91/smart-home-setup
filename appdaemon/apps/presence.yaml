@@ -1,3 +1,7 @@
 ble_tracker_app:
   module: presence
   class: BleDeviceTrackerUpdater
+
+non_binary_presence_app:
+  module: presence
+  class: NonBinaryPresence
