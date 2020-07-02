@@ -920,7 +920,7 @@ Samsung Galaxy S20
 </td></tr>
 
 <tr><td colspan="1">
-      We use the official <a href="https://companion.home-assistant.io/">Room Assistant</a> on our phones. In order to connect remotely to Home Assistant, we use <a href="https://www.nabucasa.com/">Nabu Casa</a> (I actually use NGINX as a reverse proxy in my production environment and I'll eventually explain this setup at a later stage).
+      We use the official <a href="https://companion.home-assistant.io/">Home Assistant Companion app</a> on our phones. In order to connect remotely to Home Assistant, we use <a href="https://www.nabucasa.com/">Nabu Casa</a> (I actually use NGINX as a reverse proxy in my production environment and I'll eventually explain this setup at a later stage).
 </td></tr>
 </table>
 
@@ -1276,7 +1276,7 @@ Now the input selects for the persons and the house will behave as follows:
 
 **Person Presence Input Selects:**
 * Person entity changes to home
-    * old non-binary state = "just left" -> non-binary presence state = "home" (this awoids retriggering just arrived automations when the person just left quickly, in this example less than 5 minutes)
+    * old non-binary state = "just left" -> non-binary presence state = "home" (this avoids retriggering just arrived automations when the person just left quickly, in this example less than 5 minutes)
     * old non-binary state != "just left" -> non-binary presence state = "just arrived"
 * Person entity changes from "home" to anything else-> non-binary presence state = "just left"
 * Non-binary presence state = "just arrived" for 5 minutes -> non-binary presence state = "home"
