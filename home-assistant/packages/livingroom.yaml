@@ -1,0 +1,10 @@
+# Entity Customization
+homeassistant:
+  customize:
+    # Lights
+    light.stehlampe_wohnzimmer_vorne:
+      friendly_name: Vorne
+      icon: mdi:floor-lamp
+    light.stehlampe_wohnzimmer_hinten:
+      friendly_name: Hinten
+      icon: mdi:floor-lamp

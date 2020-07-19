@@ -1,0 +1,10 @@
+# Entity Customization
+homeassistant:
+  customize:
+    # Lights
+    light.deckenlampe_schlafzimmer:
+      friendly_name: Deckenlampe
+      icon: mdi:ceiling-light
+    light.bett_schlafzimmer:
+      friendly_name: Bett
+      icon: mdi:led-strip-variant

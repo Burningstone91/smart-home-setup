@@ -1,0 +1,7 @@
+# Entity Customization
+homeassistant:
+  customize:
+    # Lights
+    light.buero:
+      friendly_name: Deckenlampe
+      icon: mdi:ceiling-light

@@ -31,7 +31,7 @@ input_select:
       - weg
       - lange weg
 
-# Input Selects for House Presence State
+# Input Select for House Presence State
   house_presence_state:
     name: Haus Präsenz
     options:
@@ -40,12 +40,13 @@ input_select:
       - Niemand ist zu Hause
       - Ferien
 
-#Entity Customization
+# Entity Customization
 homeassistant:
   customize:
     zone.home:
       friendly_name: Zu Hause
       icon: mdi:home
+    # Dimitri
     person.dimitri:
       friendly_name: Dimitri
       entity_picture: /local/person_pictures/dimitri_home.jpg
@@ -64,6 +65,7 @@ homeassistant:
     zone.work_dimitri:
       friendly_name: Arbeit
       icon: mdi:office-building
+    # Sabrina
     person.sabrina:
       friendly_name: Sabrina
       entity_picture: /local/person_pictures/sabrina_home.jpg

@@ -659,7 +659,7 @@ all:
     10.10.70.12:
       room_assistant_config: 
         global:
-          instanceName: balkon
+          instanceName: garderobe
   vars:
     room_assistant_global_config:
       global:
@@ -1289,6 +1289,169 @@ Now the input selects for the persons and the house will behave as follows:
     * At least one but not all -> house presence state = "someone home"
 * All persons' non-binary presence state neither "home" nor just arrived -> house presence state = "noone home"
 * All persons' non-binary presence state = "extended away" -> house presence state = "vacation"
+
+</p>
+</details>
+
+## Lighting <a name="presence-detection" href="https://github.com/Burningstone91/smart-home-setup#lighting"></a>
+### Basic Explanation of Setup
+
+(TODO)
+
+### Hardware used
+<table align="center" border="0">
+
+<tr>
+<td align="center" style="width:25%;">
+Raspberry Pi 3
+</td>
+<td align="center" style="width:25%;">
+ConBee II
+</td>
+<td align="center" style="width:25%;">
+Philips Hue Bulbs (8x Color E27, 3x White Ambiance GU10, 1x LED strip 5m)
+</td>
+<td align="center" style="width:25%;">
+IKEA Tradfri Plug
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/pi_3.jpg" raw=true height="250" alt="Pi 3"/>
+</td>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/conbee.jpg" raw=true height="250" alt="ConBee" />
+</td>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="250" alt="Philips Hue" />
+</td>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="250" alt="IKEA Plug" />
+</td>
+</tr>
+
+<tr><td colspan="4">
+The Hue bulbs are distributed in the different rooms of our apartment and on the balcony is a light strip attached to an IKEA Tradfri Smart Plug. All the lights are integrated into Home Assistant through a ConBee II ZigBee stick. I ditched the Hue hub because the Home Assistant integration needs to poll the state from the Hue hub, whereas with the ConBee stick information is pushed to Home Assistant. This means that e.g. button presses from Hue Dimmer Switches will be seen immediately and each button press is recognized. With polling it can happen that button presses are missed because the button has been pressed multiple times between the polling interval. In addition to this, I can integrate (and I will later) lots of other ZigBee devices such as Xiaomi door sensors or the Ikea plug when using the ConBee stick.
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Setup ZigBee Hub (ConBee II)
+The ConBee II stick is attached to a separate Raspberry Pi 3 in the living room, because the server lives in a place with a very limited range to reach other ZigBee devices. We are going to install a software called [DeCONZ](https://phoscon.de/en/conbee/install) from the company [Dresden Elektronik](https://www.dresden-elektronik.de/) inside a docker container. 
+Install Raspbian Lite on the Raspberry Pi.
+
+Give user access to serial devices to controll the ConBee II stick:
+
+```bash
+sudo usermod -aG dialout pi
+restart
+```
+
+Now we are going to create a Symlink for the stick, this way it doesn't matter when the device changes the device path (/dev/ttyACM0 instead of /dev/ttyACM1) due to detaching and reattaching the stick or when we add another stick.
+
+Get the product and vendor id of the stick by listing all usb devices:
+
+```bash
+lsusb
+```
+
+Note the 8 digit number of the stick e.g. 0658:0200
+
+create a file "99-usb-serial.rules" in the folder /etc/udev/rules.d
+
+```bash
+sudo nano /etc/udev/rules.d/99-usb-serial.rules
+```
+
+Add the following content, where ABCD is the first 4 digits of the previously noted number and 1234 is the last 4 digits.
+
+```bash
+SUBSYSTEM=="tty", ATTRS{idVendor}=="ABCD", ATTRS{idProduct}=="1234", SYMLINK+="zigbee"
+```
+
+Restart.
+
+Now the stick is available under /dev/zigbee.
+
+Install docker and docker-compose:
+
+Docker:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker pi
+rm get-docker.sh
+```
+
+Docker-compose:
+```bash
+sudo apt-get install -y python python-pip
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+sudo apt-get install -y libffi-dev libssl-dev
+sudo apt-get remove python-configparser
+sudo pip3 install docker-compose
+```
+
+Create docker-compose.yml file and directory deconz to store the config:
+
+Create docker-compose.yml file:
+
+```bash
+sudo nano docker-compose.yml
+```
+
+Add the following content:
+
+```yaml
+version: "3"
+services:
+  deconz:
+    container_name: deconz
+    devices:
+      - /dev/zigbee
+    environment:
+      - DECONZ_WEB_PORT=8080
+      - DECONZ_WS_PORT=443
+      - DECONZ_VNC_MODE=1
+      - DECONZ_VNC_PORT=5900
+      - DECONZ_VNC_PASSWORD=yoursupersecretpassword
+      - DECONZ_DEVICE=/dev/zigbee
+      - TZ=Europe/Zurich
+    image: marthoc/deconz
+    ports:
+      - 8080:8080
+      - 5900:5900
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./deconz:/root/.local/share/dresden-elektronik/deCONZ
+```
+
+This way you can view the ZigBee mesh through VNC on port 5900 and with the password you set in DECONZ_VNC_PASSWORD. The Web Portal (Phoscon) and the REST Api (which will be used to connect to Home Assistant) are available under port 8080.
+
+### Adding light bulbs to the ZigBee network
+The Phoscon Web UI should now be available under http://ip-of-your-pi:8080/pwa. Initially you need to supply a username and a password. The process for adding Philips Hue bulbs, which were previously connected to a Hue hub is as follows:
+
+* Delete bulb within the Hue hub.
+* Cut the power to the bulb for 10 seconds.
+* In Phoscon go to Devices -> Lights and press "Add new lights" at the bottom of the page.
+* Take a Hue Dimmer Remote close to bulb and press and hold the "ON" and "Off" button for 10 seconds until the bulb starts to blink and the Hue Dimmer Remote shows a green light.
+* The light should now show up in Phoscon.
+
+### Creating groups in Phoscon
+I create light groups in Phoscon. Each group defined in Phoscon will later show as a separate entity. This has a huge advantage over [Home Assistant Light Groups](https://www.home-assistant.io/integrations/light.group/) because if you send for example a command to turn off 5 lights in a light group that you configured in Home Assistant, it will one command for each bulb to the ConBee stick, which will in turn send 5 single commands to the ZigBee network. This can lead to delays and something called the "popcorn" effect, where lights turn on in random order. If you create a group in Phoscon, it will only send one command to the ZigBee network and all the lights will turn on/off at the same time. The disadvantage of Phoscon group is that you can't include lights/switches from other systems. You can still create a group in Home Assistant to do this and just include the group from Phoscon in there with the other devices that you want to control with this group.
+
+### Configure deCONZ integration in Home Assistant
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "deconz" and click on it.
+Choose "Manually define gateway".
+Enter the ip of the Pi in the field "host" and in the field port enter "8080".
+Hit "Submit".
+In another browser tab go to http://ip-of-your-pi:8080/pwa in the sidebar go to Settings -> Gateway. Click on "Advanced" at the bottom. Hit the "Authenticate App" button. Go back to Home Assistant and press "Submit" again. Now all your devices that you connected to the ConBee II stick should show up in Home Assistant.
+
 
 </p>
 </details>

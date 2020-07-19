@@ -1,11 +1,4 @@
-#Configuration for MQTT Broker
-mqtt:
-  broker: 127.0.0.1
-  username: !secret mqtt_user
-  password: !secret mqtt_pass
-  discovery: true
-
-#Internal and External URL configuration
+# Internal and External URL configuration
 homeassistant:
-  internal_url: http://192.168.0.30.3123
+  internal_url: http://192.168.0.30:3123
   external_url: !secret external_HA_URL
