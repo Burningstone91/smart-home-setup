@@ -1,0 +1,7 @@
+livingroom:
+  module: area
+  class: Area
+  area: livingroom
+  attributes:
+    friendly_name: Wohnzimmer
+  priority: 1

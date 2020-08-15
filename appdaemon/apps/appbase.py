@@ -4,15 +4,14 @@ from typing import Union, Optional
 import adbase as ad
 import voluptuous as vol
 
-from helpers import voluptuous_helper as vol_help
+from utils import config_validation as cv
 
 
 APP_SCHEMA = vol.Schema(
     {
         vol.Required("module"): str,
         vol.Required("class"): str,
-        vol.Optional("dependencies"): vol_help.ensure_list,
-        vol.Optional("manager"): str,
+        vol.Optional("dependencies"): cv.ensure_list,
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -44,11 +43,6 @@ class AppBase(ad.ADBase):
             if not getattr(self, app, None):
                 setattr(self, app, self.adbase.get_app(app))
 
-        # Create a reference to the manager app
-        if self.args.get("manager"):
-            self.manager = getattr(self, self.args["manager"])
-
         # Run the app configuration if specified
         if hasattr(self, "configure"):
             self.configure()
-

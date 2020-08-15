@@ -1,7 +1,19 @@
-ble_tracker_app:
+room_presence_app:
   module: presence
-  class: BleDeviceTrackerUpdater
+  class: RoomPresence
+  sensors:
+    dimitri: sensor.room_presence_dimitri
+    sabrina: sensor.room_presence_sabrina
+
+person_presence_app:
+  module: presence
+  class: PersonPresence
 
 non_binary_presence_app:
   module: presence
   class: NonBinaryPresence
+
+house_presence_app:
+  module: presence
+  class: HousePresence
+  house_id: home

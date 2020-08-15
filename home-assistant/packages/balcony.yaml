@@ -1,13 +1,13 @@
 # Light switch template to transform switch. into light. entity
 light:
   - platform: switch
-    name: Lichterkette Balkon
+    name: balcony_ceiling
     entity_id: switch.plug_balkon
 
 # Entity Customization
 homeassistant:
   customize:
     # Lights
-    light.lichterkette_balkon:
+    light.balcony_ceiling:
       friendly_name: Lichterkette
       icon: mdi:string-lights

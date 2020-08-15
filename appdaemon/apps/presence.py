@@ -1,224 +1,228 @@
 """Define an automation for updating a device tracker from the state of a sensor."""
-from enum import Enum
-from typing import Union
+import voluptuous as vol
 
 from appbase import AppBase, APP_SCHEMA
-from globals import PERSONS, HOUSE
+from utils import config_validation as cv
 
 
-class BleDeviceTrackerUpdater(AppBase):
-    """Define a base class for the BLE updater."""
+class RoomPresence(AppBase):
+    """Define a base class for room presence."""
+
+    APP_SCHEMA = APP_SCHEMA.extend(
+        {vol.Required("sensors"): vol.Schema({vol.Optional(str): cv.entity_id})}
+    )
 
     def configure(self) -> None:
         """Configure."""
-        for person, attribute in PERSONS.items():
-            room_presence_sensor = attribute["sensor_room_presence"]
-            topic = attribute["topic_room_device_tracker"]
+        room_presence_sensors = self.args["sensors"]
 
-            # set initial state of device tracker
-            if self.hass.get_state(room_presence_sensor) == "not_home":
-                self.update_device_tracker(topic, "not_home")
-            else:
-                self.update_device_tracker(topic, "home")
+        for person, sensor in room_presence_sensors.items():
 
-            # home -> not_home after 3 min no activity
+            # Listen for person changing area
             self.hass.listen_state(
-                self.on_presence_change,
-                room_presence_sensor,
-                new="not_home",
-                duration=3 * 60,
-                target_state="not_home",
-                topic=topic,
+                self.on_sensor_change, sensor, duration=5, person_id=person
             )
 
-            # room presence sensor change
-            self.hass.listen_state(
-                self.on_presence_change, room_presence_sensor, topic=topic
-            )
-
-    def on_presence_change(
-        self, entity: Union[str, dict], attribute: str, old: str, new: str, kwargs: dict
+    def on_sensor_change(
+        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
     ) -> None:
-        """Take action on presence change."""
-        if kwargs.get("target_state") == "not_home":
-            self.update_device_tracker(kwargs["topic"], "not_home")
-        elif new != "not_home":
-            self.update_device_tracker(kwargs["topic"], "home")
+        """Respond when room presence sensor changes state."""
+        if new != old:
+            person_id = kwargs["person_id"]
+            person_entity = f"person.{person_id}"
+            areas = self.adbase.get_state("area")
+            area_entity = f"area.{new}"
 
-    def update_device_tracker(self, topic: str, target_state: str) -> None:
-        """Update the location of the MQTT device tracker."""
-        self.mqtt.mqtt_publish(topic, target_state, namespace="mqtt")
+            # Remove person from other areas
+            for area in areas.keys():
+                if area != area_entity:
+                    persons = self.adbase.get_state(area, attribute="persons")
+                    if person_id in persons:
+                        persons.remove(person_id)
+                        self.adbase.set_state(area, persons=persons)
 
+            # Add person to new area
+            if new != "not_home":
+                persons = self.adbase.get_state(area_entity, attribute="persons")
+                if person_id not in persons:
+                    persons.append(person_id)
+                    self.adbase.set_state(area_entity, persons=persons)
+
+            # Set area for person
+            self.adbase.set_state(person_entity, area=new)
+            self.adbase.log(f"{person_id.capitalize()} Area: {new}")
+
+
+class PersonPresence(AppBase):
+    """Define a base class for binary person presence."""
+
+    def configure(self) -> None:
+        """Configure."""
+        persons = self.adbase.get_state("person")
+
+        for person in persons.keys():
+            # Listen for person entering the house
+            self.adbase.listen_state(
+                self.on_person_arrival,
+                person,
+                attribute="area",
+            )
+
+            # area 3 minutes "not_home" -> person left
+            self.adbase.listen_state(
+                self.on_person_leave,
+                person,
+                attribute="area",
+                new="not_home",
+                duration=3 * 60
+            )
+
+    def on_person_arrival(
+        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Respond when person enters house."""
+        # Set person to "home"
+        not_home_states = ["not_home", "undefined", "unknown", None]
+        if new != old and old in not_home_states and new not in not_home_states:
+            self.adbase.set_state(entity, home="yes")
+            self.adbase.log(f"{entity.split('.')[1].capitalize()}: home")
+            
+    def on_person_leave(
+        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Respond when person left house for 3 minutes."""
+        # Set person to "not home"
+        self.adbase.set_state(entity, home="no")
+        self.adbase.log(f"{entity.split('.')[1].capitalize()}: not home")
 
 class NonBinaryPresence(AppBase):
-    """Define a base class for Non Binary Presence."""
-
-    class PresenceStates(Enum):
-        """Define an enum for person related presence states."""
-
-        home = "zu Hause"
-        just_arrived = "gerade angekommen"
-        just_left = "gerade gegangen"
-        away = "weg"
-        extended_away = "lange weg"
-
-    class HouseStates(Enum):
-        """Define an enum for house related presence states."""
-
-        someone = "Jemand ist zu Hause"
-        everyone = "Alle sind zu Hause"
-        noone = "Niemand ist zu Hause"
-        vacation = "Ferien"
+    """Define a base class for non binary person presence."""
 
     def configure(self) -> None:
         """Configure."""
-        # set initial state for the house
-        self.update_house_presence_state()
+        persons = self.adbase.get_state("person")
 
-        for person, attribute in PERSONS.items():
-            input_select = attribute["input_select_non_binary_state"]
-            person_sensor = attribute["person"]
-
+        for person in persons.keys():
             # away/extended away -> just arrived
-            self.hass.listen_state(
+            self.adbase.listen_state(
                 self.on_presence_change,
-                person_sensor,
-                new="home",
-                person=person,
-                input_select=input_select,
-                non_binary_state=self.PresenceStates.just_arrived.value,
+                person,
+                attribute="home",
+                new="yes",
+                non_binary_state="just_arrived",
             )
 
             # home -> just left
-            self.hass.listen_state(
+            self.adbase.listen_state(
                 self.on_presence_change,
-                person_sensor,
-                old="home",
-                person=person,
-                input_select=input_select,
-                non_binary_state=self.PresenceStates.just_left.value,
+                person,
+                attribute="home",
+                new="no",
+                non_binary_state="just_left",
             )
 
             # just arrived -> home, after 5 min
-            self.hass.listen_state(
+            self.adbase.listen_state(
                 self.on_presence_change,
-                input_select,
-                new=self.PresenceStates.just_arrived.value,
+                person,
+                attribute="non_binary_presence",
+                new="just_arrived",
                 duration=5 * 60,
-                person=person,
-                input_select=input_select,
-                non_binary_state=self.PresenceStates.home.value,
+                non_binary_state="home",
             )
 
             # just left -> away, after 5 min
-            self.hass.listen_state(
+            self.adbase.listen_state(
                 self.on_presence_change,
-                input_select,
-                new=self.PresenceStates.just_left.value,
+                person,
+                attribute="non_binary_presence",
+                new="just_left",
                 duration=5 * 60,
-                person=person,
-                input_select=input_select,
-                non_binary_state=self.PresenceStates.away.value,
+                non_binary_state="away",
             )
 
             # away -> extended away, after 24 hours
-            self.hass.listen_state(
+            self.adbase.listen_state(
                 self.on_presence_change,
-                input_select,
-                new=self.PresenceStates.away.value,
+                person,
+                attribute="non_binary_presence",
+                new="away",
                 duration=24 * 60 * 60,
-                person=person,
-                input_select=input_select,
-                non_binary_state=self.PresenceStates.extended_away.value,
+                non_binary_state="extended_away",
             )
 
     def on_presence_change(
-        self, entity: Union[str, dict], attribute: str, old: str, new: str, kwargs: dict
+        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
     ) -> None:
-        """Take action on person's presence change."""
-        input_select = kwargs["input_select"]
-        old_state = self.hass.get_state(input_select)
-        target_state = kwargs["non_binary_state"]
-
+        """Respond when person changes presence state."""
         # just left -> just arrived = home
-        if (old_state == self.PresenceStates.just_left.value) and (
-            target_state == self.PresenceStates.just_arrived.value
-        ):
-            target_state = self.PresenceStates.home.value
-
-        # set person non-binary presence state
-        if old_state != target_state:
-            self.hass.select_option(input_select, target_state)
-            self.adbase.log(
-                f"{kwargs['person']} war {old_state}, ist jetzt {target_state}"
-            )
-
-        # set house non-binary presence state
-        self.update_house_presence_state()
-
-    def update_house_presence_state(self) -> None:
-        """Update the presence state of the house."""
-        old_state = self.house_presence_state
-        if self.everyone_home:
-            new_state = self.HouseStates.everyone.value
-        elif self.everyone_extended_away:
-            new_state = self.HouseStates.vacation.value
-        elif self.noone_home:
-            new_state = self.HouseStates.noone.value
+        if old == "just_left" and new == "just_arrived":
+            non_binary_state = "home"
         else:
-            new_state = self.HouseStates.someone.value
+            non_binary_state = kwargs["non_binary_state"]
 
-        if old_state != new_state:
-            self.hass.select_option(HOUSE["input_select_presence"], new_state)
-            self.adbase.log(f"Vorher: {old_state}, Jetzt: {new_state}")
+        # Set non binary presence state for person
+        self.adbase.set_state(entity, non_binary_presence=non_binary_state)
+        self.adbase.log(
+            f"{entity.split('.')[1].capitalize()}: {non_binary_state.replace('_',' ')}"
+        )
 
-    def whos_in_state(self, *presence_states: Enum) -> list:
-        """Return list of person in given state."""
-        presence_state_list = [
-            presence_state.value for presence_state in presence_states
-        ]
-        return [
+
+class HousePresence(AppBase):
+    """Define a base class for house presence."""
+
+    APP_SCHEMA = APP_SCHEMA.extend({vol.Required("house_id"): str})
+
+    def configure(self) -> None:
+        """Configure."""
+        house_id = self.args["house_id"]
+        self.house_entity_id = f"house.{house_id}"
+        persons = self.adbase.get_state("person")
+
+        # Listen for person changing home state
+        for person in persons.keys():
+            self.adbase.listen_state(self.on_presence_change, person, attribute="home")
+
+    def on_presence_change(
+        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Respond when person changes presence state."""
+        person_id = entity.split(".")[1]
+        persons = self.adbase.get_state("person")
+        
+        persons_home = self.adbase.get_state(self.house_entity_id, attribute="persons")
+        persons_extended_away = [
             person
-            for person, attribute in PERSONS.items()
-            if self.hass.get_state(attribute["input_select_non_binary_state"])
-            in presence_state_list
+            for person, attributes in persons.items()
+            if attributes["attributes"]["non_binary_presence"] == "extended_away"
         ]
 
-    @property
-    def whos_just_arrived(self) -> bool:
-        """Return true if everyone is *home*."""
-        return self.whos_in_state(self.PresenceStates.just_arrived)
+        # Add/remove person from the house
+        if new == "yes":
+            persons_home.append(person_id)
+        elif person_id in persons_home:
+            persons_home.remove(person_id)
 
-    @property
-    def whos_home(self) -> list:
-        """Return list of persons *home*."""
-        return self.whos_in_state(
-            self.PresenceStates.home, self.PresenceStates.just_arrived
+        # Set occupancy of the house
+        if not persons_home:
+            occupied = "no"
+        else:
+            occupied = "yes"
+
+        # Set presence state of the house
+        if len(persons.keys()) == len(persons_home):
+            presence_state = "everyone_home"
+        elif len(persons.keys()) == len(persons_extended_away):
+            presence_state = "vacation"
+        elif not persons_home:
+            presence_state = "nobody_home"
+        else:
+            presence_state = "someone_home"
+
+        self.adbase.set_state(
+            self.house_entity_id,
+            presence_state=presence_state,
+            occupied=occupied,
+            persons=persons_home,
         )
-
-    @property
-    def everyone_home(self) -> bool:
-        """Return true if everyone is *home*."""
-        return self.whos_home == list(PERSONS.keys())
-
-    @property
-    def someone_home(self) -> bool:
-        """Return true if someone is *home*."""
-        return len(self.whos_home) != 0
-
-    @property
-    def noone_home(self) -> bool:
-        """Return true if no one is *home*."""
-        return not self.whos_home
-
-    @property
-    def everyone_extended_away(self) -> bool:
-        """Return true if everyone is *extended away*."""
-        return self.whos_in_state(self.PresenceStates.extended_away) == list(
-            PERSONS.keys()
-        )
-
-    @property
-    def house_presence_state(self) -> str:
-        """Return current state of the house presence."""
-        return self.hass.get_state(HOUSE["input_select_presence"])
+        self.adbase.log(f"House Presence: {presence_state.replace('_',' ')}")

@@ -39,18 +39,3 @@ def valid_time(value: Any) -> datetime.datetime:
     except ValueError:
         raise vol.Invalid(f"Invalid Time: {value}")
 
-
-class existing_entity_id(object):
-    """Validate if a given object is an existing HA entity"""
-
-    def __init__(self, hass):
-        """Init."""
-        self._hass = hass
-
-    def __call__(self, value: Any) -> str:
-        value = str(value).lower()
-        if '.' not in value:
-            raise vol.Invalid(f'Invalid entity-id: {value}')
-        if not self._hass.entity_exists(value):
-            raise vol.Invalid(f'Entity-id {value} does not exist')
-        return value

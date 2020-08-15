@@ -1,50 +1,38 @@
-# Burningstone's Smart Home Journey
-Installation and Configuration of my Smart Home Setup
-
-## Introduction
-I discovered Home Assistant around 2 years ago, installed it, played a bit with it, but didn't really have a need for it at that time. Some Philips Hue bulbs and Dimmers later, I gave Home Assistant another try. This time it got me hooked. I became addicted immediately. This was a bit more than 1 year ago. In this time I started to learn Python, YAML, wrote my own code for automations, etc. and setup a system that works pretty stable and covers my current needs. You can find my current setup [here](https://github.com/Burningstone91/smart-home).
-
-This is the diagram of all the devices and how they connect and communicate with Home Assistant from my current setup. This will be adjusted during this journey as I'm trying to optimize and streamline a few things or use other software/hardware for other things.
-
-![Alt text](/git-pictures/smart_home_diagram.png?raw=true "Smart Home Diagram")
-
-And here is the diagram of my network incl. VLANs. I may do a write-up on this as well at a later stage.
-
-![Alt text](/git-pictures/network_diagram.png?raw=true "Network Diagram")
-
-Now I will build my whole setup from scratch, add some new features and hardware and you can follow me on this journey. I will keep adding my new configuration and the corresponding documentation continuously to this repo. You may ask, why I do this when I have a stable, running system? 
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Unknown </title></head><body>
+<h1 id="burningstones-smart-home-journey">Burningstone's Smart Home Journey</h1>
+<p>Installation and Configuration of my Smart Home Setup</p>
+<h2 id="introduction">Introduction</h2>
+<p>I discovered Home Assistant around 2 years ago, installed it, played a bit with it, but didn't really have a need for it at that time. Some Philips Hue bulbs and Dimmers later, I gave Home Assistant another try. This time it got me hooked. I became addicted immediately. This was a bit more than 1 year ago. In this time I started to learn Python, YAML, wrote my own code for automations, etc. and setup a system that works pretty stable and covers my current needs. You can find my current setup <a href="https://github.com/Burningstone91/smart-home">here</a>.</p>
+<p>This is the diagram of all the devices and how they connect and communicate with Home Assistant from my current setup. This will be adjusted during this journey as I'm trying to optimize and streamline a few things or use other software/hardware for other things.</p>
+<p><img alt="Alt text" src="/git-pictures/smart_home_diagram.png?raw=true" title="Smart Home Diagram"/></p>
+<p>And here is the diagram of my network incl. VLANs. I may do a write-up on this as well at a later stage.</p>
+<p><img alt="Alt text" src="/git-pictures/network_diagram.png?raw=true" title="Network Diagram"/></p>
+<p>Now I will build my whole setup from scratch, add some new features and hardware and you can follow me on this journey. I will keep adding my new configuration and the corresponding documentation continuously to this repo. You may ask, why I do this when I have a stable, running system? 
 First, this will be a documentation that I can use to give me an overview of my system and in worst case (house burnt down + wife lost USB stick attached to key + I lost USB stick attached to key + I lost external drive that I always carry in my backpack, yes I know I'm paranoid :P) help me to setup everything again. 
 Second, I hope that other people can profit from this, learn from my journey, use parts of my config in their own system or at least it helps them to solve one of their issues. 
-And third, my current setup grew quite a lot in complexity. Due to my skills evolving and learning new tricks or methods to do certain things, it became inconsistent in regards to naming and in how and where things are configured and the documentation is lacking heavily. 
-
-!!!WARNING!!! I'm by no means a programmer and I don't work as a professional in IT or something IT related. I'm just passionate about home automation, programming, IoT and technology in general.
-
-My "Server" is an Intel NUC with an i3-7100U CPU, 8 GB of RAM and a 1 TB SSD (I use it for other virtual machines as well). The Smart Home runs inside an Ubuntu virtual machine in Proxmox.
-
-If you find any information here useful feel free to buy me a coffee :)
-
-<a href="https://www.buymeacoff.ee/u89Ao5n" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" style="height: 19px !important;width: 68px !important;" ></a>
-
-## Overview
-I will explain here the different parts of my home automation system and how I set them up. For each part, I will talk about the hardware involved and how I integrated it into the system and I will also give an explanation on the automations and the corresponding code related to this part. 
-
-* <a href="https://github.com/Burningstone91/smart-home-setup#start">
+And third, my current setup grew quite a lot in complexity. Due to my skills evolving and learning new tricks or methods to do certain things, it became inconsistent in regards to naming and in how and where things are configured and the documentation is lacking heavily. </p>
+<p>!!!WARNING!!! I'm by no means a programmer and I don't work as a professional in IT or something IT related. I'm just passionate about home automation, programming, IoT and technology in general.</p>
+<p>My "Server" is an Intel NUC with an i3-7100U CPU, 8 GB of RAM and a 1 TB SSD (I use it for other virtual machines as well). The Smart Home runs inside an Ubuntu virtual machine in Proxmox.</p>
+<p>If you find any information here useful feel free to buy me a coffee :)</p>
+<p><a href="https://www.buymeacoff.ee/u89Ao5n" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" style="height: 19px !important;width: 68px !important;"/></a></p>
+<h2 id="overview">Overview</h2>
+<p>I will explain here the different parts of my home automation system and how I set them up. For each part, I will talk about the hardware involved and how I integrated it into the system and I will also give an explanation on the automations and the corresponding code related to this part. </p>
+<ul>
+<li><a href="https://github.com/Burningstone91/smart-home-setup#start">
       Start of my Journey and Basic Setup
-  </a>
-* <a href="https://github.com/Burningstone91/smart-home-setup#mqtt">
+  </a></li>
+<li><a href="https://github.com/Burningstone91/smart-home-setup#mqtt">
       Setup of MQTT Broker
-  </a>
-* <a href="https://github.com/Burningstone91/smart-home-setup#appdaemon">
+  </a></li>
+<li><a href="https://github.com/Burningstone91/smart-home-setup#appdaemon">
       Setup AppDaemon - Automation Engine
-  </a>
-* <a href="https://github.com/Burningstone91/smart-home-setup#presence-detection">
+  </a></li>
+<li><a href="https://github.com/Burningstone91/smart-home-setup#presence-detection">
       Presence Detection
-  </a>
-
-## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"></a>
-
-First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
-
+  </a></li>
+</ul>
+<h2 id="start-of-my-jouney-and-basic-setup">Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"/></h2>
+<p>First some preparations and the install of <a href="https://www.home-assistant.io/">Home Assistant</a>, which will be the core of the home automation system.</p>
 <details><summary>Step-by-step Guide</summary>
 <p>
 
@@ -68,7 +56,7 @@ version: "3"
 services:
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:0.114.0
+    image: homeassistant/home-assistant:0.108.0
     network_mode: host
     restart: unless-stopped
     volumes:
@@ -163,9 +151,8 @@ Now the initial configuration is done and Home Assistant is up and running.
 </p>
 </details>
 
-## Setup MQTT Broker <a name="mqtt" href="https://github.com/Burningstone91/smart-home-setup#mqtt"></a>
-The MQTT broker is the server that hosts the MQTT network. It provides the infrastructure for devices to publish/subscribe to topics. In this setup [Mosquitto](https://mosquitto.org/) is the broker of choice.
-
+<h2 id="setup-mqtt-broker">Setup MQTT Broker <a name="mqtt" href="https://github.com/Burningstone91/smart-home-setup#mqtt"/></h2>
+<p>The MQTT broker is the server that hosts the MQTT network. It provides the infrastructure for devices to publish/subscribe to topics. In this setup <a href="https://mosquitto.org/">Mosquitto</a> is the broker of choice.</p>
 <details><summary>Step-by-step Guide</summary>
 <p>
 
@@ -278,7 +265,7 @@ You should now see "Hello World" showing up on the first terminal.
 #### Configure via UI
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "MQTT" and click on it.
 Enter "127.0.0.1" in the field "broker".
-Enter your username and password. Tick the box next to "Enable Discovery". If Discovery is enabled, Home Assistant will automatically detect certain devices. The device needs to send a specific payload when it first connects to MQTT, this message contains the information that Home Assistant needs to create the device and the corresponding entities. Lots of integrations have this specific payload built-in and therefore your devices should be detected automatically.
+Enter your username and password. Tick the box next to "Enable Discovery".
 
 #### Configure via Configuration Files
 Create a file called "core.yaml" inside the directory config/packages. This file will be used for all config relating to the core. Add the following to the file:
@@ -294,9 +281,8 @@ mqtt:
 </p>
 </details>
 
-## Setup AppDaemon - Automation Engine <a name="appdaemon" href="https://github.com/Burningstone91/smart-home-setup#appdaemon"></a>
-[AppDaemon](https://appdaemon.readthedocs.io/en/latest/) can be used to write Home Automation apps for Home Assistant in Python. It's an alternative to Home Assistant's inbuilt automations. You can create more complicated automations and reuse the same code for multiple apps. The official AppDaemon documentation provides a [detailed explanation](https://appdaemon.readthedocs.io/en/latest/APPGUIDE.html) on how to create your first app. I use AppDaemon for all my automations for multiple reasons such as overcoming limitations of Home Assistant automations (which got a lot more powerful starting from 0.113.0!), creating automations and entities that persist reboot, remove code redundancy, learn python etc. It just better fits my way of thinking, connecting automations together instead of separating each and everything into a separate automations.
-
+<h2 id="setup-appdaemon-automation-engine">Setup AppDaemon - Automation Engine <a name="appdaemon" href="https://github.com/Burningstone91/smart-home-setup#appdaemon"/></h2>
+<p><a href="https://appdaemon.readthedocs.io/en/latest/">AppDaemon</a> can be used to write Home Automation apps for Home Assistant in Python. It's an alternative to Home Assistant's inbuilt automations. You can create more complicated automations and reuse the same code for multiple apps. The official AppDaemon documentation provides a <a href="https://appdaemon.readthedocs.io/en/latest/APPGUIDE.html">detailed explanation</a> on how to create your first app.</p>
 <details><summary>Step-by-step Guide</summary>
 <p>
 
@@ -433,7 +419,7 @@ class AppBase(ad.ADBase):
 
     APP_SCHEMA = APP_SCHEMA
 
-    def initialize(self) -> None:
+    def initialize(self) -&gt; None:
         """Initialize."""
         self.adbase = self.get_ad_api()
         self.hass = self.get_plugin_api("HASS")
@@ -458,8 +444,7 @@ class AppBase(ad.ADBase):
         if hasattr(self, "configure"):
             self.configure()
 ```
-
-In addition create a folder called utils and put a file called config_validation.py inside this folder with the following content:
+In addition create a folder called helpers and put a file called voluptuous_helper.py inside this folder with the following content:
 
 ```python
 """Define methods to validate configuration for voluptuous."""
@@ -472,14 +457,14 @@ import voluptuous as vol
 T = TypeVar("T")  # pylint: disable=invalid-name
 
 
-def ensure_list(value: Union[T, Sequence[T]]) -> Sequence[T]:
+def ensure_list(value: Union[T, Sequence[T]]) -&gt; Sequence[T]:
     """Validate if a given object is a list."""
     if value is None:
         return []
     return value if isinstance(value, list) else [value]
 
 
-def entity_id(value: Any) -> str:
+def entity_id(value: Any) -&gt; str:
     """Validate if a given object is an entity ID."""
     value = str(value).lower()
     if "." in value:
@@ -488,7 +473,7 @@ def entity_id(value: Any) -> str:
     raise vol.Invalid("Invalid entity ID: {0}".format(value))
 
 
-def valid_date(value: Any) -> datetime.date:
+def valid_date(value: Any) -&gt; datetime.date:
     """Validate if a given object is a date."""
     try:
         return datetime.datetime.strptime(value, "%d.%m.%Y")
@@ -496,12 +481,28 @@ def valid_date(value: Any) -> datetime.date:
         raise vol.Invalid(f"Invalid Date: {value}")
 
 
-def valid_time(value: Any) -> datetime.datetime:
+def valid_time(value: Any) -&gt; datetime.datetime:
     """Validate if a given object is a time."""
     try:
         return datetime.datetime.strptime(value, "%H:%M:%S")
     except ValueError:
         raise vol.Invalid(f"Invalid Time: {value}")
+
+
+class existing_entity_id(object):
+    """Validate if a given object is an existing HA entity"""
+
+    def __init__(self, hass):
+        """Init."""
+        self._hass = hass
+
+    def __call__(self, value: Any) -&gt; str:
+        value = str(value).lower()
+        if '.' not in value:
+            raise vol.Invalid(f'Invalid entity-id: {value}')
+        if not self._hass.entity_exists(value):
+            raise vol.Invalid(f'Entity-id {value} does not exist')
+        return value
 ```
 
 Now when we create an app that usese the AppBase, it will automatically create a reference to every dependency in the app configuration. This way way we can use the methods and variables of the apps that our app depends on, to avoid redundant code. It will also do some basic config validation with Voluptuous and raise an error when you wrote "modle" instead of "module" for example. As we have multiple namespaces (HASS and MQTT), there are some variables that represent the MQTT and HASS namespace. This way you don't need to put "namespace=hass" when you call a method, instead you start the function call with "self.hass", if you want to do something in HASS namespace. Start it with "self.mqtt" to do something in MQTT namespace and start it with "self.adbase" to do something in the AppDaemon namespace (logging etc.).
@@ -511,27 +512,20 @@ This file is going to be extended later on with more functionality.
 </p>
 </details>
 
-## Presence Detection <a name="presence-detection" href="https://github.com/Burningstone91/smart-home-setup#presence-detection"></a>
-### Basic Explanation of Setup
-I use the [person integration](https://www.home-assistant.io/integrations/person/) from Home Assistant to combine a bluetooth device tracker (device attached to my keys) and a gps device tracker (my phone). The docs give a detailed explanation on how the location is determined when multiple device trackers are used. Long story short, when I'm at home, my position is determined first by keys and then by phone. When I'm not home, my position is determined first by phone then by keys.
-
-I use the phone device tracker together with the [zone integration](https://www.home-assistant.io/integrations/zone/) from Home Assistant to show in which place (work, grocery store, etc.) we are, when we are not home. This is reflected in the state of the person.
-
-And I use the bluetooth device tracker together with [Room Assistant](https://www.room-assistant.io/) to show in which room we are when we are home. This is not reflected in the state of the person.
-
-I'm using the bluetooth device trackers now for around 2 years and I did not have a single false trigger in this time. Home Assistant marks us as home before we open the front door and marks us as left 3 min after we left the house.
-
-I adapted the method from Phil Hawthorne for [making presence detection not so binary](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/) in an AppDaemon app. This is used for example when we leave the house and come back a few minutes later, that it will not trigger any arrival automations.
-
-I also have a presence state for the house which can be "someone home", "everyone home", "no one home" or "vacation". 
-
-I'm going to explain each part of the presence detection system in detail including Hardware and Software used and how to set it up.
-
-### Bluetooth Device Tracker - Presence on Room Level
-#### Hardware used
+<h2 id="presence-detection">Presence Detection <a name="presence-detection" href="https://github.com/Burningstone91/smart-home-setup#presence-detection"/></h2>
+<h3 id="basic-explanation-of-setup">Basic Explanation of Setup</h3>
+<p>I use the <a href="https://www.home-assistant.io/integrations/person/">person integration</a> from Home Assistant to combine a bluetooth device tracker (device attached to my keys) and a gps device tracker (my phone). The docs give a detailed explanation on how the location is determined when multiple device trackers are used. Long story short, when I'm at home, my position is determined first by keys and then by phone. When I'm not home, my position is determined first by phone then by keys.</p>
+<p>I use the phone device tracker together with the <a href="https://www.home-assistant.io/integrations/zone/">zone integration</a> from Home Assistant to show in which place (work, grocery store, etc.) we are, when we are not home. This is reflected in the state of the person.</p>
+<p>And I use the bluetooth device tracker together with <a href="https://www.room-assistant.io/">Room Assistant</a> to show in which room we are when we are home. This is not reflected in the state of the person.</p>
+<p>I'm using the bluetooth device trackers now for around 2 years and I did not have a single false trigger in this time. Home Assistant marks us as home before we open the front door and marks us as left 3 min after we left the house.</p>
+<p>I adapted the method from Phil Hawthorne for <a href="https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/">making presence detection not so binary</a> in an AppDaemon app. This is used for example when we leave the house and come back a few minutes later, that it will not trigger any arrival automations.</p>
+<p>I also have a presence state for the house which can be "someone home", "everyone home", "no one home" or "vacation". </p>
+<p>I'm going to explain each part of the presence detection system in detail including Hardware and Software used and how to set it up.</p>
+<h3 id="bluetooth-device-tracker-presence-on-room-level">Bluetooth Device Tracker - Presence on Room Level</h3>
+<h4 id="hardware-used">Hardware used</h4>
 <table align="center" border="0">
 
-<tr>
+<tbody><tr>
 <td align="center" style="width:50%;">
 Raspberry Pi Zero W
 </td>
@@ -542,10 +536,10 @@ Nut Mini
 
 <tr>
 <td align="center" style="width:50%;">
-<img src="git-pictures/device_pictures/pi_zero_w.jpg" raw=true height="250" alt="Pi Zero W"/>
+<img src="pi_zero_w-1.jpg" raw="true" height="250" alt="Pi Zero W"/>
 </td>
 <td align="center" style="width:50%;">
-<img src="git-pictures/device_pictures/nut_mini.jpg" raw=true height="250" alt="Nut mini" />
+<img src="nut_mini-1.jpg" raw="true" height="250" alt="Nut mini"/>
 </td>
 </tr>
 
@@ -553,7 +547,8 @@ Nut Mini
 The Nut Mini's are attatched to our keys and I'm soon going to buy some Fitness Bands to replace them. They send a Bluetooth Low Energy (BLE) signal every 3 seconds. There's one Raspberry Pi's as central as possible in every room that I want to automate and one close to the entrance door. The Pi's run <a href="https://companion.home-assistant.io/">Room Assistant</a>, which catches these signals and determines the location of the Nut Mini based on the strength of the signal. It talks to Home Assistant through MQTT and if discovery is enabled it will be detected automatically.
 Due to the fact that only device tracker entities can be linked to a person, I use an AppDaemon app that updates the status of an MQTT device tracker whenever the state of the keys changes.
 </td></tr>
-</table>
+
+</tbody></table>
 
 <details><summary>Step-by-step Guide</summary>
 <p>
@@ -770,394 +765,6 @@ Now run the Ansible playbook again to update the configuration with:
 ansible-playbook -i hosts.yml -u pi room-assistant.yml
 ```
 
-#### Base Apps for Presence Detection (AppDaemon)
-Now that we have sensors in place, which show in which room a person is in. We are going to use this to create a room presence detection app. I use AppDaemon a lot to create entities that only exist in AppDaemon, not in Home Assistant as I only use them for automations. If I still need access to this information in Home Assistant, I create a sensor in AppDaemon and feed it with the missing information. Thanks @Odianosen25 for showing me this feature approach.
-For the room presence detection, we are going to create one app for areas, one app for persons, one app for the house and multiple apps to set different attributes of the persons, areas and the house based on the changes of the room presence sensors.
-
-In the AppDaemon directory should be a folder called "apps". All the following apps need to be created inside this directory. 
-
-We are going to start with the area app. The are app creates area entities that will have attributes for the persons (list of persons in area), the occupied state(yes | no), the friendly name and the identifier.
-
-Create a new file called "area.py". Add the following to this file:
-
-```python
-"""Define automations for areas."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-
-class Area(AppBase):
-    """Representation of an Area."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("area"): str,
-            vol.Optional("attributes"): vol.Schema(
-                {vol.Optional("friendly_name"): str}
-            ),
-            vol.Optional("occupancy"): vol.Schema(
-                {vol.Optional(cv.entity_id): str}
-            ),
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure an area."""
-        areas = self.adbase.get_state("area")
-        area = self.args["area"]
-        area_id = area.lower().replace(" ", "_")
-        attributes = self.args["attributes"]
-        self.area_entity = f"area.{area_id}"
-
-        # Create an entity for the area if it doesn't already exist
-        if self.area_entity not in areas.keys():
-            if "friendly_name" not in attributes:
-                attributes.update({"friendly_name": area.title()})
-
-            attributes.update(
-                {"id": area_id, "persons": [], "occupied": None, "occupancy": {}}
-            )
-
-            self.adbase.set_state(self.area_entity, state="idle", attributes=attributes)
-
-        # Listen for no changes in area state for 30 seconds
-        self.adbase.listen_state(self.on_state_change, self.area_entity, duration=30)
-
-    def on_state_change(
-        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when area doesn't change state for 30s."""
-        # Set area to idle
-        self.adbase.set_state(entity, state="idle")
-```
-Now we are going to create a configuration file to set up the areas in the house. Create a file for each area e.g. "bedroom.yaml".
-
-The configuration parameters are as follows:
-
-key | optional | type | default | description
--- | -- | -- | -- | --
-`module` | False | string | area | The module name of the app.
-`class` | False | string | Area | The name of the Class.
-`area` | False | string | | The identifier for the area.
-`attributes` | True | dict | | The attributes for the area.
-
-Attributes configuration:
-key | optional | type | default | description
--- | -- | -- | -- | --
-`friendly_name` | True | string | | The friendly name of the area.
-
-
-Example:
-
-```yaml
-bedroom:
-  module: area
-  class: Area
-  area: bedroom
-  attributes:
-    friendly_name: Schlafzimmer
-```
-Now we have an entity for each area configured this way, which exist only in AppDaemon and which we are going to use later in other apps and automations.
-
-Next the "person" app. The person app creates person entities that will have attributes for the home state (yes | no), the non-binary-presence state (just_left | away | just_arrived | home | extended_away), the full name, the identifier and notifiers belonging to this person. 
-
-Create a new file called "person.py". Add the following to this file:
-
-```python
-"""Define automations for persons."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-class Person(AppBase):
-    """Representation of a Person."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("person"): str,
-            vol.Required("attributes"): vol.Schema(
-                {
-                    vol.Required("full_name"): str,
-                    vol.Optional("notifiers"): vol.All(cv.ensure_list, [str]),
-                }
-            )
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure a person."""
-        person = self.args["person"].lower()
-        attributes = self.args["attributes"]
-        entity_id = f"person.{person}"
-
-        attributes.update(
-            {
-                "id": person,
-                "home": None,
-                "non_binary_presence": None
-            }
-        )
-
-        self.adbase.set_state(entity_id, attributes=attributes)
-```
-
-Now we are going to create a configuration file to set up the persons in the household. Create a file called "persons.yaml".
-
-The configuration parameters are as follows:
-
-key | optional | type | default | description
--- | -- | -- | -- | --
-`module` | False | string | person | The module name of the app.
-`class` | False | string | Person | The name of the Class.
-`person` | False | string | | The short name of the person.
-`attributes` | False | dict | | The attributes for the person.
-
-Attributes configuration:
-key | optional | type | default | description
--- | -- | -- | -- | --
-`full_name` | False | string | | The full name of the person.
-`notifiers` | True | list | | List of notifier entities belonging to this person.
-
-
-Example:
-
-```yaml
-dimitri:
-  module: person
-  class: Person
-  person: Dimitri
-  attributes:
-    full_name: Dimitri Li 
-```
-
-Now you have one entity for each person configured this way, which exists only in AppDaemon and which we are going to use later in other apps and automations.
-
-Next the "house" app. The house app creates house entities that will have attributes for the persons (list of persons in house), presence state (someone_home | nobody_home | vacation | everyone_home), the occupied state(yes | no), the friendly name and the identifier.
-
-Create a new file called "house.py". Add the following to this file:
-
-```python
-"""Define automations for the house."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-
-
-class House(AppBase):
-    """Representation of a House."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("id"): str,
-            vol.Optional("attributes"): vol.Schema(
-                {
-                    vol.Optional("friendly_name"): str,
-                }
-            )
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure an area."""
-        houses = self.adbase.get_state("house")
-        house_id = self.args["id"]
-        attributes = self.args.get("attributes")
-        entity_id = f"house.{house_id}"
-
-        # Create an entity for the house if it doesn't already exist
-        if entity_id not in houses.keys():
-            if "friendly_name" not in attributes:
-                attributes.update({"friendly_name": area.title()})
-
-            attributes.update(
-                {
-                    "id": house_id,
-                    "persons": [],
-                    "occupied": None,
-                    "presence_state": None,
-                }
-            )
-
-            self.adbase.set_state(entity_id, state="idle", attributes=attributes) 
-
-        # Listen for no changes in house state for 30 seconds
-        self.adbase.listen_state(
-            self.state_changed, entity_id, duration=30
-        )
-
-    def state_changed(
-        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when house doesn't change state for 30s."""
-        # Set area to idle
-        self.adbase.set_state(entity, state="idle")
-```
-
-Now we are going to create a configuration file to set up the persons in the household. Create a file called "house.yaml".
-
-The configuration parameters are as follows:
-
-key | optional | type | default | description
--- | -- | -- | -- | --
-`module` | False | string | house | The module name of the app.
-`class` | False | string | House | The name of the Class.
-`id` | False | string | | The identifier for the house.
-`attributes` | True | dict | | The attributes for the house.
-
-Attributes configuration:
-key | optional | type | default | description
--- | -- | -- | -- | --
-`friendly_name` | True | string | | The friendly name of the house.
-
-
-Example:
-
-```yaml
-house:
-  module: house
-  class: House
-  id: home
-  attributes:
-    friendly_name: Wohnung
-  
-```
-Now we have an entity for the house, which exists only in AppDaemon and which we are going to use later in other apps and automations.
-
-Next the presence apps, which set the different attributes of the areas, persons and the house.
-The room presence app sets the area for each person entity and sets the person in the corresponding area entity whenever the room presence sensor changes state to a new state for 5 seconds. 
-
-Create a file called "presence.py" and add the following:
-
-```python
-"""Define an automation for updating a device tracker from the state of a sensor."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-
-class RoomPresence(AppBase):
-    """Define a base class for room presence."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {vol.Required("sensors"): vol.Schema({vol.Optional(str): cv.entity_id})}
-    )
-
-    def configure(self) -> None:
-        """Configure."""
-        room_presence_sensors = self.args["sensors"]
-
-        for person, sensor in room_presence_sensors.items():
-
-            # Listen for person changing area
-            self.hass.listen_state(
-                self.on_sensor_change, sensor, duration=5, person_id=person
-            )
-
-    def on_sensor_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when room presence sensor changes state."""
-        if new != old:
-            person_id = kwargs["person_id"]
-            person_entity = f"person.{person_id}"
-            areas = self.adbase.get_state("area")
-            area_entity = f"area.{new}"
-
-            # Remove person from other areas
-            for area in areas.keys():
-                if area != area_entity:
-                    persons = self.adbase.get_state(area, attribute="persons")
-                    if person_id in persons:
-                        persons.remove(person_id)
-                        self.adbase.set_state(area, persons=persons)
-
-            # Add person to new area
-            if new != "not_home":
-                persons = self.adbase.get_state(area_entity, attribute="persons")
-                if person_id not in persons:
-                    persons.append(person_id)
-                    self.adbase.set_state(area_entity, persons=persons)
-
-            # Set area for person
-            self.adbase.set_state(person_entity, area=new)
-            self.adbase.log(f"{person_id.capitalize()} Area: {new}")
-```
-
-Create a corresponding configuration file called "presence.yaml" and add the following:
-
-```yaml
-room_presence_app:
-  module: presence
-  class: RoomPresence
-  sensors:
-    dimitri: sensor.room_presence_dimitri
-    sabrina: sensor.room_presence_sabrina
-```
-
-In the sensor section put the person_id (configured in the person app) and the corresponding room presence sensor. 
-
-The person presence app sets the home state of the person to "yes" or "no" based on the area the person is currently in. If the area is "not_home" for 3 minutes, the home state is set to "no".
-
-Add another class in the "presence.py" file:
-
-```python
-class PersonPresence(AppBase):
-    """Define a base class for binary person presence."""
-
-    def configure(self) -> None:
-        """Configure."""
-        persons = self.adbase.get_state("person")
-
-        for person in persons.keys():
-            # Listen for person entering the house
-            self.adbase.listen_state(
-                self.on_person_arrival,
-                person,
-                attribute="area",
-            )
-
-            # area 3 minutes "not_home" -> person left
-            self.adbase.listen_state(
-                self.on_person_leave,
-                person,
-                attribute="area",
-                new="not_home",
-                duration=3 * 60
-            )
-
-    def on_person_arrival(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when person enters house."""
-        # Set person to "home"
-        not_home_states = ["not_home", "undefined", "unknown", None]
-        if new != old and old in not_home_states and new not in not_home_states:
-            self.adbase.set_state(entity, home="yes")
-            self.adbase.log(f"{entity.split('.')[1].capitalize()}: home")
-            
-    def on_person_leave(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when person left house for 3 minutes."""
-        # Set person to "not home"
-        self.adbase.set_state(entity, home="no")
-        self.adbase.log(f"{entity.split('.')[1].capitalize()}: not home")
-```
-
-In the corresponding configuration file called "presence.yaml" and add the following:
-
-```yaml
-person_presence_app:
-  module: presence
-  class: PersonPresence
-```
-
-The non binary presence state and the presence state of the house are coverd in a later topic.
-
 #### MQTT Device Tracker
 Because the sensor can not be used with the person integration, we use the [MQTT device tracker integration](https://www.home-assistant.io/integrations/device_tracker.mqtt/) and bind the resulting device tracker to the person integration. 
 
@@ -1176,9 +783,9 @@ device_tracker:
 
 This will create two device trackers. By publishing "home" or "not_home" to the MQTT topic 'location/dimitri_room_presence', the state of "device_tracker.room_presence_dimitri" will be updated accordingly.
 
-Restart Home Assistant. There should be two new device_trackers under "Developer Tools" -> "States".
+Restart Home Assistant. There should be two new device_trackers under "Developer Tools" -&gt; "States".
 
-#### Device Tracker Update App (AppDaemon)
+#### Device Tracker Update App
 Create a python dictionary that contains the base configuration of the home. Such as the presence state of the house, the notifiers of the phones etc. This dictionary will be appended later on when more apps are added.
 
 In the AppDaemon directory should be a folder called "apps". Create a new file called "globals.py" inside this folder. Add the following to this file:
@@ -1275,22 +882,23 @@ At the end of all this we should now have for each person a device tracker that 
 </p>
 </details>
 
-### GPS Device Tracker - Presence Outside Home
-#### Hardware used
+<h3 id="gps-device-tracker-presence-outside-home">GPS Device Tracker - Presence Outside Home</h3>
+<h4 id="hardware-used_1">Hardware used</h4>
 <table align="center" border="0">
 
-<tr><td align="center" colspan="1">
+<tbody><tr><td align="center" colspan="1">
 Samsung Galaxy S20
 </td></tr>
 
 <tr><td align="center" colspan="1">
-<img src="git-pictures/device_pictures/galaxy_s20.jpg" raw=true height="250" alt="Galaxy S 20" style="margin-right: 10px;"/>
+<img src="galaxy_s20-1.jpg" raw="true" height="250" alt="Galaxy S 20" style="margin-right: 10px;"/>
 </td></tr>
 
 <tr><td colspan="1">
       We use the official <a href="https://companion.home-assistant.io/">Home Assistant Companion app</a> on our phones. In order to connect remotely to Home Assistant, we use <a href="https://www.nabucasa.com/">Nabu Casa</a> (I actually use NGINX as a reverse proxy in my production environment and I'll eventually explain this setup at a later stage).
 </td></tr>
-</table>
+
+</tbody></table>
 
 <details><summary>Step-by-step Guide</summary>
 <p>
@@ -1340,17 +948,13 @@ To configure a zone go to the Sidebar in Home Assistant and click on "Configurat
 </p>
 </details>
 
-### Customizing Entities
-This does not belong to the presence detection system, it's more a general thing, however it's the first time during this journey that I use it, so I'll quickly explain it. 
-I use the entity_id to identify my entities and the friendly_name for the name that should be shown in the frontend. 
-
-I structure the name of my entities like this, domain.what_where or domain.what_owner. E.g. "switch.tv_livingroom", "sensor.temperature_kitchen", "sensor.battery_level_phone_dimitri". I do this for easier maintenance and consistency reasons.
-
-You can [customize](https://www.home-assistant.io/docs/configuration/customizing-devices/) entities through the UI or through YAML. For lots of entites, especially similar entities, it's way easier and faster to do this through customization  in YAML. I use this for setting a friendly_name, icon, device_class and entity_picture where applicable. 
-
-Here's my customization section for all entities that are part of the presence detection setup. I put this in the package persons.yaml:
-
-```yaml
+<h3 id="customizing-entities">Customizing Entities</h3>
+<p>This does not belong to the presence detection system, it's more a general thing, however it's the first time during this journey that I use it, so I'll quickly explain it. 
+I use the entity_id to identify my entities and the friendly_name for the name that should be shown in the frontend. </p>
+<p>I structure the name of my entities like this, domain.what_where or domain.what_owner. E.g. "switch.tv_livingroom", "sensor.temperature_kitchen", "sensor.battery_level_phone_dimitri". I do this for easier maintenance and consistency reasons.</p>
+<p>You can <a href="https://www.home-assistant.io/docs/configuration/customizing-devices/">customize</a> entities through the UI or through YAML. For lots of entites, especially similar entities, it's way easier and faster to do this through customization  in YAML. I use this for setting a friendly_name, icon, device_class and entity_picture where applicable. </p>
+<p>Here's my customization section for all entities that are part of the presence detection setup. I put this in the package persons.yaml:</p>
+<p><code>yaml
 homeassistant:
   customize:
     zone.home:
@@ -1369,7 +973,7 @@ homeassistant:
       friendly_name: Standort Dimitri
       icon: mdi:map-marker
     device_tracker.room_presence_dimitri:
-      friendly_name: Schlüssel Dimitri
+      friendly_name: Schl��ssel Dimitri
       icon: mdi:key
     zone.work_dimitri:
       friendly_name: Arbeit
@@ -1379,104 +983,254 @@ homeassistant:
       entity_picture: /local/person_pictures/sabrina_home.jpg
       icon: mdi:account
     device_tracker.room_presence_sabrina:
-      friendly_name: Schlüssel Sabrina
-      icon: mdi:key
-```
-
-### Combining Device Trackers
-
-#### Creating a Person
-After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
-To create an additional person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".
-
-#### Binding Device Trackers to Persons
-To bind a device tracker to a person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Click on the person you want to assign the device trackers to. In the field below "Select the devices that belong to this person" pick one of the device trackers, a second field to choose a device will appear, choose the second device tracker and then press "Update" in the bottom right.
-
-### Make Presence Detection not so binary (AppDaemon)
-This is based on a method of Phil Hawthorne, more details can be found in his tutorial [Making Home Assistant's Presence Detection not so Binary](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). At the end of this part the state of the person entities is going to have the states "just left", "away" "extended away", "just arrived" and "home", instead of just "home" and "not_home". Like this we can avoid an arriving home automation getting triggered, when a person just left quickly for getting some bread at the bakery.
-
+      friendly_name: Schl��ssel Sabrina
+      icon: mdi:key</code></p>
+<h3 id="combining-device-trackers">Combining Device Trackers</h3>
+<h4 id="creating-a-person">Creating a Person</h4>
+<p>After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
+To create an additional person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".</p>
+<h4 id="binding-device-trackers-to-persons">Binding Device Trackers to Persons</h4>
+<p>To bind a device tracker to a person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Click on the person you want to assign the device trackers to. In the field below "Select the devices that belong to this person" pick one of the device trackers, a second field to choose a device will appear, choose the second device tracker and then press "Update" in the bottom right.</p>
+<h3 id="make-presence-detection-not-so-binary">Make Presence Detection not so binary</h3>
+<p>This is based on a method of Phil Hawthorne, more details can be found in his tutorial <a href="https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/">Making Home Assistant's Presence Detection not so Binary</a>. At the end of this part we're going to have a presence sensor with the states "just left", "away" "extended away", "just arrived" and "home", instead of just "home" and "not_home". Like this we can avoid an arriving home automation getting triggered, when a person just left quickly for getting some bread at the bakery.</p>
 <details><summary>Step-by-step Guide</summary>
 <p>
 
-The non binary presence app sets the state of the person to "just_left", "just_arrived", "home", "away" or "extended away" based on the room persons home state. 
+First create an input_select to represent the non-binary state for each person, and while you're at it, one for the house as well.
+Add the following to the persons.yaml file in Home Assistant:
 
-Add another class in the "presence.py" file:
+```yaml
+# Input Selects for Persons non-binary Presence State
+input_select:
+  person_a_non_binary_presence:
+    name: Person A non-binary state
+    options:
+      - Home
+      - just arrived
+      - just left
+      - away
+      - extended away
+  person_b_non_binary_presence:
+    name: Person B non-binary state
+    options:
+      - Home
+      - just arrived
+      - just left
+      - away
+      - extended away
+
+# Input Selects for House Presence State
+input_select:
+  house_presence_state:
+    name: Haus Pr��senz
+    options:
+      - Someone is Home
+      - Everyone is Home
+      - No one is Home
+      - Vacation
+```
+
+Adjust the globals.py file to include the input selects for the persons and the house and the person entities created in a previous step:
+
+```python
+PERSONS = {
+    "Dimitri": {
+        "person": "person.dimitri",
+        "sensor_room_presence": "sensor.dimitri_room_presence",
+        "topic_room_device_tracker": "location/dimitri_room_presence",
+        "input_select_non_binary_state": "input_select.dimitri_non_binary_presence",
+    },
+    "Sabrina": {
+        "person": "person.sabrina",
+        "sensor_room_presence": "sensor.sabrina_room_presence",
+        "topic_room_device_tracker": "location/sabrina_room_presence",
+        "input_select_non_binary_state": "input_select.sabrina_non_binary_presence",
+    },
+}
+
+HOUSE = {
+    "input_select_presence": "input_select.house_presence_state"
+}
+```
+
+Now add the the following class "NonBinaryPresence" to the presence.py AppDaemon app:
 
 ```python
 class NonBinaryPresence(AppBase):
-    """Define a base class for non binary person presence."""
+    """Define a base class for Non Binary Presence."""
 
-    def configure(self) -> None:
+    class PresenceStates(Enum):
+        """Define an enum for person related presence states."""
+
+        home = "zu Hause"
+        just_arrived = "gerade angekommen"
+        just_left = "gerade gegangen"
+        away = "weg"
+        extended_away = "lange weg"
+
+    class HouseStates(Enum):
+        """Define an enum for house related presence states."""
+
+        someone = "Jemand ist zu Hause"
+        everyone = "Alle sind zu Hause"
+        noone = "Niemand ist zu Hause"
+        vacation = "Ferien"
+
+    def configure(self) -&gt; None:
         """Configure."""
-        persons = self.adbase.get_state("person")
+        # set initial state for the house
+        self.update_house_presence_state()
 
-        for person in persons.keys():
-            # away/extended away -> just arrived
-            self.adbase.listen_state(
+        for person, attribute in PERSONS.items():
+            input_select = attribute["input_select_non_binary_state"]
+            person_sensor = attribute["person"]
+
+            # away/extended away -&gt; just arrived
+            self.hass.listen_state(
                 self.on_presence_change,
-                person,
-                attribute="home",
-                new="yes",
-                non_binary_state="just_arrived",
+                person_sensor,
+                new="home",
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.just_arrived.value,
             )
 
-            # home -> just left
-            self.adbase.listen_state(
+            # home -&gt; just left
+            self.hass.listen_state(
                 self.on_presence_change,
-                person,
-                attribute="home",
-                new="no",
-                non_binary_state="just_left",
+                person_sensor,
+                old="home",
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.just_left.value,
             )
 
-            # just arrived -> home, after 5 min
-            self.adbase.listen_state(
+            # just arrived -&gt; home, after 5 min
+            self.hass.listen_state(
                 self.on_presence_change,
-                person,
-                attribute="non_binary_presence",
-                new="just_arrived",
+                input_select,
+                new=self.PresenceStates.just_arrived.value,
                 duration=5 * 60,
-                non_binary_state="home",
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.home.value,
             )
 
-            # just left -> away, after 5 min
-            self.adbase.listen_state(
+            # just left -&gt; away, after 5 min
+            self.hass.listen_state(
                 self.on_presence_change,
-                person,
-                attribute="non_binary_presence",
-                new="just_left",
+                input_select,
+                new=self.PresenceStates.just_left.value,
                 duration=5 * 60,
-                non_binary_state="away",
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.away.value,
             )
 
-            # away -> extended away, after 24 hours
-            self.adbase.listen_state(
+            # away -&gt; extended away, after 24 hours
+            self.hass.listen_state(
                 self.on_presence_change,
-                person,
-                attribute="non_binary_presence",
-                new="away",
+                input_select,
+                new=self.PresenceStates.away.value,
                 duration=24 * 60 * 60,
-                non_binary_state="extended_away",
+                person=person,
+                input_select=input_select,
+                non_binary_state=self.PresenceStates.extended_away.value,
             )
 
     def on_presence_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when person changes presence state."""
-        # just left -> just arrived = home
-        if old == "just_left" and new == "just_arrived":
-            non_binary_state = "home"
-        else:
-            non_binary_state = kwargs["non_binary_state"]
+        self, entity: Union[str, dict], attribute: str, old: str, new: str, kwargs: dict
+    ) -&gt; None:
+        """Take action on person's presence change."""
+        input_select = kwargs["input_select"]
+        old_state = self.hass.get_state(input_select)
+        target_state = kwargs["non_binary_state"]
 
-        # Set non binary presence state for person
-        self.adbase.set_state(entity, non_binary_presence=non_binary_state)
-        self.adbase.log(
-            f"{entity.split('.')[1].capitalize()}: {non_binary_state.replace('_',' ')}"
+        # just left -&gt; just arrived = home
+        if (old_state == self.PresenceStates.just_left.value) and (
+            target_state == self.PresenceStates.just_arrived.value
+        ):
+            target_state = self.PresenceStates.home.value
+
+        # set person non-binary presence state
+        if old_state != target_state:
+            self.hass.select_option(input_select, target_state)
+            self.adbase.log(
+                f"{kwargs['person']} war {old_state}, ist jetzt {target_state}"
+            )
+
+        # set house non-binary presence state
+        self.update_house_presence_state()
+
+    def update_house_presence_state(self) -&gt; None:
+        """Update the presence state of the house."""
+        old_state = self.house_presence_state
+        if self.everyone_home:
+            new_state = self.HouseStates.everyone.value
+        elif self.everyone_extended_away:
+            new_state = self.HouseStates.vacation.value
+        elif self.noone_home:
+            new_state = self.HouseStates.noone.value
+        else:
+            new_state = self.HouseStates.someone.value
+
+        if old_state != new_state:
+            self.hass.select_option(HOUSE["input_select_presence"], new_state)
+            self.adbase.log(f"Vorher: {old_state}, Jetzt: {new_state}")
+
+    def whos_in_state(self, *presence_states: Enum) -&gt; list:
+        """Return list of person in given state."""
+        presence_state_list = [
+            presence_state.value for presence_state in presence_states
+        ]
+        return [
+            person
+            for person, attribute in PERSONS.items()
+            if self.hass.get_state(attribute["input_select_non_binary_state"])
+            in presence_state_list
+        ]
+
+    @property
+    def whos_just_arrived(self) -&gt; bool:
+        """Return true if everyone is *home*."""
+        return self.whos_in_state(self.PresenceStates.just_arrived)
+
+    @property
+    def whos_home(self) -&gt; list:
+        """Return list of persons *home*."""
+        return self.whos_in_state(
+            self.PresenceStates.home, self.PresenceStates.just_arrived
         )
+
+    @property
+    def everyone_home(self) -&gt; bool:
+        """Return true if everyone is *home*."""
+        return self.whos_home == list(PERSONS.keys())
+
+    @property
+    def someone_home(self) -&gt; bool:
+        """Return true if someone is *home*."""
+        return len(self.whos_home) != 0
+
+    @property
+    def noone_home(self) -&gt; bool:
+        """Return true if no one is *home*."""
+        return not self.whos_home
+
+    @property
+    def everyone_extended_away(self) -&gt; bool:
+        """Return true if everyone is *extended away*."""
+        return self.whos_in_state(self.PresenceStates.extended_away) == list(
+            PERSONS.keys()
+        )
+
+    @property
+    def house_presence_state(self) -&gt; str:
+        """Return current state of the house presence."""
+        return self.hass.get_state(HOUSE["input_select_presence"])
 ```
 
-In the corresponding configuration file called "presence.yaml" and add the following:
+Add the following to the presence.yaml AppDaemon configuration file to enable the Non-binary presence state app:
 
 ```yaml
 non_binary_presence_app:
@@ -1484,113 +1238,34 @@ non_binary_presence_app:
   class: NonBinaryPresence
 ```
 
-The house presence app sets the state of the house to "someone_home", "nobody_home", "everyone_home" or "vacation" based on the persons peresence state.
-
-Add another class in the "presence.py" file:
-
-```python
-class HousePresence(AppBase):
-    """Define a base class for house presence."""
-
-    APP_SCHEMA = APP_SCHEMA.extend({vol.Required("house_id"): str})
-
-    def configure(self) -> None:
-        """Configure."""
-        house_id = self.args["house_id"]
-        self.house_entity_id = f"house.{house_id}"
-        persons = self.adbase.get_state("person")
-
-        # Listen for person changing home state
-        for person in persons.keys():
-            self.adbase.listen_state(self.on_presence_change, person, attribute="home")
-
-    def on_presence_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when person changes presence state."""
-        person_id = entity.split(".")[1]
-        persons = self.adbase.get_state("person")
-        
-        persons_home = self.adbase.get_state(self.house_entity_id, attribute="persons")
-        persons_extended_away = [
-            person
-            for person, attributes in persons.items()
-            if attributes["attributes"]["non_binary_presence"] == "extended_away"
-        ]
-
-        # Add/remove person from the house
-        if new == "yes":
-            persons_home.append(person_id)
-        elif person_id in persons_home:
-            persons_home.remove(person_id)
-
-        # Set occupancy of the house
-        if not persons_home:
-            occupied = "no"
-        else:
-            occupied = "yes"
-
-        # Set presence state of the house
-        if len(persons.keys()) == len(persons_home):
-            presence_state = "everyone_home"
-        elif len(persons.keys()) == len(persons_extended_away):
-            presence_state = "vacation"
-        elif not persons_home:
-            presence_state = "nobody_home"
-        else:
-            presence_state = "someone_home"
-
-        self.adbase.set_state(
-            self.house_entity_id,
-            presence_state=presence_state,
-            occupied=occupied,
-            persons=persons_home,
-        )
-        self.adbase.log(f"House Presence: {presence_state.replace('_',' ')}")
-
-```
-
-In the corresponding configuration file called "presence.yaml" and add the following:
-
-```yaml
-house_presence_app:
-  module: presence
-  class: HousePresence
-  house_id: home
-```
-
-Where "house_id" is the id you configured in the house app previously.
-
-Now the the state of the persons non-binary presence and the presence state of the house will behave as follows:
+Now the input selects for the persons and the house will behave as follows:
 
 **Person Presence Input Selects:**
 * Person entity changes to home
-    * old non-binary state = "just left" -> non-binary presence state = "home" (this avoids retriggering just arrived automations when the person just left quickly, in this example less than 5 minutes)
-    * old non-binary state != "just left" -> non-binary presence state = "just arrived"
-* Person entity changes from "home" to anything else-> non-binary presence state = "just left"
-* Non-binary presence state = "just arrived" for 5 minutes -> non-binary presence state = "home"
-* Non-binary presence state = "just left" for 5 minutes -> non-binary presence state = "away"
-* Non-binary presence state = "away" for 24 hours -> non-binary presence state = "extended "away"
+    * old non-binary state = "just left" -&gt; non-binary presence state = "home" (this avoids retriggering just arrived automations when the person just left quickly, in this example less than 5 minutes)
+    * old non-binary state != "just left" -&gt; non-binary presence state = "just arrived"
+* Person entity changes from "home" to anything else-&gt; non-binary presence state = "just left"
+* Non-binary presence state = "just arrived" for 5 minutes -&gt; non-binary presence state = "home"
+* Non-binary presence state = "just left" for 5 minutes -&gt; non-binary presence state = "away"
+* Non-binary presence state = "away" for 24 hours -&gt; non-binary presence state = "extended "away"
 
 **House Presence Input Selects:**
 * At least one persons' non-binary presence state = "home" or "just arrived"
-    * All -> house presence state = "everyone home"
-    * At least one but not all -> house presence state = "someone home"
-* All persons' non-binary presence state neither "home" nor just arrived -> house presence state = "noone home"
-* All persons' non-binary presence state = "extended away" -> house presence state = "vacation"
+    * All -&gt; house presence state = "everyone home"
+    * At least one but not all -&gt; house presence state = "someone home"
+* All persons' non-binary presence state neither "home" nor just arrived -&gt; house presence state = "noone home"
+* All persons' non-binary presence state = "extended away" -&gt; house presence state = "vacation"
 
 </p>
 </details>
 
-## Lighting <a name="lighting" href="https://github.com/Burningstone91/smart-home-setup#lighting"></a>
-### Basic Explanation of Setup
-
-(TODO)
-
-### Hardware used
+<h2 id="lighting">Lighting <a name="lighting" href="https://github.com/Burningstone91/smart-home-setup#lighting"/></h2>
+<h3 id="basic-explanation-of-setup_1">Basic Explanation of Setup</h3>
+<p>(TODO)</p>
+<h3 id="hardware-used_2">Hardware used</h3>
 <table align="center" border="0">
 
-<tr>
+<tbody><tr>
 <td align="center" style="width:25%;">
 Raspberry Pi 3
 </td>
@@ -1607,27 +1282,27 @@ IKEA Tradfri Plug
 
 <tr>
 <td align="center" style="width:25%;">
-<img src="git-pictures/device_pictures/pi_3.jpg" raw=true height="250" alt="Pi 3"/>
+<img src="pi_3-1.jpg" raw="true" height="250" alt="Pi 3"/>
 </td>
 <td align="center" style="width:25%;">
-<img src="git-pictures/device_pictures/conbee.jpg" raw=true height="250" alt="ConBee" />
+<img src="conbee-1.jpg" raw="true" height="250" alt="ConBee"/>
 </td>
 <td align="center" style="width:25%;">
-<img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="250" alt="Philips Hue" />
+<img src="philips_hue-1.jpg" raw="true" height="250" alt="Philips Hue"/>
 </td>
 <td align="center" style="width:25%;">
-<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="250" alt="IKEA Plug" />
+<img src="ikea_plug-1.jpg" raw="true" height="250" alt="IKEA Plug"/>
 </td>
 </tr>
 
 <tr><td colspan="4">
 The Hue bulbs are distributed in the different rooms of our apartment and on the balcony is a light strip attached to an IKEA Tradfri Smart Plug. All the lights are integrated into Home Assistant through a ConBee II ZigBee stick. I ditched the Hue hub because the Home Assistant integration needs to poll the state from the Hue hub, whereas with the ConBee stick information is pushed to Home Assistant. This means that e.g. button presses from Hue Dimmer Switches will be seen immediately and each button press is recognized. With polling it can happen that button presses are missed because the button has been pressed multiple times between the polling interval. In addition to this, I can integrate (and I will later) lots of other ZigBee devices such as Xiaomi door sensors or the Ikea plug when using the ConBee stick.
 </td></tr>
-</table>
+
+</tbody></table>
 
 <details><summary>Step-by-step Guide</summary>
 <p>
-
 
 ### Setup ZigBee Hub (ConBee II)
 The ConBee II stick is attached to a separate Raspberry Pi 3 in the living room, because the server lives in a place with a very limited range to reach other ZigBee devices. We are going to install a software called [DeCONZ](https://phoscon.de/en/conbee/install) from the company [Dresden Elektronik](https://www.dresden-elektronik.de/) inside a docker container. 
@@ -1719,21 +1394,14 @@ services:
       - ./deconz:/root/.local/share/dresden-elektronik/deCONZ
 ```
 
-Start the docker stack as a background daemon:
-
-```bash
-docker-compose up -d
-```
-
 This way you can view the ZigBee mesh through VNC on port 5900 and with the password you set in DECONZ_VNC_PASSWORD. The Web Portal (Phoscon) and the REST API (which will be used to connect to Home Assistant) are available under port 8080.
 
-
-### Adding light bulbs to the ZigBee network (Philips Hue)
+### Adding light bulbs to the ZigBee network
 The Phoscon Web UI should now be available under http://ip-of-your-pi:8080/pwa. Initially you need to supply a username and a password. The process for adding Philips Hue bulbs, which were previously connected to a Hue hub is as follows:
 
 * Delete bulb within the Hue hub.
 * Cut the power to the bulb for 10 seconds.
-* In Phoscon go to Devices -> Lights and press "Add new lights" at the bottom of the page.
+* In Phoscon go to Devices -&gt; Lights and press "Add new lights" at the bottom of the page.
 * Take a Hue Dimmer Remote close to bulb and press and hold the "ON" and "Off" button for 10 seconds until the bulb starts to blink and the Hue Dimmer Remote shows a green light.
 * The light should now show up in Phoscon.
 
@@ -1745,7 +1413,7 @@ In Home Assistant on the sidebar click on "Configuration" then on "Integrations"
 Choose "Manually define gateway".
 Enter the ip of the Pi in the field "host" and in the field port enter "8080".
 Hit "Submit".
-In another browser tab go to http://ip-of-your-pi:8080/pwa in the sidebar go to Settings -> Gateway. Click on "Advanced" at the bottom. Hit the "Authenticate App" button. Go back to Home Assistant and press "Submit" again. Now all your devices that you connected to the ConBee II stick should show up in Home Assistant.
+In another browser tab go to http://ip-of-your-pi:8080/pwa in the sidebar go to Settings -&gt; Gateway. Click on "Advanced" at the bottom. Hit the "Authenticate App" button. Go back to Home Assistant and press "Submit" again. Now all your devices that you connected to the ConBee II stick should show up in Home Assistant.
 
 ### Setup Z-Wave Hub (Aeotec Z-Stick Gen 5)
 The Aeotec stick is attached to the same Raspberry Pi 3 as the ConBee II. We are going to install a software called [OZWDaemon](https://github.com/OpenZWave/qt-openzwave) inside a docker container. The OZWDaemon acts as a Z-Wave to MQTT bridge. This means that MQTT must be running somewhere on your network and in order to use the devices with Home Assistant the MQTT must be configured inside Home Assistant. If you followed this guide from the beginning you covered this already. 
@@ -1781,13 +1449,6 @@ services:
       - ./ozwdaemon:/opt/ozw/config
 
 ```
-
-Start the docker stack as a background daemon:
-
-```bash
-docker-compose up -d
-```
-
 This will enable the ozw-admin through port 1983, VNC Server through port 5900 and HTML VNC Client through port 7800.
 
 This will 
@@ -1802,11 +1463,12 @@ If you already paired devices securely to your Aeotec stick, put the network key
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "openzwave" and click on "OpenZWave (Beta).
 Hit "Submit".
 
-If you already had devices paired to the Aeotec stick previously your devices should appear under "Configuration" -> "Integrations" -> "OpenZWave (Beta)". 
+If you already had devices paired to the Aeotec stick previously your devices should appear under "Configuration" -&gt; "Integrations" -&gt; "OpenZWave (Beta)". 
 
 To add devices, access the web interface through http://ip-op-the-pi:7800. Click on "Open" in the top left corner. Press "Start" in the bottom box called "Remote OZWDaemon". Bring the device close to the Aeotec stick for pairing. Click on "Add Node" in the second line at the top. If you want to include the device securely, press "Yes" in the pop-up box, otherwise press "No". Put the device into pairing mode (For the Aeotec Multisensors I use press on the button at the back, for secure mode press twice extremly fast). Your device should appear under "Node List" if it was successful. Put the device into the final location and press "Heal Network". Check in Home Assistant if the devices appeared.
 
-The web interface can also be used to change device specific configuration such as motion sensor sensitivity for the Aeotec Multisensor. There is also a service in home assistant (Developer Tools -> Services) called "ozw.set_config_parameter", which also enables changing device specific configuration.
+The web interface can also be used to change device specific configuration such as motion sensor sensitivity for the Aeotec Multisensor. 
 
 </p>
 </details>
+</body></html>

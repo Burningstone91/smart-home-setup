@@ -2,6 +2,6 @@
 homeassistant:
   customize:
     # Lights
-    light.buero:
+    light.office:
       friendly_name: Deckenlampe
       icon: mdi:ceiling-light

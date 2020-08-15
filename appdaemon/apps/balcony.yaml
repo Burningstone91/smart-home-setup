@@ -1,0 +1,7 @@
+balcony:
+  module: area
+  class: Area
+  area: balcony
+  attributes:
+    friendly_name: Balkon
+  priority: 1

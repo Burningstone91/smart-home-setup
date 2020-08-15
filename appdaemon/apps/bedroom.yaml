@@ -1,0 +1,7 @@
+bedroom:
+  module: area
+  class: Area
+  area: bedroom
+  attributes:
+    friendly_name: Schlafzimmer
+  priority: 1

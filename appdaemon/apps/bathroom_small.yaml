@@ -1,0 +1,7 @@
+bathroom_small:
+  module: area
+  class: Area
+  area: bathroomsmall
+  attributes:
+    friendly_name: Kleines Bad
+  priority: 1

@@ -12,34 +12,6 @@ device_tracker:
 # GPS Presence Tracker (Phone App)
 mobile_app:
 
-# Input Selects for non-binary Presence State
-input_select:
-  sabrina_non_binary_presence:
-    name: Sabrina Präsenz
-    options:
-      - zu Hause
-      - gerade angekommen
-      - gerade gegangen
-      - weg
-      - lange weg
-  dimitri_non_binary_presence:
-    name: Dimitri Präsenz
-    options:
-      - zu Hause
-      - gerade angekommen
-      - gerade gegangen
-      - weg
-      - lange weg
-
-# Input Select for House Presence State
-  house_presence_state:
-    name: Haus Präsenz
-    options:
-      - Jemand ist zu Hause
-      - Alle sind zu Hause
-      - Niemand ist zu Hause
-      - Ferien
-
 # Entity Customization
 homeassistant:
   customize:

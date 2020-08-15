@@ -1,0 +1,15 @@
+dimitri:
+  module: person
+  class: Person
+  person: Dimitri
+  attributes:
+    full_name: Dimitri Steiner
+  priority: 1
+
+sabrina:
+  module: person
+  class: Person
+  person: Sabrina
+  attributes:
+    full_name: Sabrina Steiner
+  priority: 1

@@ -20,6 +20,67 @@ input_boolean:
 ```
 This creates three input booleans which represent the state of the respective mode. I use guest mode, sleep mode and cleaning mode but you can choose whatever modes you want for your system.
 
+#######################3SRG METEO
+import base64
+import json
+import requests
+
+oauth_url = 'https://api.srgssr.ch/oauth/v1/accesstoken?grant_type=client_credentials'
+username = '5kGwbf52a8LYxQBwUI5VM8qAKExIULYJ'
+password = 'gGf7gRkNjA1iwd5x'
+
+
+
+credentials = (username + ':' + password).encode('utf-8')
+base64_encoded_credentials = base64.b64encode(credentials).decode('utf-8')
+
+headers = {
+    'Authorization': 'Basic ' + base64_encoded_credentials,
+    'Content': '0',
+    'Cache-Control': 'no-cache'
+}
+
+response = requests.get(oauth_url, headers=headers)
+json_response = json.loads(response.text)
+token = json_response['access_token']
+
+
+
+base_url = 'https://api.srgssr.ch/forecasts/v1.0/weather'
+latitude = 47.36667
+longitude = 8.5
+
+headers = {
+    'Authorization': 'Bearer ' + token,
+    'Content': '0',
+    'Cache-Control': 'no-cache'
+}
+
+#Current daily forecast
+response = requests.get(base_url + '/current?latitude=' + str(latitude) + '&longitude=' + str(longitude), headers=headers)
+
+print('########################Current############################')
+print('Body:', response.content.decode("utf-8"))
+
+#weekly forecast
+response = requests.get(base_url + '/7day?latitude=' + str(latitude) + '&longitude=' + str(longitude), headers=headers)
+
+print('########################7day############################')
+print('Body:', response.content.decode("utf-8"))
+
+#next hour forecast
+response = requests.get(base_url + '/nexthour?latitude=' + str(latitude) + '&longitude=' + str(longitude), headers=headers)
+
+print('########################next hour############################')
+print('Body:', response.content.decode("utf-8"))
+
+#24 hour forecast
+response = requests.get(base_url + '/24hour?latitude=' + str(latitude) + '&longitude=' + str(longitude), headers=headers)
+
+print('########################24 hour############################')
+print('Body:', response.content.decode("utf-8"))
+
+
 
 ################################################33
 System Monitoring

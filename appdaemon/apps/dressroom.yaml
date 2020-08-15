@@ -1,0 +1,7 @@
+dressroom:
+  module: area
+  class: Area
+  area: dressroom
+  attributes:
+    friendly_name: Ankleidezimmer
+  priority: 1

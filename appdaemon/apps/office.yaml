@@ -1,0 +1,14 @@
+office:
+  module: area
+  class: Area
+  area: office
+  attributes:
+    friendly_name: Büro
+  occupancy:
+    media_player.office: "on"
+    device_tracker.pc_sabrina: "home"
+    device_tracker.pc_dimitri: "home"
+  priority: 1
+
+  
+  

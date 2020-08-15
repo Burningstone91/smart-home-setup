@@ -1,0 +1,7 @@
+bathroom_large:
+  module: area
+  class: Area
+  area: bathroomlarge
+  attributes:
+    friendly_name: Grosses Bad
+  priority: 1

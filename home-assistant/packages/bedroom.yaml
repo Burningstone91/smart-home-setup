@@ -2,9 +2,9 @@
 homeassistant:
   customize:
     # Lights
-    light.deckenlampe_schlafzimmer:
+    light.bedroom_ceiling:
       friendly_name: Deckenlampe
       icon: mdi:ceiling-light
-    light.bett_schlafzimmer:
+    light.bedroom_bed:
       friendly_name: Bett
       icon: mdi:led-strip-variant

@@ -1,0 +1,6 @@
+storage_room:
+  module: area
+  class: Area
+  area: storageroom
+  attributes:
+    friendly_name: Reduit

@@ -12,6 +12,9 @@ appdaemon:
   latitude: !secret latitude
   longitude: !secret longitude
   missing_app_warnings: 1
+  # namespaces:
+  #   default:
+  #     writeback: safe
   production_mode: False
   time_zone: 'Europe/Zurich'
   plugins:

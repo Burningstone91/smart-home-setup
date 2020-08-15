@@ -2,9 +2,9 @@
 homeassistant:
   customize:
     # Lights
-    light.stehlampe_wohnzimmer_vorne:
+    light.livingroom_floor_front:
       friendly_name: Vorne
       icon: mdi:floor-lamp
-    light.stehlampe_wohnzimmer_hinten:
+    light.livingroom_floor_back:
       friendly_name: Hinten
       icon: mdi:floor-lamp
