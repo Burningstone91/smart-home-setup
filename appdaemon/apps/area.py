@@ -43,10 +43,10 @@ class Area(AppBase):
         self.adbase.listen_state(self.on_state_change, self.area_entity, duration=30)
 
         # Listen for changes in occupancy entities of area
-        if "occupancy" in self.args:
-            occupancy_entities = self.args.get("occupancy")
+        if "occupancy_entities" in self.args:
+            occupancy_entities = self.args.get("occupancy_entities")
             for entity, state in occupancy_entities.items():
-                self.adbase.listen_state(
+                self.hass.listen_state(
                     self.on_occupancy_entity_change,
                     entity,
                     occupied_state=state,
@@ -71,17 +71,17 @@ class Area(AppBase):
 
     def on_occupancy_entity_change(
         self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
-    ) -> None:
+    ) -> None: 
         """Respond when occupancy factor changes."""
-        occupied_state = kwargs["state"]
+        occupied_state = kwargs["occupied_state"]
         # Determine occupancy state of entity
         occupancy = self.adbase.get_state(self.area_entity, attribute="occupancy")
         if new == occupied_state:
-            occupancy[entity] = "yes"
+            occupancy[entity] = True
         else:
-            occupancy[entity] = "no"
+            occupancy[entity] = False
         
-        # Set sate of occupancy entity
+        # Set state of occupancy entity
         self.adbase.set_state(self.area_entity, occupancy=occupancy)
         
     def on_occupancy_change(
@@ -95,8 +95,11 @@ class Area(AppBase):
 
     def is_occupied(self, area: str) -> bool:
         """Return occupancy of given area."""
+        """Return True if area is occupied."""
+        # Get state of occupancy entities
         area_attr = self.adbase.get_state(area, attribute="attributes")
-        persons = len(area_attr["persons"]) > 0
         occupancy = area_attr["occupancy"]
-        return persons or any(value for key, value in occupancy.items())
+        # Check if persons in area
+        persons = len(area_attr["persons"]) > 0
+        return persons or any(value == True for key, value in occupancy.items())
 

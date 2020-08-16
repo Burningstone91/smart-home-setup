@@ -84,7 +84,7 @@ class PersonPresence(AppBase):
         # Set person to "home"
         not_home_states = ["not_home", "undefined", "unknown", None]
         if new != old and old in not_home_states and new not in not_home_states:
-            self.adbase.set_state(entity, home="yes")
+            self.adbase.set_state(entity, home=True)
             self.adbase.log(f"{entity.split('.')[1].capitalize()}: home")
             
     def on_person_leave(
@@ -92,7 +92,7 @@ class PersonPresence(AppBase):
     ) -> None:
         """Respond when person left house for 3 minutes."""
         # Set person to "not home"
-        self.adbase.set_state(entity, home="no")
+        self.adbase.set_state(entity, home=False)
         self.adbase.log(f"{entity.split('.')[1].capitalize()}: not home")
 
 class NonBinaryPresence(AppBase):
@@ -108,7 +108,7 @@ class NonBinaryPresence(AppBase):
                 self.on_presence_change,
                 person,
                 attribute="home",
-                new="yes",
+                new=1,
                 non_binary_state="just_arrived",
             )
 
@@ -117,7 +117,7 @@ class NonBinaryPresence(AppBase):
                 self.on_presence_change,
                 person,
                 attribute="home",
-                new="no",
+                new=0,
                 non_binary_state="just_left",
             )
 
@@ -198,16 +198,16 @@ class HousePresence(AppBase):
         ]
 
         # Add/remove person from the house
-        if new == "yes":
+        if new == True:
             persons_home.append(person_id)
         elif person_id in persons_home:
             persons_home.remove(person_id)
 
         # Set occupancy of the house
         if not persons_home:
-            occupied = "no"
+            occupied = False
         else:
-            occupied = "yes"
+            occupied = True
 
         # Set presence state of the house
         if len(persons.keys()) == len(persons_home):

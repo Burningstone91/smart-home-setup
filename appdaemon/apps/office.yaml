@@ -4,10 +4,8 @@ office:
   area: office
   attributes:
     friendly_name: Büro
-  occupancy:
-    media_player.office: "on"
-    device_tracker.pc_sabrina: "home"
-    device_tracker.pc_dimitri: "home"
+  # occupancy_entities:
+  #   light.bedroom: "on"
   priority: 1
 
   

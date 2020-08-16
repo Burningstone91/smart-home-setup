@@ -17,3 +17,6 @@ appdaemon/logs
 appdaemon/dashboards
 scratch
 home-assistant/www/person_pictures/
+known_devices.yaml
+appdaemon/namespaces/
+index-1.html

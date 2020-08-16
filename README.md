@@ -776,7 +776,7 @@ For the room presence detection, we are going to create one app for areas, one a
 
 In the AppDaemon directory should be a folder called "apps". All the following apps need to be created inside this directory. 
 
-We are going to start with the area app. The are app creates area entities that will have attributes for the persons (list of persons in area), the occupied state(yes | no), the friendly name and the identifier.
+We are going to start with the area app. The are app creates area entities that will have attributes for the persons (list of persons in area), the occupied state(True | False), the friendly name and the identifier.
 
 Create a new file called "area.py". Add the following to this file:
 
@@ -861,7 +861,7 @@ bedroom:
 ```
 Now we have an entity for each area configured this way, which exist only in AppDaemon and which we are going to use later in other apps and automations.
 
-Next the "person" app. The person app creates person entities that will have attributes for the home state (yes | no), the non-binary-presence state (just_left | away | just_arrived | home | extended_away), the full name, the identifier and notifiers belonging to this person. 
+Next the "person" app. The person app creates person entities that will have attributes for the home state (True | False), the non-binary-presence state (just_left | away | just_arrived | home | extended_away), the full name, the identifier and notifiers belonging to this person. 
 
 Create a new file called "person.py". Add the following to this file:
 
@@ -935,7 +935,7 @@ dimitri:
 
 Now you have one entity for each person configured this way, which exists only in AppDaemon and which we are going to use later in other apps and automations.
 
-Next the "house" app. The house app creates house entities that will have attributes for the persons (list of persons in house), presence state (someone_home | nobody_home | vacation | everyone_home), the occupied state(yes | no), the friendly name and the identifier.
+Next the "house" app. The house app creates house entities that will have attributes for the persons (list of persons in house), presence state (someone_home | nobody_home | vacation | everyone_home), the occupied state(True | False), the friendly name and the identifier.
 
 Create a new file called "house.py". Add the following to this file:
 
@@ -1100,7 +1100,7 @@ room_presence_app:
 
 In the sensor section put the person_id (configured in the person app) and the corresponding room presence sensor. 
 
-The person presence app sets the home state of the person to "yes" or "no" based on the area the person is currently in. If the area is "not_home" for 3 minutes, the home state is set to "no".
+The person presence app sets the home state of the person to True or False based on the area the person is currently in. If the area is "not_home" for 3 minutes, the home state is set to False.
 
 Add another class in the "presence.py" file:
 
@@ -1136,7 +1136,7 @@ class PersonPresence(AppBase):
         # Set person to "home"
         not_home_states = ["not_home", "undefined", "unknown", None]
         if new != old and old in not_home_states and new not in not_home_states:
-            self.adbase.set_state(entity, home="yes")
+            self.adbase.set_state(entity, home=True)
             self.adbase.log(f"{entity.split('.')[1].capitalize()}: home")
             
     def on_person_leave(
@@ -1144,7 +1144,7 @@ class PersonPresence(AppBase):
     ) -> None:
         """Respond when person left house for 3 minutes."""
         # Set person to "not home"
-        self.adbase.set_state(entity, home="no")
+        self.adbase.set_state(entity, home=False)
         self.adbase.log(f"{entity.split('.')[1].capitalize()}: not home")
 ```
 
@@ -1416,7 +1416,7 @@ class NonBinaryPresence(AppBase):
                 self.on_presence_change,
                 person,
                 attribute="home",
-                new="yes",
+                new=1,
                 non_binary_state="just_arrived",
             )
 
@@ -1425,7 +1425,7 @@ class NonBinaryPresence(AppBase):
                 self.on_presence_change,
                 person,
                 attribute="home",
-                new="no",
+                new=0,
                 non_binary_state="just_left",
             )
 
@@ -1519,16 +1519,16 @@ class HousePresence(AppBase):
         ]
 
         # Add/remove person from the house
-        if new == "yes":
+        if new == True:
             persons_home.append(person_id)
         elif person_id in persons_home:
             persons_home.remove(person_id)
 
         # Set occupancy of the house
         if not persons_home:
-            occupied = "no"
+            occupied = False
         else:
-            occupied = "yes"
+            occupied = True
 
         # Set presence state of the house
         if len(persons.keys()) == len(persons_home):
@@ -1581,6 +1581,144 @@ Now the the state of the persons non-binary presence and the presence state of t
 
 </p>
 </details>
+
+### Room Occupancy (AppDaemon)
+This app combines different factors to determine the occupancy of the room. I use this to turn off lights/devices once a room is not occupied anymore. A motion sensor alone is not sufficient, as it fails to detect motion when sitting/lying still. The app checks the persons in the room, whether motion has been detected (this is set by the motion light app later on) and whether any of the specified "occupancy" entities is "on". I still use the motion detector to turn the lights on because if I stay in the hallway close to a room, sometimes the room sensor shows me inside the room, even though I might just be standing there playing with the dog or whatever and then I don't want the lights to turn on. 
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+Extend the "area.py" file to look like this:
+
+```python
+"""Define automations for areas."""
+import voluptuous as vol
+
+from appbase import AppBase, APP_SCHEMA
+from utils import config_validation as cv
+
+
+class Area(AppBase):
+    """Representation of an Area."""
+
+    APP_SCHEMA = APP_SCHEMA.extend(
+        {
+            vol.Required("area"): str,
+            vol.Optional("attributes"): vol.Schema(
+                {vol.Optional("friendly_name"): str}
+            ),
+            vol.Optional("occupancy"): vol.Schema(
+                {vol.Optional(cv.entity_id): str}
+            ),
+        }
+    )
+
+    def configure(self) -> None:
+        """Configure an area."""
+        areas = self.adbase.get_state("area")
+        area = self.args["area"]
+        area_id = area.lower().replace(" ", "_")
+        attributes = self.args["attributes"]
+        self.area_entity = f"area.{area_id}"
+
+        # Create an entity for the area if it doesn't already exist
+        if self.area_entity not in areas.keys():
+            if "friendly_name" not in attributes:
+                attributes.update({"friendly_name": area.title()})
+
+            attributes.update(
+                {"id": area_id, "persons": [], "occupied": None, "occupancy": {}}
+            )
+
+            self.adbase.set_state(self.area_entity, state="idle", attributes=attributes)
+
+        # Listen for no changes in area state for 30 seconds
+        self.adbase.listen_state(self.on_state_change, self.area_entity, duration=30)
+
+        # Listen for changes in occupancy entities of area
+        if "occupancy_entities" in self.args:
+            occupancy_entities = self.args.get("occupancy_entities")
+            for entity, state in occupancy_entities.items():
+                self.hass.listen_state(
+                    self.on_occupancy_entity_change,
+                    entity,
+                    occupied_state=state,
+                )
+
+        # Listen for changes in occupancy of area
+        self.adbase.listen_state(
+            self.on_occupancy_change, self.area_entity, attribute="occupancy"
+        )
+
+        # Listen for changes in persons in area
+        self.adbase.listen_state(
+            self.on_occupancy_change, self.area_entity, attribute="persons"
+        )
+
+    def on_state_change(
+        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Respond when area doesn't change state for 30s."""
+        # Set area to idle
+        self.adbase.set_state(entity, state="idle")
+
+    def on_occupancy_entity_change(
+        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
+    ) -> None: 
+        """Respond when occupancy factor changes."""
+        occupied_state = kwargs["occupied_state"]
+        # Determine occupancy state of entity
+        occupancy = self.adbase.get_state(self.area_entity, attribute="occupancy")
+        if new == occupied_state:
+            occupancy[entity] = True
+        else:
+            occupancy[entity] = False
+        
+        # Set state of occupancy entity
+        self.adbase.set_state(self.area_entity, occupancy=occupancy)
+        
+    def on_occupancy_change(
+        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Respond when occupancy factor changes."""
+        occupied = self.is_occupied(entity)
+        # Set occupancy of area
+        self.adbase.set_state(entity, occupied=occupied)
+        self.adbase.log(f"{entity.split('.')[1].capitalize()} Occupied: {occupied}")
+
+    def is_occupied(self, area: str) -> bool:
+        """Return occupancy of given area."""
+        """Return True if area is occupied."""
+        # Get state of occupancy entities
+        area_attr = self.adbase.get_state(area, attribute="attributes")
+        occupancy = area_attr["occupancy"]
+        # Check if persons in area
+        persons = len(area_attr["persons"]) > 0
+        return persons or any(value == True for key, value in occupancy.items())
+```
+
+You can now add entities and their corresponding "on" state in the config for an area. These will then be included when determining the occupancy of the room.
+
+E.g. I want the area to be occupied when the TV (switch.tv_office) in the office is on.
+So I add the following to the area config for the office:
+
+```yaml
+  occupancy_entities:
+    switch.tv_office: "on"
+```
+
+The complete office area config then looks like this:
+
+```yaml
+office:
+  module: area
+  class: Area
+  area: office
+  attributes:
+    friendly_name: Büro
+  occupancy_entities:
+    switch.tv_office: "on"
+```
 
 ## Lighting <a name="lighting" href="https://github.com/Burningstone91/smart-home-setup#lighting"></a>
 ### Basic Explanation of Setup
