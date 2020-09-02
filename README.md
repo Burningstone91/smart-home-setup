@@ -32,13 +32,19 @@ I will explain here the different parts of my home automation system and how I s
       Start of my Journey and Basic Setup
   </a>
 * <a href="https://github.com/Burningstone91/smart-home-setup#mqtt">
-      Setup of MQTT Broker
+      Setup MQTT Broker
   </a>
 * <a href="https://github.com/Burningstone91/smart-home-setup#appdaemon">
       Setup AppDaemon - Automation Engine
   </a>
 * <a href="https://github.com/Burningstone91/smart-home-setup#presence-detection">
       Presence Detection
+  </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#zigbee-zwave">
+      ZigBee(deCONZ) /Z-Wave (OZW Daemon)
+  </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#lighting">
+      Lighting
   </a>
 
 ## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"></a>
@@ -1720,46 +1726,44 @@ office:
     switch.tv_office: "on"
 ```
 
-## Lighting <a name="lighting" href="https://github.com/Burningstone91/smart-home-setup#lighting"></a>
-### Basic Explanation of Setup
+</p>
+</details>
 
-(TODO)
+
+## ZigBee(deCONZ) / Z-Wave(OZW Daemon) <a name="zigbee-zwave" href="https://github.com/Burningstone91/smart-home-setup#zigbee-zwave"></a>
 
 ### Hardware used
 <table align="center" border="0">
 
 <tr>
-<td align="center" style="width:25%;">
+<td align="center" style="width:33%;">
 Raspberry Pi 3
 </td>
-<td align="center" style="width:25%;">
+<td align="center" style="width:33%;">
 ConBee II
 </td>
-<td align="center" style="width:25%;">
-Philips Hue Bulbs (8x Color E27, 3x White Ambiance GU10, 1x LED strip 5m)
-</td>
-<td align="center" style="width:25%;">
-IKEA Tradfri Plug
+<td align="center" style="width:34%;">
+Aeotec Z-Stick Gen 5
 </td>
 </tr>
 
 <tr>
-<td align="center" style="width:25%;">
+<td align="center" style="width:33%;">
 <img src="git-pictures/device_pictures/pi_3.jpg" raw=true height="250" alt="Pi 3"/>
 </td>
-<td align="center" style="width:25%;">
+<td align="center" style="width:33%;">
 <img src="git-pictures/device_pictures/conbee.jpg" raw=true height="250" alt="ConBee" />
 </td>
-<td align="center" style="width:25%;">
-<img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="250" alt="Philips Hue" />
+<td align="center" style="width:34%;">
+<img src="git-pictures/device_pictures/aeotec-stick.jpg" raw=true height="250" alt="Philips Hue" />
 </td>
-<td align="center" style="width:25%;">
-<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="250" alt="IKEA Plug" />
-</td>
+
 </tr>
 
-<tr><td colspan="4">
-The Hue bulbs are distributed in the different rooms of our apartment and on the balcony is a light strip attached to an IKEA Tradfri Smart Plug. All the lights are integrated into Home Assistant through a ConBee II ZigBee stick. I ditched the Hue hub because the Home Assistant integration needs to poll the state from the Hue hub, whereas with the ConBee stick information is pushed to Home Assistant. This means that e.g. button presses from Hue Dimmer Switches will be seen immediately and each button press is recognized. With polling it can happen that button presses are missed because the button has been pressed multiple times between the polling interval. In addition to this, I can integrate (and I will later) lots of other ZigBee devices such as Xiaomi door sensors or the Ikea plug when using the ConBee stick.
+<tr><td colspan="3">
+All ZigBee devices are integrated into Home Assistant through a ConBee II ZigBee stick together with the software [DeCONZ](https://phoscon.de/en/conbee/install). I ditched the Hue hub (have lots of hue lights and dimmer switches) because the Home Assistant integration needs to poll the state from the Hue hub, whereas with the ConBee stick information is pushed to Home Assistant. This means that e.g. button presses from Hue Dimmer Switches will be seen immediately and each button press is recognized. With polling it can happen that button presses are missed because the button has been pressed multiple times between the polling interval. In addition to this, I can integrate (and I will later) lots of other ZigBee devices such as Xiaomi door sensors or the Ikea plug when using the ConBee stick.
+The Z-Wave devices are integrated into Home Assistant through an Aeotec Z-Stick Gen 5 with the software [OZWDaemon](https://github.com/OpenZWave/qt-openzwave). 
+My Home Assistant server is in the office and can't reach some ZigBee/Z-Wave devices, that's why I attached both sticks to a separate Pi 3 and put the Pi in a better location. This has an added bonus, the ZigBee and Z-Wave network don't need to be restarted whenever I restart Home Assistant. The ZigBee stick communicates through a websocket connection and the OZWDaemon through MQTT.
 </td></tr>
 </table>
 
@@ -1865,19 +1869,6 @@ docker-compose up -d
 
 This way you can view the ZigBee mesh through VNC on port 5900 and with the password you set in DECONZ_VNC_PASSWORD. The Web Portal (Phoscon) and the REST API (which will be used to connect to Home Assistant) are available under port 8080.
 
-
-### Adding light bulbs to the ZigBee network (Philips Hue)
-The Phoscon Web UI should now be available under http://ip-of-your-pi:8080/pwa. Initially you need to supply a username and a password. The process for adding Philips Hue bulbs, which were previously connected to a Hue hub is as follows:
-
-* Delete bulb within the Hue hub.
-* Cut the power to the bulb for 10 seconds.
-* In Phoscon go to Devices -> Lights and press "Add new lights" at the bottom of the page.
-* Take a Hue Dimmer Remote close to bulb and press and hold the "ON" and "Off" button for 10 seconds until the bulb starts to blink and the Hue Dimmer Remote shows a green light.
-* The light should now show up in Phoscon.
-
-### Creating groups in Phoscon
-I create light groups in Phoscon. Each group defined in Phoscon will later show as a separate entity. This has a huge advantage over [Home Assistant Light Groups](https://www.home-assistant.io/integrations/light.group/) because if you send for example a command to turn off 5 lights in a light group that you configured in Home Assistant, it will one command for each bulb to the ConBee stick, which will in turn send 5 single commands to the ZigBee network. This can lead to delays and something called the "popcorn" effect, where lights turn on in random order. If you create a group in Phoscon, it will only send one command to the ZigBee network and all the lights will turn on/off at the same time. The disadvantage of Phoscon group is that you can't include lights/switches from other systems. You can still create a group in Home Assistant to do this and just include the group from Phoscon in there with the other devices that you want to control with this group.
-
 ### Configure deCONZ integration in Home Assistant
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "deconz" and click on it.
 Choose "Manually define gateway".
@@ -1948,3 +1939,54 @@ The web interface can also be used to change device specific configuration such 
 
 </p>
 </details>
+
+
+## Lighting <a name="lighting" href="https://github.com/Burningstone91/smart-home-setup#lighting"></a>
+### Basic Explanation of Setup
+
+(TODO)
+
+### Hardware used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:50%;">
+Philips Hue Bulbs (8x Color E27, 3x White Ambiance GU10, 1x LED strip 5m)
+</td>
+<td align="center" style="width:50%;">
+IKEA Tradfri Plug
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="250" alt="Philips Hue" />
+</td>
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="250" alt="IKEA Plug" />
+</td>
+</tr>
+
+<tr><td colspan="2">
+The Hue bulbs are distributed in the different rooms of our apartment and on the balcony is a light strip attached to an IKEA Tradfri Smart Plug. 
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Adding light bulbs to the ZigBee network (Philips Hue)
+The Phoscon Web UI should be available under http://ip-of-your-pi:8080/pwa. Initially you need to supply a username and a password. The process for adding Philips Hue bulbs, which were previously connected to a Hue hub is as follows:
+
+* Delete bulb within the Hue hub.
+* Cut the power to the bulb for 10 seconds.
+* In Phoscon go to Devices -> Lights and press "Add new lights" at the bottom of the page.
+* Take a Hue Dimmer Remote close to bulb and press and hold the "ON" and "Off" button for 10 seconds until the bulb starts to blink and the Hue Dimmer Remote shows a green light.
+* The light should now show up in Phoscon.
+
+### Creating groups in Phoscon
+I create light groups in Phoscon. Each group defined in Phoscon will later show as a separate entity. This has a huge advantage over [Home Assistant Light Groups](https://www.home-assistant.io/integrations/light.group/) because if you send for example a command to turn off 5 lights in a light group that you configured in Home Assistant, it will one command for each bulb to the ConBee stick, which will in turn send 5 single commands to the ZigBee network. This can lead to delays and something called the "popcorn" effect, where lights turn on in random order. If you create a group in Phoscon, it will only send one command to the ZigBee network and all the lights will turn on/off at the same time. The disadvantage of Phoscon group is that you can't include lights/switches from other systems. You can still create a group in Home Assistant to do this and just include the group from Phoscon in there with the other devices that you want to control with this group.
+
+</p>
+</details>
+
+

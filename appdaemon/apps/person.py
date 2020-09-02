@@ -29,7 +29,8 @@ class Person(AppBase):
             {
                 "id": person,
                 "home": None,
-                "non_binary_presence": None
+                "non_binary_presence": None,
+                "sleep_state": None,
             }
         )
 

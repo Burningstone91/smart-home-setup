@@ -23,7 +23,15 @@ def entity_id(value: Any) -> str:
 
     raise vol.Invalid("Invalid entity ID: {0}".format(value))
 
+def entity_ids(value: Union[str, list]):
+    """Validate Entity IDs."""
+    if value is None:
+        raise vol.Invalid("Entity IDs can not be None")
+    if isinstance(value, str):
+        value = [ent_id.strip() for ent_id in value.split(",")]
 
+    return [entity_id(ent_id) for ent_id in value]
+    
 def valid_date(value: Any) -> datetime.date:
     """Validate if a given object is a date."""
     try:

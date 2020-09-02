@@ -8,5 +8,16 @@ office:
   #   light.bedroom: "on"
   priority: 1
 
-  
+office_lights:
+  module: XXXXXXlighting
+  class: AreaLighting
+  area: office
+  motion_sensors: binary_sensor.motion_office
+  delay_off: 600
+  lights_ct: light.office
+  lux_sensor: sensor.lux_office
+  lux_threshold: 400
+  circadian_sensor: sensor.circadian_values
+  min_colortemp: 2000
+  max_colortemp: 6500
   

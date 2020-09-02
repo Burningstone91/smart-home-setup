@@ -17,7 +17,6 @@ class RoomPresence(AppBase):
         room_presence_sensors = self.args["sensors"]
 
         for person, sensor in room_presence_sensors.items():
-
             # Listen for person changing area
             self.hass.listen_state(
                 self.on_sensor_change, sensor, duration=5, person_id=person
@@ -156,11 +155,12 @@ class NonBinaryPresence(AppBase):
     ) -> None:
         """Respond when person changes presence state."""
         # just left -> just arrived = home
-        if old == "just_left" and new == "just_arrived":
-            non_binary_state = "home"
-        else:
-            non_binary_state = kwargs["non_binary_state"]
+        old_state = self.adbase.get_state(entity, attribute="sleep_state")
+        non_binary_state = kwargs["non_binary_state"]
 
+        if old_state == "just_left" and non_binary_state == "just_arrived":
+            non_binary_state = "home"
+            
         # Set non binary presence state for person
         self.adbase.set_state(entity, non_binary_presence=non_binary_state)
         self.adbase.log(

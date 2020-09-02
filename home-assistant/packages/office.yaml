@@ -5,3 +5,38 @@ homeassistant:
     light.office:
       friendly_name: Deckenlampe
       icon: mdi:ceiling-light
+    # Environment Sensors
+    binary_sensor.motion_office:
+      friendly_name: Büro
+      device_class: motion
+    binary_sensor.tamper_office:
+      friendly_name: Manipulation Büro
+      device_class: safety
+    sensor.lux_office:
+      friendly_name: Büro
+      icon: mdi:weather-sunny
+      device_class: illuminance
+      unit_of_measurement: "lx"
+    sensor.battery_level_lux_office:
+      friendly_name: Lux Sensor Büro
+    sensor.temperature_office:
+      friendly_name: Büro
+      device_class: temperature
+      unit_of_measurement: "°C"
+    sensor.humidity_office:
+      friendly_name: Büro
+      device_class: humidity
+      unit_of_measurement: "%"
+    binary_sensor.door_office:
+      friendly_name: Türe Büro
+      device_class: door
+    sensor.battery_level_door_office:
+      friendly_name: Tür Sensor Büro
+    binary_sensor.window_office:
+      friendly_name: Fenster Büro
+      device_class: window
+    sensor.battery_level_window_office:
+      friendly_name: Fenster Sensor Büro
+    
+        
+

@@ -36,6 +36,7 @@ class House(AppBase):
                     "persons": [],
                     "occupied": None,
                     "presence_state": None,
+                    "sleep_state": None
                 }
             )
 

@@ -1,0 +1,6 @@
+input_boolean:
+  bed_sabrina:
+    name: Bett Sabrina
+  bed_dimitri:
+    name: Bett Dimitri
+    

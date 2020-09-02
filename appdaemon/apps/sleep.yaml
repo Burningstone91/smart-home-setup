@@ -1,0 +1,8 @@
+sleep_app:
+  module: sleep
+  class: Sleep
+  house_id: home
+  sensors:
+    dimitri: input_boolean.bed_dimitri
+    sabrina: input_boolean.bed_sabrina
+

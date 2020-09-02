@@ -30,7 +30,7 @@ class AppBase(ad.ADBase):
 
         # Validate app configuration
         try:
-            self.APP_SCHEMA(self.args)
+            self.args = self.APP_SCHEMA(self.args)
         except vol.Invalid as err:
             self.adbase.log(f"Invalid configuration: {err}", log="error_log")
             return
