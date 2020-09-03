@@ -19,8 +19,6 @@ And third, my current setup grew quite a lot in complexity. Due to my skills evo
 
 !!!WARNING!!! I'm by no means a programmer and I don't work as a professional in IT or something IT related. I'm just passionate about home automation, programming, IoT and technology in general.
 
-My "Server" is an Intel NUC with an i3-7100U CPU, 8 GB of RAM and a 1 TB SSD (I use it for other virtual machines as well). The Smart Home runs inside an Ubuntu virtual machine in Proxmox.
-
 If you find any information here useful feel free to buy me a coffee :)
 
 <a href="https://www.buymeacoff.ee/u89Ao5n" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" style="height: 19px !important;width: 68px !important;" ></a>
@@ -53,6 +51,25 @@ First some preparations and the install of [Home Assistant](https://www.home-ass
 
 <details><summary>Step-by-step Guide</summary>
 <p>
+
+### Hardware used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:20%;">
+Intel NUC
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:20%;">
+<img src="git-pictures/device_pictures/nuc.jpg" raw=true height="100" alt="NUC" />
+</td>
+</tr>
+
+<tr><td colspan="1">
+My "Server" is an Intel NUC with an i3-7100U CPU, 8 GB of RAM and a 1 TB SSD (I use it for other virtual machines as well). The Smart Home runs inside an Ubuntu virtual machine in Proxmox. I'm using Home Assistant Container in my setup.
+</td></tr>
+</table>
 
 ### Preparations
 Install Docker and Docker-Compose on the host machine following the official instructions online.
@@ -1968,24 +1985,24 @@ Philips Hue Bulbs (8x Color E27, 3x White Ambiance GU10, 1x LED strip 5m)
 
 <tr>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="250" alt="Philips Hue" />
+<img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="100" alt="Philips Hue" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="250" alt="IKEA Plug" />
+<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="100" alt="IKEA Plug" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/hue_motion.jpg" raw=true height="250" alt="Hue Motion" />
+<img src="git-pictures/device_pictures/hue_motion.jpg" raw=true height="100" alt="Hue Motion" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/aeotec_multi.jpg" raw=true height="250" alt="Aeotec Multisensor" />
+<img src="git-pictures/device_pictures/aeotec_multi.jpg" raw=true height="100" alt="Aeotec Multisensor" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/xiaomi_lux.jpg" raw=true height="250" alt="Xiaomi Lux" />
+<img src="git-pictures/device_pictures/xiaomi_lux.jpg" raw=true height="100" alt="Xiaomi Lux" />
 </td>
 </tr>
 
 <tr><td colspan="5">
-The Hue bulbs are distributed in the different rooms of our apartment and on the balcony is a light strip attached to an IKEA Tradfri Smart Plug. 
+The Hue bulbs are distributed in the different rooms of our apartment and on the balcony is a light strip attached to an IKEA Tradfri Smart Plug. The motion and lux sensors are also placed around the house and are used to control lighting behaviour
 </td></tr>
 </table>
 
@@ -2003,6 +2020,14 @@ The Phoscon Web UI should be available under http://ip-of-your-pi:8080/pwa. Init
 
 ### Creating groups in Phoscon
 I create light groups in Phoscon. Each group defined in Phoscon will later show as a separate entity. This has a huge advantage over [Home Assistant Light Groups](https://www.home-assistant.io/integrations/light.group/) because if you send for example a command to turn off 5 lights in a light group that you configured in Home Assistant, it will one command for each bulb to the ConBee stick, which will in turn send 5 single commands to the ZigBee network. This can lead to delays and something called the "popcorn" effect, where lights turn on in random order. If you create a group in Phoscon, it will only send one command to the ZigBee network and all the lights will turn on/off at the same time. The disadvantage of Phoscon group is that you can't include lights/switches from other systems. You can still create a group in Home Assistant to do this and just include the group from Phoscon in there with the other devices that you want to control with this group.
+
+
+NEXT
+* Add hue motion to Phoscon
+* Add aeotec to OZW
+* Add xiaomi lux sensor to Phoscon
+* Explanation for Area lighting automation based on motion, lux, circadian values and occupancy (incl. config parameter table and example config)
+
 
 </p>
 </details>
