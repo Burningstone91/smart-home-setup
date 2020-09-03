@@ -5,7 +5,9 @@ office:
   attributes:
     friendly_name: Büro
   # occupancy_entities:
-  #   light.bedroom: "on"
+  #   - device_tracker.desktop_dimitri: "home"
+  #   - device_tracker.desktop_sabrina: "home"
+  #   - media_player.receiver_office: "on"
   priority: 1
 
 office_lights:

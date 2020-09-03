@@ -5,3 +5,15 @@ dressroom:
   attributes:
     friendly_name: Ankleidezimmer
   priority: 1
+
+  dressroom_lights:
+    module: XXXXXXlighting
+    class: AreaLighting
+    area: dressroom
+    motion_sensors: binary_sensor.motion_dressroom
+    delay_off: 300
+    lights_rgb: light.dressroom
+    circadian_sensor: sensor.circadian_values
+    min_colortemp: 2000
+    max_colortemp: 6500
+    update_interval: 900

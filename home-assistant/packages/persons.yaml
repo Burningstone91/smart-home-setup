@@ -23,11 +23,21 @@ homeassistant:
       friendly_name: Dimitri
       entity_picture: /local/person_pictures/dimitri_home.jpg
       icon: mdi:account
+    ## Phone
     sensor.battery_level_phone_dimitri:
       friendly_name: Handy Dimitri
     sensor.charging_phone_dimitri:
-      friendly_name: Handy Dimitri
+      friendly_name: Ladestatus Handy Dimitri
       icon: mdi:cellphone-charging
+    sensor.next_alarm_phone_dimitri:
+      friendly_name: Nächster Wecker Dimitri
+      icon: mdi:alarm
+    sensor.call_state_phone_dimitri:
+      friendly_name: Anruf Dimitri
+      icon: mdi:phone
+    sensor.wifi_connection_phone_dimitri:
+      friendly_name: WiFi Handy Dimitri
+    ## Presence
     device_tracker.gps_presence_dimitri:
       friendly_name: Standort Dimitri
       icon: mdi:map-marker

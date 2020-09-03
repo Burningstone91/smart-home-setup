@@ -539,10 +539,10 @@ I'm going to explain each part of the presence detection system in detail includ
 
 <tr>
 <td align="center" style="width:50%;">
-Raspberry Pi Zero W
+6x Raspberry Pi Zero W
 </td>
 <td align="center" style="width:50%;">
-Nut Mini
+2x Nut Mini
 </td>
 </tr>
 
@@ -1286,7 +1286,7 @@ At the end of all this we should now have for each person a device tracker that 
 <table align="center" border="0">
 
 <tr><td align="center" colspan="1">
-Samsung Galaxy S20
+2x Samsung Galaxy S20
 </td></tr>
 
 <tr><td align="center" colspan="1">
@@ -1752,10 +1752,10 @@ Aeotec Z-Stick Gen 5
 <img src="git-pictures/device_pictures/pi_3.jpg" raw=true height="250" alt="Pi 3"/>
 </td>
 <td align="center" style="width:33%;">
-<img src="git-pictures/device_pictures/conbee.jpg" raw=true height="250" alt="ConBee" />
+<img src="git-pictures/device_pictures/conbee_stick.jpg" raw=true height="250" alt="ConBee" />
 </td>
 <td align="center" style="width:34%;">
-<img src="git-pictures/device_pictures/aeotec-stick.jpg" raw=true height="250" alt="Philips Hue" />
+<img src="git-pictures/device_pictures/aeotec_stick.jpg" raw=true height="250" alt="Philips Hue" />
 </td>
 
 </tr>
@@ -1949,24 +1949,42 @@ The web interface can also be used to change device specific configuration such 
 ### Hardware used
 <table align="center" border="0">
 <tr>
-<td align="center" style="width:50%;">
+<td align="center" style="width:20%;">
 Philips Hue Bulbs (8x Color E27, 3x White Ambiance GU10, 1x LED strip 5m)
 </td>
-<td align="center" style="width:50%;">
-IKEA Tradfri Plug
+<td align="center" style="width:20%;">
+1x IKEA Tradfri Plug
+</td>
+<td align="center" style="width:20%;">
+1x Philips Hue Motion Sensor
+</td>
+<td align="center" style="width:20%;">
+4x Aeotec Multisensor 6
+</td>
+<td align="center" style="width:20%;">
+1x Xiaomi Lux Sensor
 </td>
 </tr>
 
 <tr>
-<td align="center" style="width:50%;">
+<td align="center" style="width:20%;">
 <img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="250" alt="Philips Hue" />
 </td>
-<td align="center" style="width:50%;">
+<td align="center" style="width:20%;">
 <img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="250" alt="IKEA Plug" />
+</td>
+<td align="center" style="width:20%;">
+<img src="git-pictures/device_pictures/hue_motion.jpg" raw=true height="250" alt="Hue Motion" />
+</td>
+<td align="center" style="width:20%;">
+<img src="git-pictures/device_pictures/aeotec_multi.jpg" raw=true height="250" alt="Aeotec Multisensor" />
+</td>
+<td align="center" style="width:20%;">
+<img src="git-pictures/device_pictures/xiaomi_lux.jpg" raw=true height="250" alt="Xiaomi Lux" />
 </td>
 </tr>
 
-<tr><td colspan="2">
+<tr><td colspan="5">
 The Hue bulbs are distributed in the different rooms of our apartment and on the balcony is a light strip attached to an IKEA Tradfri Smart Plug. 
 </td></tr>
 </table>

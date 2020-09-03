@@ -4,4 +4,16 @@ livingroom:
   area: livingroom
   attributes:
     friendly_name: Wohnzimmer
+  # occupancy_entities:
+  #   - media_player.receiver_livingroom: "on"
   priority: 1
+
+livingroom_lights:
+  module: XXXXXXlighting
+  class: AreaLighting
+  area: livingroom
+  motion_sensors: binary_sensor.motion_livingroom
+  delay_off: 600
+  lights_rgb: light.livingroom
+  min_colortemp: 2000
+  max_colortemp: 6500

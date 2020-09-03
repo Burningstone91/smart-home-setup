@@ -33,9 +33,6 @@ class AreaLighting(AppBase):
             vol.Optional("sleep_brightness"): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=100)
             ),
-            vol.Optional("sleep_colortemp"): vol.All(
-                vol.Coerce(int), vol.Range(min=1000, max=10000)
-            ),
             vol.Optional("circadian_sensor"): cv.entity_id,
             vol.Optional("min_brightness", default=1): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=100)
@@ -72,7 +69,6 @@ class AreaLighting(AppBase):
         self.sleep_lights = self.args.get("sleep_lights")
         self.sleep_lights_ct = self.args.get("sleep_lights_ct")
         self.sleep_brightness = self.args.get("sleep_brightness")
-        self.sleep_colortemp = self.args.get("sleep_colortemp")
         self.circadian_sensor = self.args.get("circadian_sensor")
         self.min_brightness = self.args.get("min_brightness")
         self.max_brightness = self.args.get("max_brightness")
@@ -124,30 +120,31 @@ class AreaLighting(AppBase):
         # Set motion state of room to True
         self.set_area_motion(True)
 
-        # Start timer to turn motion state to False
+        # Start/Restart timer to turn motion state to False
         self.restart_motion_timer()
 
     def on_light_change(
         self, entity: str, attribute: str, old: str, new: str, kwargs: dict
     ) -> None:
         """Respond when light changes state."""
-        if new == "on":
-            if "circadian_timer" in self.handles:
-                self.adbase.cancel_timer(self.handles["circadian_timer"])
-                self.handles.pop("circadian_timer")
-            self.handles["circadian_timer"] = self.adbase.run_every(
-                self.turn_lights_on,
-                f"now+{self.update_interval}",
-                self.update_interval,
-                transition=self.transition,
-            )
-        else:
-            if "motion_timer" in self.handles:
-                self.adbase.cancel_timer(self.handles["motion_timer"])
-                self.handles.pop("motion_timer")
-            if "circadian_timer" in self.handles:
-                self.adbase.cancel_timer(self.handles["circadian_timer"])
-                self.handles.pop("circadian_timer")
+        if new != old:
+            if new == "on":
+                if "circadian_timer" in self.handles:
+                    self.adbase.cancel_timer(self.handles["circadian_timer"])
+                    self.handles.pop("circadian_timer")
+                self.handles["circadian_timer"] = self.adbase.run_every(
+                    self.turn_lights_on,
+                    f"now+{self.update_interval}",
+                    self.update_interval,
+                    transition=self.transition,
+                )
+            elif new == "off":
+                if "motion_timer" in self.handles:
+                    self.adbase.cancel_timer(self.handles["motion_timer"])
+                    self.handles.pop("motion_timer")
+                if "circadian_timer" in self.handles:
+                    self.adbase.cancel_timer(self.handles["circadian_timer"])
+                    self.handles.pop("circadian_timer")
 
     def on_occupancy_change(
         self, entity: str, attribute: str, old: str, new: str, kwargs: dict
@@ -224,7 +221,7 @@ class AreaLighting(AppBase):
 
     def calc_brightness_pct(self) -> float:
         """Calculate brightness percentage."""
-        if self.is_sleep():
+        if self.is_sleep() and self.sleep_brightness:
             return self.sleep_brightness
         else:
             if self.circadian_sensor:
@@ -240,9 +237,7 @@ class AreaLighting(AppBase):
                 return self.default_brightness
 
     def calc_colortemp(self, brightness_pct: float) -> float:
-        if self.is_sleep():
-            return self.sleep_colortemp
-        elif brightness_pct > 0:
+        if brightness_pct > 0:
             return (
                 (self.max_colortemp - self.min_colortemp) * (brightness_pct / 100)
             ) + self.min_colortemp

@@ -100,6 +100,7 @@ class Area(AppBase):
         area_attr = self.adbase.get_state(area, attribute="attributes")
         occupancy = area_attr["occupancy"]
         # Check if persons in area
-        persons = len(area_attr["persons"]) > 0
+        # persons = len(area_attr["persons"]) > 0
+        persons = False
         return persons or any(value == True for key, value in occupancy.items())
 

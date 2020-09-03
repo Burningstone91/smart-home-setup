@@ -5,4 +5,5 @@ sleep_app:
   sensors:
     dimitri: input_boolean.bed_dimitri
     sabrina: input_boolean.bed_sabrina
-
+  # dimitri: binary_sensor.bed_dimitri
+  # sabrina: binary_sensor.bed_sabrina
