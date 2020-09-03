@@ -1,0 +1,15 @@
+# Entity Customization
+homeassistant:
+  customize:
+    # Door/Window Sensor
+    binary_sensor.window_kitchen:
+      friendly_name: Fenster Küche
+      device_class: window
+    binary_sensor.door_kitchen:
+      friendly_name: Tür Küche
+      device_class: door
+    # Battery Sensors
+    sensor.battery_level_door_kitchen:
+      friendly_name: Tür Sensor Küche
+    sensor.battery_level_window_kitchen:
+      friendly_name: Fenster Sensor Küche

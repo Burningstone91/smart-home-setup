@@ -2,7 +2,7 @@
 light:
   - platform: switch
     name: balcony_ceiling
-    entity_id: switch.plug_balkon
+    entity_id: switch.light_balcony
 
 # Entity Customization
 homeassistant:
@@ -11,3 +11,12 @@ homeassistant:
     light.balcony_ceiling:
       friendly_name: Lichterkette
       icon: mdi:string-lights
+    # Environment Sensors
+    sensor.lux_outside:
+      friendly_name: Aussen
+      icon: mdi:weather-sunny
+      device_class: illuminance
+      unit_of_measurement: "lx"
+    # Battery Sensors
+    sensor.battery_level_lux_outside:
+      friendly_name: Lux Sensor Aussen

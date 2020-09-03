@@ -1,0 +1,30 @@
+# Entity Customization
+homeassistant:
+  customize:
+    # Door/Window Sensor
+    binary_sensor.door_bathroomsmall:
+      friendly_name: Tür Kleines Bad
+      device_class: door
+    # Motion/Tamper Sensors
+    binary_sensor.motion_bathroomsmall:
+      friendly_name: Kleines Bad
+      device_class: motion
+    binary_sensor.tamper_bathroomsmall:
+      friendly_name: Manipulation Kleines Bad
+      device_class: safety
+    # Environment Sensors
+    sensor.temperature_bathroomsmall:
+      friendly_name: Kleines Bad
+      device_class: temperature
+      unit_of_measurement: "°C"
+    sensor.humidity_bathroomsmall:
+      friendly_name: Kleines Bad
+      device_class: humidity
+      unit_of_measurement: "%"
+    # Battery Sensors
+    sensor.battery_level_door_bathroomsmall:
+      friendly_name: Tür Sensor Kleines Bad
+    sensor.battery_level_multisensor_bathroomsmall:
+      friendly_name: Multisensor Kleines Bad
+    sensor.battery_level_temperature_bathroomsmall:
+      friendly_name: Temperatur Sensor Kleines Bad

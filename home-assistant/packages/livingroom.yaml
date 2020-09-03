@@ -2,9 +2,43 @@
 homeassistant:
   customize:
     # Lights
+    light.livingroom:
+      friendly_name: Wohnzimmer
+      icon: mdi:lightbulb
     light.livingroom_floor_front:
       friendly_name: Vorne
       icon: mdi:floor-lamp
     light.livingroom_floor_back:
       friendly_name: Hinten
       icon: mdi:floor-lamp
+    # Door/Window Sensor
+    binary_sensor.window_livingroom:
+      friendly_name: Fenster Wohnzimmer
+      device_class: window
+    binary_sensor.door_livingroom:
+      friendly_name: Tür Wohnzimmer
+      device_class: door
+    # Motion/Tamper Sensors
+    binary_sensor.motion_livingroom:
+      friendly_name: Wohnzimmer
+      device_class: motion
+    # Environment Sensors
+    sensor.temperature_livingroom:
+      friendly_name: Wohnzimmer
+      device_class: temperature
+      unit_of_measurement: "°C"
+    sensor.humidity_livingroom:
+      friendly_name: Wohnzimmer
+      device_class: humidity
+      unit_of_measurement: "%"
+    # Battery Sensors
+    sensor.battery_level_door_livingroom:
+      friendly_name: Tür Sensor Wohnzimmer
+    sensor.battery_level_window_livingroom:
+      friendly_name: Fenster Sensor Wohnzimmer
+    sensor.battery_level_motion_livingroom:
+      friendly_name: Bewegung Sensor Wohnzimmer
+    sensor.battery_level_temperature_livingroom:
+      friendly_name: Temperatur Sensor Wohnzimmer
+    sensor.battery_level_remote_light_livingroom:
+      friendly_name: Remote Licht Wohnzimmer

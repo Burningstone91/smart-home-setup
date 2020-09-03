@@ -2,9 +2,52 @@
 homeassistant:
   customize:
     # Lights
+    light.bedroom:
+      friendly_name: Schlafzimmer
+      icon: mdi:lightbulb
     light.bedroom_ceiling:
       friendly_name: Deckenlampe
       icon: mdi:ceiling-light
     light.bedroom_bed:
       friendly_name: Bett
       icon: mdi:led-strip-variant
+    # Door/Window Sensor
+    binary_sensor.window_bedroom:
+      friendly_name: Fenster Schlafzimmer
+      device_class: window
+    binary_sensor.door_bedroom:
+      friendly_name: Tür Schlafzimmer
+      device_class: door
+    # Motion/Tamper Sensors
+    binary_sensor.motion_bedroom:
+      friendly_name: Schlafzimmer
+      device_class: motion
+    binary_sensor.tamper_bedroom:
+      friendly_name: Manipulation Schlafzimmer
+      device_class: safety
+    # Environment Sensors
+    sensor.temperature_bedroom:
+      friendly_name: Schlafzimmer
+      device_class: temperature
+      unit_of_measurement: "°C"
+    sensor.humidity_bedroom:
+      friendly_name: Schlafzimmer
+      device_class: humidity
+      unit_of_measurement: "%"
+    # Battery Sensors
+    sensor.battery_level_door_bedroom:
+      friendly_name: Tür Sensor Schlafzimmer
+    sensor.battery_level_window_bedroom:
+      friendly_name: Fenster Sensor Schlafzimmer
+    sensor.battery_level_multisensor_bedroom:
+      friendly_name: Multisensor Schlafzimmer
+    sensor.battery_level_remote_light_bedroom:
+      friendly_name: Remote Licht Schlafzimmer
+    sensor.battery_level_remote_sabrina:
+      friendly_name: Remote Sabrina
+    sensor.battery_level_remote_dimitri:
+      friendly_name: Remote Dimitri
+    # Applicances
+    switch.dehumidifier_bedroom:
+      friendly_name: Entfeuchter
+      icon: mdi:power-plug

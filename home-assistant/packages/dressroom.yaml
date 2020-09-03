@@ -5,3 +5,35 @@ homeassistant:
     light.dressroom:
       friendly_name: Deckenlampe
       icon: mdi:ceiling-light
+    # Door/Window Sensor
+    binary_sensor.window_dressroom:
+      friendly_name: Fenster Ankleide
+      device_class: window
+    binary_sensor.door_dressroom:
+      friendly_name: Tür Ankleide
+      device_class: door
+    # Motion/Tamper Sensors
+    binary_sensor.motion_dressroom:
+      friendly_name: Ankleide
+      device_class: motion
+    binary_sensor.tamper_dressroom:
+      friendly_name: Manipulation Ankleide
+      device_class: safety
+    # Environment Sensors
+    sensor.temperature_dressroom:
+      friendly_name: Ankleide
+      device_class: temperature
+      unit_of_measurement: "°C"
+    sensor.humidity_dressroom:
+      friendly_name: Ankleide
+      device_class: humidity
+      unit_of_measurement: "%"
+    # Battery Sensors
+    sensor.battery_level_door_dressroom:
+      friendly_name: Tür Sensor Ankleide
+    sensor.battery_level_window_dressroom:
+      friendly_name: Fenster Sensor Ankleide
+    sensor.battery_level_multisensor_dressroom:
+      friendly_name: Multisensor Ankleide
+    sensor.battery_level_remote_light_dressroom:
+      friendly_name: Remote Licht Ankleide

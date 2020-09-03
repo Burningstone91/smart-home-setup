@@ -1,0 +1,15 @@
+# Entity Customization
+homeassistant:
+  customize:
+    # Door/Window Sensor
+    binary_sensor.window_bathroomlarge:
+      friendly_name: Fenster Grosses Bad
+      device_class: window
+    binary_sensor.door_bathroomlarge:
+      friendly_name: Tür Grosses Bad
+      device_class: door
+    # Battery Sensors
+    sensor.battery_level_door_bathroomlarge:
+      friendly_name: Tür Sensor Grosses Bad
+    sensor.battery_level_window_bathroomlarge:
+      friendly_name: Fenster Sensor Grosses Bad

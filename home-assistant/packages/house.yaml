@@ -1,0 +1,10 @@
+# Entity Customization
+homeassistant:
+  customize:
+    # Door/Window Sensor
+    binary_sensor.door_main:
+      friendly_name: Haustür
+      device_class: door
+    # Battery Sensors
+    sensor.battery_level_door_main:
+      friendly_name: Tür Sensor Haustür

@@ -1,0 +1,26 @@
+# Entity Customization
+homeassistant:
+  customize:
+    # Door/Window Sensor
+    binary_sensor.window_storageroom:
+      friendly_name: Fenster Reduit
+      device_class: window
+    binary_sensor.door_storageroom:
+      friendly_name: Tür Reduit
+      device_class: door
+    # Environment Sensors
+    sensor.temperature_storageroom:
+      friendly_name: Reduit
+      device_class: temperature
+      unit_of_measurement: "°C"
+    sensor.humidity_storageroom:
+      friendly_name: Reduit
+      device_class: humidity
+      unit_of_measurement: "%"
+    # Battery Sensors
+    sensor.battery_level_door_storageroom:
+      friendly_name: Tür Sensor Reduit
+    sensor.battery_level_window_storageroom:
+      friendly_name: Fenster Sensor Reduit
+    sensor.battery_level_temperature_storageroom:
+      friendly_name: Temperatur Sensor Reduit
