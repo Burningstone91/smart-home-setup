@@ -49,9 +49,6 @@ I will explain here the different parts of my home automation system and how I s
 
 First some preparations and the install of [Home Assistant](https://www.home-assistant.io/), which will be the core of the home automation system.
 
-<details><summary>Step-by-step Guide</summary>
-<p>
-
 ### Hardware used
 <table align="center" border="0">
 <tr>
@@ -70,6 +67,9 @@ Intel NUC
 My "Server" is an Intel NUC with an i3-7100U CPU, 8 GB of RAM and a 1 TB SSD (I use it for other virtual machines as well). The Smart Home runs inside an Ubuntu virtual machine in Proxmox. I'm using Home Assistant Container in my setup.
 </td></tr>
 </table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
 
 ### Preparations
 Install Docker and Docker-Compose on the host machine following the official instructions online.
