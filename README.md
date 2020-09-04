@@ -38,6 +38,9 @@ I will explain here the different parts of my home automation system and how I s
 * <a href="https://github.com/Burningstone91/smart-home-setup#presence-detection">
       Presence Detection
   </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#bed-occupancy">
+      Bed Occupancy
+  </a>
 * <a href="https://github.com/Burningstone91/smart-home-setup#zigbee-zwave">
       ZigBee(deCONZ) /Z-Wave (OZW Daemon)
   </a>
@@ -534,7 +537,9 @@ This file is going to be extended later on with more functionality.
 </p>
 </details>
 
+
 ## Presence Detection <a name="presence-detection" href="https://github.com/Burningstone91/smart-home-setup#presence-detection"></a>
+
 ### Basic Explanation of Setup
 I use the [person integration](https://www.home-assistant.io/integrations/person/) from Home Assistant to combine a bluetooth device tracker (device attached to my keys) and a gps device tracker (my phone). The docs give a detailed explanation on how the location is determined when multiple device trackers are used. Long story short, when I'm at home, my position is determined first by keys and then by phone. When I'm not home, my position is determined first by phone then by keys.
 
@@ -1746,6 +1751,121 @@ office:
 </p>
 </details>
 
+
+## Bed Occupancy <a name="bed-occupancy" href="https://github.com/Burningstone91/smart-home-setup#bed-occupancy"></a>
+
+### Basic Explanation of Setup
+
+I used the following awesome guide [5$ Can Get You a Smart Bed](https://medium.com/the-smarter-home/smart-bed-7de9ad55276e) to create a sensor for our bed.
+
+### Hardware used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:50%;">
+NodeMCU ESP32
+</td>
+<td align="center" style="width:50%;">
+4x DIY "pressure" mats
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/esp32.jpg" raw=true height="100" alt="ESP32" />
+</td>
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/pressure_mats.jpg" raw=true height="100" alt="Pressure Mats" />
+</td>
+</tr>
+
+<tr><td colspan="5">
+Two pressure mats are at the top and the bottom of "my" side of the bed and two pressure mats on her side of the bed.
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Build Sensor
+Follow the instructions from the [guide](https://medium.com/the-smarter-home/smart-bed-7de9ad55276e). I adapted the ESPHome configuration to create 6 binary sensors, one for each pressure mat and one for each side of the bed. The two sensors for the sides of the bed are "on" when one or both of the pressure mat sensors are "on".
+
+The final ESP Home config:
+
+```yaml
+esphome:
+  name: bed_sensor_bedroom
+  platform: ESP32
+  board: nodemcu-32s
+
+wifi:
+  ssid: "NoT WiFi_2GHz"
+  password: "wifi-password"
+  use_address: 10.10.70.22
+  ap:
+    ssid: "Bed Sensor Bedroom"
+    password: "fallback-ap-password"
+
+captive_portal:
+
+logger:
+
+api:
+  password: "api-password"
+  
+ota:
+  password: "ota-password"
+
+esp32_touch:
+
+binary_sensor:
+   - platform: esp32_touch
+     name: "Bed top Dimitri"
+     pin: GPIO12
+     threshold: 5
+     id: bed_top_dimitri
+   - platform: esp32_touch
+     name: "Bed bottom Dimitri"
+     pin: GPIO4
+     threshold: 4
+     id: bed_bottom_dimitri
+   - platform: template
+     id: bed_dimitri
+     name: "Bed Dimitri"
+     lambda: |-
+       if (id(bed_top_dimitri).state ||
+           id(bed_bottom_dimitri).state) {
+         return true;
+       } else {
+         return false;
+       }
+   - platform: esp32_touch
+     name: "Bett top Sabrina"
+     pin: GPIO33
+     threshold: 5
+     id: bed_top_sabrina
+   - platform: esp32_touch
+     name: "Bed bottom Sabrina"
+     pin: GPIO27
+     threshold: 4
+     id: bed_bottom_dimitri
+   - platform: template
+     id: bed_sabrina
+     name: "Bed Sabrina"
+     lambda: |-
+       if (id(bed_top_sabrina).state ||
+           id(bed_bottom_sabrina).state) {
+         return true;
+       } else {
+         return false;
+       }
+
+```
+### Make Bed Occupancy not so binary (AppDaemon)
+Same as the not so binary presence detection (just left, just arrived, home, etc.), we're going to create a not so binary bed occupancy state. The app sets the following states: "just laid down", "sleeping", "just got up", "awake", and "back to bed" for the "I quickly need to go to the toilet". 
+
+
+</p>
+</details>
 
 ## ZigBee(deCONZ) / Z-Wave(OZW Daemon) <a name="zigbee-zwave" href="https://github.com/Burningstone91/smart-home-setup#zigbee-zwave"></a>
 

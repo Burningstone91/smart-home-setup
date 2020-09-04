@@ -13,6 +13,8 @@ options.xml
 secrets.yaml
 zwcfg_*
 mosquitto/config/passwd
+mosquitto/data
+esphome/
 appdaemon/logs
 appdaemon/dashboards
 scratch

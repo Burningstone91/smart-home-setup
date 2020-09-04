@@ -11,11 +11,7 @@ class Sleep(AppBase):
     APP_SCHEMA = APP_SCHEMA.extend(
         {
             vol.Required("house_id"): str,
-            vol.Required("sensors"): vol.Schema(
-                {
-                    vol.Optional(str): cv.entity_id
-                }
-            )
+            vol.Required("sensors"): vol.Schema({vol.Optional(str): cv.entity_id}),
         }
     )
 
@@ -32,7 +28,7 @@ class Sleep(AppBase):
                 sensor,
                 new="on",
                 person=person_entity,
-                target_state="just_laid_down"
+                target_state="just_laid_down",
             )
             # bed occupied -> not occupied
             self.hass.listen_state(
@@ -40,7 +36,7 @@ class Sleep(AppBase):
                 sensor,
                 new="off",
                 person=person_entity,
-                target_state="just_got_up"
+                target_state="just_got_up",
             )
             # just got up -> just laid down = back_to_bed
             self.adbase.listen_state(
@@ -49,7 +45,7 @@ class Sleep(AppBase):
                 attribute="sleep_state",
                 old="just_got_up",
                 new="just_laid_down",
-                target_state="back_to_bed"
+                target_state="back_to_bed",
             )
             # just laid down -> sleeping, after 5 min
             self.adbase.listen_state(
@@ -58,7 +54,7 @@ class Sleep(AppBase):
                 attribute="sleep_state",
                 new="just_laid_down",
                 duration=5 * 60,
-                target_state="sleeping"
+                target_state="sleeping",
             )
             # back to bed -> sleeping, after 5 min
             self.adbase.listen_state(
@@ -67,7 +63,7 @@ class Sleep(AppBase):
                 attribute="sleep_state",
                 new="back_to_bed",
                 duration=5 * 60,
-                target_state="sleeping"
+                target_state="sleeping",
             )
             # just got up -> awake, after 5 min
             self.adbase.listen_state(
@@ -76,13 +72,11 @@ class Sleep(AppBase):
                 attribute="sleep_state",
                 new="just_got_up",
                 duration=5 * 60,
-                target_state="awake"
+                target_state="awake",
             )
             # Listen to changes in persons' sleep state
             self.adbase.listen_state(
-                self.on_person_change_house,
-                person_entity,
-                attribute="sleep_state"
+                self.on_person_change_house, person_entity, attribute="sleep_state"
             )
 
     def on_sensor_change(
@@ -97,7 +91,7 @@ class Sleep(AppBase):
 
             if old_state == "just_got_up" and target_state == "just_laid_down":
                 target_state = "back_to_bed"
-            
+
             self.adbase.set_state(person, sleep_state=target_state)
             self.adbase.log(
                 f"{person.split('.')[1].capitalize()}: {target_state.replace('_',' ')}"
@@ -114,7 +108,7 @@ class Sleep(AppBase):
             self.adbase.log(
                 f"{entity.split('.')[1].capitalize()}: {target_state.replace('_',' ')}"
             )
-    
+
     def on_person_change_house(
         self, entity: str, attribute: str, old: str, new: str, kwargs: dict
     ) -> None:
@@ -135,10 +129,13 @@ class Sleep(AppBase):
         """Return list of persons in given states."""
         persons = self.adbase.get_state("person")
         return [
-            attributes["attributes"]["id"] for attributes in persons.values()
+            attributes["attributes"]["id"]
+            for attributes in persons.values()
             if attributes["attributes"]["sleep_state"] in states
         ]
 
     def persons_in_bed(self) -> list:
         """Return list of persons in bed."""
-        return self.who_in_state("just_laid_down", "back_to_bed", "sleeping")
+        return self.who_in_state(
+            "just_got_up" "just_laid_down", "back_to_bed", "sleeping"
+        )

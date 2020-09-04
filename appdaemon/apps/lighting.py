@@ -263,4 +263,6 @@ class AreaLighting(AppBase):
 
     def is_sleep(self) -> bool:
         """Return true if someone is asleep."""
-        pass
+        sleep_state = self.adbase.get_state(self.area_entity, attribute="sleep_state")
+        return sleep_state != "nobody_in_bed"
+

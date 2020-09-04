@@ -11,6 +11,14 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./appdaemon:/conf
+  esphome-dashboard:
+    container_name: esphome-dashboard
+    image: esphome/esphome:latest
+    network_mode: host
+    restart: unless-stopped
+    volumes: 
+      - ./esphome:/config
+      - /etc/localtime:/etc/localtime:ro
   hass:
     container_name: hass
     image: homeassistant/home-assistant:0.114.0
