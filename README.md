@@ -1756,7 +1756,7 @@ office:
 
 ### Basic Explanation of Setup
 
-I used the following awesome guide [5$ Can Get You a Smart Bed](https://medium.com/the-smarter-home/smart-bed-7de9ad55276e) to create a sensor for our bed.
+I used the following awesome guide [5$ Can Get You a Smart Bed](https://medium.com/the-smarter-home/smart-bed-7de9ad55276e) to create a sensor for our bed. This sensor is then used to set the "bed" state of the persons and the house.
 
 ### Hardware used
 <table align="center" border="0">
@@ -1789,7 +1789,7 @@ Two pressure mats are at the top and the bottom of "my" side of the bed and two 
 ### Build Sensor
 Follow the instructions from the [guide](https://medium.com/the-smarter-home/smart-bed-7de9ad55276e). I adapted the ESPHome configuration to create 6 binary sensors, one for each pressure mat and one for each side of the bed. The two sensors for the sides of the bed are "on" when one or both of the pressure mat sensors are "on".
 
-The final ESP Home config:
+The final ESPHome config:
 
 ```yaml
 esphome:
@@ -1811,7 +1811,7 @@ logger:
 
 api:
   password: "api-password"
-  
+
 ota:
   password: "ota-password"
 
@@ -1860,9 +1860,175 @@ binary_sensor:
        }
 
 ```
-### Make Bed Occupancy not so binary (AppDaemon)
-Same as the not so binary presence detection (just left, just arrived, home, etc.), we're going to create a not so binary bed occupancy state. The app sets the following states: "just laid down", "sleeping", "just got up", "awake", and "back to bed" for the "I quickly need to go to the toilet". 
 
+### Configure Sensor into Home Assistant
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "ESPHome" and click on it.
+Enter the IP or hostname of the ESP32 Sensor in the field "host", "port" can be left as it is at 6053. Click "SUBMIT". Enter the password set in the section "api" of the ESPHome config file. Click "SUBMIT" again. You should now see the binary sensors configured on the ESP.
+
+### Make Bed Occupancy not so binary (AppDaemon)
+Same as the [not so binary presence detection](#make-presence-detection-not-so-binary-appdaemon) (just left, just arrived, home, etc.), we're going to create a not so binary bed occupancy state. The app sets the following states for the person entities' sleep state: "just laid down", "sleeping", "just got up", "awake", and "back to bed" for the "I quickly need to go to the toilet" situations. The app also sets the sleep state of the house entity to "somone in bed", "nobody in bed" and "everyone in bed".
+
+Create a file called "sleep.py" and add the following:
+
+```python
+"""Define automations for Sleeping."""
+import voluptuous as vol
+
+from appbase import AppBase, APP_SCHEMA
+from utils import config_validation as cv
+
+
+class Sleep(AppBase):
+    """Defina a class for Sleep automations."""
+
+    APP_SCHEMA = APP_SCHEMA.extend(
+        {
+            vol.Required("house_id"): str,
+            vol.Required("sensors"): vol.Schema({vol.Optional(str): cv.entity_id}),
+        }
+    )
+
+    def configure(self) -> None:
+        """Configure."""
+        bed_sensors = self.args["sensors"]
+        self.house_entity = f"house.{self.args['house_id']}"
+
+        for person, sensor in bed_sensors.items():
+            person_entity = f"person.{person}"
+            # bed not occupied -> occupied
+            self.hass.listen_state(
+                self.on_sensor_change,
+                sensor,
+                new="on",
+                person=person_entity,
+                target_state="just_laid_down",
+            )
+            # bed occupied -> not occupied
+            self.hass.listen_state(
+                self.on_sensor_change,
+                sensor,
+                new="off",
+                person=person_entity,
+                target_state="just_got_up",
+            )
+            # just got up -> just laid down = back_to_bed
+            self.adbase.listen_state(
+                self.on_person_change,
+                person_entity,
+                attribute="sleep_state",
+                old="just_got_up",
+                new="just_laid_down",
+                target_state="back_to_bed",
+            )
+            # just laid down -> sleeping, after 5 min
+            self.adbase.listen_state(
+                self.on_person_change,
+                person_entity,
+                attribute="sleep_state",
+                new="just_laid_down",
+                duration=5 * 60,
+                target_state="sleeping",
+            )
+            # back to bed -> sleeping, after 5 min
+            self.adbase.listen_state(
+                self.on_person_change,
+                person_entity,
+                attribute="sleep_state",
+                new="back_to_bed",
+                duration=5 * 60,
+                target_state="sleeping",
+            )
+            # just got up -> awake, after 5 min
+            self.adbase.listen_state(
+                self.on_person_change,
+                person_entity,
+                attribute="sleep_state",
+                new="just_got_up",
+                duration=5 * 60,
+                target_state="awake",
+            )
+            # Listen to changes in persons' sleep state
+            self.adbase.listen_state(
+                self.on_person_change_house, person_entity, attribute="sleep_state"
+            )
+
+    def on_sensor_change(
+        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Respond when bed occupancy sensor changes state."""
+        if new != old:
+            # Set sleep state for person
+            person = kwargs["person"]
+            old_state = self.adbase.get_state(person, attribute="sleep_state")
+            target_state = kwargs["target_state"]
+
+            if old_state == "just_got_up" and target_state == "just_laid_down":
+                target_state = "back_to_bed"
+
+            self.adbase.set_state(person, sleep_state=target_state)
+            self.adbase.log(
+                f"{person.split('.')[1].capitalize()}: {target_state.replace('_',' ')}"
+            )
+
+    def on_person_change(
+        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Respond when person changes sleep state."""
+        if new != old:
+            # Set sleep state for person
+            target_state = kwargs["target_state"]
+            self.adbase.set_state(entity, sleep_state=target_state)
+            self.adbase.log(
+                f"{entity.split('.')[1].capitalize()}: {target_state.replace('_',' ')}"
+            )
+
+    def on_person_change_house(
+        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Update the sleep state of the house."""
+        persons_home = self.adbase.get_state(self.house_entity, attribute="persons")
+        old_state = self.adbase.get_state(self.house_entity, attribute="sleep_state")
+        if set(persons_home) == set(self.persons_in_bed()):
+            target_state = "everyone_in_bed"
+        elif self.persons_in_bed():
+            target_state = "someone_in_bed"
+        else:
+            target_state = "nobody_in_bed"
+        if old_state != target_state:
+            self.adbase.set_state(self.house_entity, sleep_state=target_state)
+            self.adbase.log(f"House Sleep State: {target_state.replace('_', ' ')}")
+
+    def who_in_state(self, *states) -> list:
+        """Return list of persons in given states."""
+        persons = self.adbase.get_state("person")
+        return [
+            attributes["attributes"]["id"]
+            for attributes in persons.values()
+            if attributes["attributes"]["sleep_state"] in states
+        ]
+
+    def persons_in_bed(self) -> list:
+        """Return list of persons in bed."""
+        return self.who_in_state(
+            "just_got_up" "just_laid_down", "back_to_bed", "sleeping"
+        )
+
+```
+
+Create a corresponding configuration file called "sleep.yaml" and add the following:
+
+```yaml
+room_presence_app:
+  module: sleep
+  class: Sleep
+  sensors:
+    dimitri: binary_sensor.bed_dimitri
+    sabrina: binary_sensor.bed_sabrina
+```
+
+In the sensors section put the person_id (configured in the person app) and the corresponding bed occupancy sensor from the previous step.
+
+These sleep states are going to be used later in other automations, e.g. lighting control, sleep/wakeup scenes etc.
 
 </p>
 </details>
@@ -2081,7 +2247,7 @@ The web interface can also be used to change device specific configuration such 
 ## Lighting <a name="lighting" href="https://github.com/Burningstone91/smart-home-setup#lighting"></a>
 ### Basic Explanation of Setup
 
-(TODO)
+The lighting behaviour is determined by motion, occupancy and light level in the area, sleep state of the house and circadian rhythm. The details are explained in the section [Area Lighting (AppDaemon)](#area-lighting-appdaemon).
 
 ### Hardware used
 <table align="center" border="0">
@@ -2141,14 +2307,52 @@ The Phoscon Web UI should be available under http://ip-of-your-pi:8080/pwa. Init
 ### Creating groups in Phoscon
 I create light groups in Phoscon. Each group defined in Phoscon will later show as a separate entity. This has a huge advantage over [Home Assistant Light Groups](https://www.home-assistant.io/integrations/light.group/) because if you send for example a command to turn off 5 lights in a light group that you configured in Home Assistant, it will one command for each bulb to the ConBee stick, which will in turn send 5 single commands to the ZigBee network. This can lead to delays and something called the "popcorn" effect, where lights turn on in random order. If you create a group in Phoscon, it will only send one command to the ZigBee network and all the lights will turn on/off at the same time. The disadvantage of Phoscon group is that you can't include lights/switches from other systems. You can still create a group in Home Assistant to do this and just include the group from Phoscon in there with the other devices that you want to control with this group.
 
+### Adding motion sensors to the ZigBee network (Philips Hue)
+Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute the following steps to integrate a Philips Hue motion sensor:
 
-NEXT
-* Add hue motion to Phoscon
-* Add aeotec to OZW
-* Add xiaomi lux sensor to Phoscon
-* Explanation for Area lighting automation based on motion, lux, circadian values and occupancy (incl. config parameter table and example config)
+* Reset the device by pressing and holding the setup button (small holle at the back) for 10 seconds, the LED should blink orange
+* In Phoscon go to Devices -> Sensors and press "Add new sensor" at the bottom of the page.
+* The sensor should now show up in Phoscon.
+
+### Adding motion sensors to the Z-Wave network (Aeotec Multisensor 6)
+Head over to Home Assistant to and execute the following steps to integrate a Aeotec Multisensor 6:
+
+* On the Sidebar click on "Developer Tools".
+* At the top choose the tab "Services".
+* In the field "Service" enter "ozw.add_node".
+* Press the button on the back of the Aeotec Multisensor 6.
+* The device should now show up under the OpenZWave (beta) integration.
+
+### Adding lux sensors to the ZigBee network (Xiaomi)
+Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute the following steps to integrate a Xiaomi Lux sensor:
+
+* In Phoscon go to Devices -> Sensors and press "Add new sensor" at the bottom of the page.
+* Choose "Other".
+* Press and hold the button at the top of the sensor until the blue LED starts to blink.
+* The sensor should now show up in Phoscon.
+
+### Setup Circadian Lighting
+I use the custom component [Circadian Ligting](https://github.com/claytonjn/hass-circadian_lighting) to calculate the brightness value for some lights. I mainly use it in the office when I'm working from home. The repo contains some explanations and articles about the benefits of Circadian Lighting. 
+
+### Area Lighting (AppDaemon)
+The area lighting app controls the lighting in the different areas based on conditions such as light levels, occupancy, etc.
+The lights are turned on through motion and turned off through room occupancy. I didn't want to turn on lights on occupancy, as sometimes someone may be standing close to a room for a few seconds and make the room occupied, even though the person has no intention to enter the room.
+
+The app consists of 3 parts, one for turning on the light on motion, one for adjusting the brightness of the lights to create a circadian rhythm and one for turning off the lights when everyone left the room.
+
+Motion Detection:
+Below is the flow for the motion detection part:
+
+![Alt text](/git-pictures/flowcharts/motion_light_flow.jpg.png?raw=true "Motion Light Flow")
+
+Adjust Brightness:
+Brightness is adjusted to match circadian values at the specified interval. The automation is started whenever lights have turned on and stopped whenever lights have been turned off.
+
+Room Occupancy:
+When the occupancy of the area changes to "False", all the lights in the area are turned off. The Room Occupancy is determined by the [Room Occupancy App](#room-occupancy-appdaemon) from a previous step.
 
 
+############################ APP ########################
 </p>
 </details>
 
