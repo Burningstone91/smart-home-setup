@@ -4,13 +4,13 @@ bedroom:
   area: bedroom
   attributes:
     friendly_name: Schlafzimmer
-  # occupancy_entities:
-  #   - binary_sensor.bed_sabrina: "on"
-  #   - binary_sensor.bed_dimitri: "on"
+  occupancy_entities:
+    binary_sensor.bed_dimitri: "on"
+  #   binary_sensor.bed_sabrina: "on"
   priority: 1
 
 bedroom_lights:
-  module: XXXXXXlighting
+  module: lighting
   class: AreaLighting
   area: bedroom
   motion_sensors: binary_sensor.motion_bedroom

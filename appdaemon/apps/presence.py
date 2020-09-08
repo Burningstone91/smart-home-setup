@@ -198,7 +198,7 @@ class HousePresence(AppBase):
         ]
 
         # Add/remove person from the house
-        if new == True:
+        if new == True and person_id not in persons_home:
             persons_home.append(person_id)
         elif person_id in persons_home:
             persons_home.remove(person_id)

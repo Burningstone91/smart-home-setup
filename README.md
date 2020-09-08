@@ -485,50 +485,7 @@ class AppBase(ad.ADBase):
             self.configure()
 ```
 
-In addition create a folder called utils and put a file called config_validation.py inside this folder with the following content:
-
-```python
-"""Define methods to validate configuration for voluptuous."""
-
-import datetime
-from typing import Any, Sequence, TypeVar, Union
-
-import voluptuous as vol
-
-T = TypeVar("T")  # pylint: disable=invalid-name
-
-
-def ensure_list(value: Union[T, Sequence[T]]) -> Sequence[T]:
-    """Validate if a given object is a list."""
-    if value is None:
-        return []
-    return value if isinstance(value, list) else [value]
-
-
-def entity_id(value: Any) -> str:
-    """Validate if a given object is an entity ID."""
-    value = str(value).lower()
-    if "." in value:
-        return value
-
-    raise vol.Invalid("Invalid entity ID: {0}".format(value))
-
-
-def valid_date(value: Any) -> datetime.date:
-    """Validate if a given object is a date."""
-    try:
-        return datetime.datetime.strptime(value, "%d.%m.%Y")
-    except ValueError:
-        raise vol.Invalid(f"Invalid Date: {value}")
-
-
-def valid_time(value: Any) -> datetime.datetime:
-    """Validate if a given object is a time."""
-    try:
-        return datetime.datetime.strptime(value, "%H:%M:%S")
-    except ValueError:
-        raise vol.Invalid(f"Invalid Time: {value}")
-```
+In addition create a folder called utils and put a file called config_validation.py inside this folder -> [config_validation.py](appdaemon/apps/utils/config_validation.py)
 
 Now when we create an app that usese the AppBase, it will automatically create a reference to every dependency in the app configuration. This way way we can use the methods and variables of the apps that our app depends on, to avoid redundant code. It will also do some basic config validation with Voluptuous and raise an error when you wrote "modle" instead of "module" for example. As we have multiple namespaces (HASS and MQTT), there are some variables that represent the MQTT and HASS namespace. This way you don't need to put "namespace=hass" when you call a method, instead you start the function call with "self.hass", if you want to do something in HASS namespace. Start it with "self.mqtt" to do something in MQTT namespace and start it with "self.adbase" to do something in the AppDaemon namespace (logging etc.).
 
@@ -806,61 +763,9 @@ In the AppDaemon directory should be a folder called "apps". All the following a
 
 We are going to start with the area app. The are app creates area entities that will have attributes for the persons (list of persons in area), the occupied state(True | False), the friendly name and the identifier.
 
-Create a new file called "area.py". Add the following to this file:
+Create a new file called "area.py" -> [area.py](appdaemon/apps/area.py)
 
-```python
-"""Define automations for areas."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-
-class Area(AppBase):
-    """Representation of an Area."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("area"): str,
-            vol.Optional("attributes"): vol.Schema(
-                {vol.Optional("friendly_name"): str}
-            ),
-            vol.Optional("occupancy"): vol.Schema(
-                {vol.Optional(cv.entity_id): str}
-            ),
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure an area."""
-        areas = self.adbase.get_state("area")
-        area = self.args["area"]
-        area_id = area.lower().replace(" ", "_")
-        attributes = self.args["attributes"]
-        self.area_entity = f"area.{area_id}"
-
-        # Create an entity for the area if it doesn't already exist
-        if self.area_entity not in areas.keys():
-            if "friendly_name" not in attributes:
-                attributes.update({"friendly_name": area.title()})
-
-            attributes.update(
-                {"id": area_id, "persons": [], "occupied": None, "occupancy": {}}
-            )
-
-            self.adbase.set_state(self.area_entity, state="idle", attributes=attributes)
-
-        # Listen for no changes in area state for 30 seconds
-        self.adbase.listen_state(self.on_state_change, self.area_entity, duration=30)
-
-    def on_state_change(
-        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when area doesn't change state for 30s."""
-        # Set area to idle
-        self.adbase.set_state(entity, state="idle")
-```
-Now we are going to create a configuration file to set up the areas in the house. Create a file for each area e.g. "bedroom.yaml".
+Now we are going to create a configuration file to set up the areas in the house. Create a file for each area e.g. "office.yaml".
 
 The configuration parameters are as follows:
 
@@ -870,67 +775,44 @@ key | optional | type | default | description
 `class` | False | string | Area | The name of the Class.
 `area` | False | string | | The identifier for the area.
 `attributes` | True | dict | | The attributes for the area.
+`occupancy_entities` | True | dict | | Dict of entity and "on" state for occupancy.
 
 Attributes configuration:
 key | optional | type | default | description
 -- | -- | -- | -- | --
 `friendly_name` | True | string | | The friendly name of the area.
 
+Occupancy Entities configuration:
+You can add entities and their corresponding "on" state in the config for an area. These will then be included when determining the occupancy of the room.
 
-Example:
+E.g. I want the area to be occupied when the TV (switch.tv_office) in the office is on.
+So I add the following to the area config for the office:
 
 ```yaml
-bedroom:
+  occupancy_entities:
+    switch.tv_office: "on"
+```
+
+The complete office area config then looks like this:
+
+```yaml
+office:
   module: area
   class: Area
-  area: bedroom
+  area: office
   attributes:
-    friendly_name: Schlafzimmer
+    friendly_name: Büro
+  occupancy_entities:
+    switch.tv_office: "on"
 ```
+
 Now we have an entity for each area configured this way, which exist only in AppDaemon and which we are going to use later in other apps and automations.
 
 Next the "person" app. The person app creates person entities that will have attributes for the home state (True | False), the non-binary-presence state (just_left | away | just_arrived | home | extended_away), the full name, the identifier and notifiers belonging to this person. 
 
-Create a new file called "person.py". Add the following to this file:
+Create a new file called "person.py" -> [person.py](appdaemon/apps/person.py)
 
-```python
-"""Define automations for persons."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-class Person(AppBase):
-    """Representation of a Person."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("person"): str,
-            vol.Required("attributes"): vol.Schema(
-                {
-                    vol.Required("full_name"): str,
-                    vol.Optional("notifiers"): vol.All(cv.ensure_list, [str]),
-                }
-            )
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure a person."""
-        person = self.args["person"].lower()
-        attributes = self.args["attributes"]
-        entity_id = f"person.{person}"
-
-        attributes.update(
-            {
-                "id": person,
-                "home": None,
-                "non_binary_presence": None
-            }
-        )
-
-        self.adbase.set_state(entity_id, attributes=attributes)
-```
+This app combines different factors to determine the occupancy of the room. I use this to turn off lights/devices once a room is not occupied anymore. A motion sensor alone is not sufficient, as it fails to detect motion when sitting/lying still. The app checks the persons in the room, whether motion has been detected (this is set by the motion light app later on) and whether any of the specified "occupancy" entities is "on". I still use the motion detector to turn the lights on because if I stay in the hallway close to a room, sometimes the room sensor shows me inside the room, even though I might just be standing there playing with the dog or whatever and then I don't want the lights to turn on. 
 
 Now we are going to create a configuration file to set up the persons in the household. Create a file called "persons.yaml".
 
@@ -958,71 +840,14 @@ dimitri:
   class: Person
   person: Dimitri
   attributes:
-    full_name: Dimitri Li 
+    full_name: Dimitri Li
 ```
 
 Now you have one entity for each person configured this way, which exists only in AppDaemon and which we are going to use later in other apps and automations.
 
 Next the "house" app. The house app creates house entities that will have attributes for the persons (list of persons in house), presence state (someone_home | nobody_home | vacation | everyone_home), the occupied state(True | False), the friendly name and the identifier.
 
-Create a new file called "house.py". Add the following to this file:
-
-```python
-"""Define automations for the house."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-
-
-class House(AppBase):
-    """Representation of a House."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("id"): str,
-            vol.Optional("attributes"): vol.Schema(
-                {
-                    vol.Optional("friendly_name"): str,
-                }
-            )
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure an area."""
-        houses = self.adbase.get_state("house")
-        house_id = self.args["id"]
-        attributes = self.args.get("attributes")
-        entity_id = f"house.{house_id}"
-
-        # Create an entity for the house if it doesn't already exist
-        if entity_id not in houses.keys():
-            if "friendly_name" not in attributes:
-                attributes.update({"friendly_name": area.title()})
-
-            attributes.update(
-                {
-                    "id": house_id,
-                    "persons": [],
-                    "occupied": None,
-                    "presence_state": None,
-                }
-            )
-
-            self.adbase.set_state(entity_id, state="idle", attributes=attributes) 
-
-        # Listen for no changes in house state for 30 seconds
-        self.adbase.listen_state(
-            self.state_changed, entity_id, duration=30
-        )
-
-    def state_changed(
-        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when house doesn't change state for 30s."""
-        # Set area to idle
-        self.adbase.set_state(entity, state="idle")
-```
+Create a new file called "house.py"  -> [house.py](appdaemon/apps/house.py)
 
 Now we are going to create a configuration file to set up the persons in the household. Create a file called "house.yaml".
 
@@ -1057,63 +882,7 @@ Now we have an entity for the house, which exists only in AppDaemon and which we
 Next the presence apps, which set the different attributes of the areas, persons and the house.
 The room presence app sets the area for each person entity and sets the person in the corresponding area entity whenever the room presence sensor changes state to a new state for 5 seconds. 
 
-Create a file called "presence.py" and add the following:
-
-```python
-"""Define an automation for updating a device tracker from the state of a sensor."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-
-class RoomPresence(AppBase):
-    """Define a base class for room presence."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {vol.Required("sensors"): vol.Schema({vol.Optional(str): cv.entity_id})}
-    )
-
-    def configure(self) -> None:
-        """Configure."""
-        room_presence_sensors = self.args["sensors"]
-
-        for person, sensor in room_presence_sensors.items():
-
-            # Listen for person changing area
-            self.hass.listen_state(
-                self.on_sensor_change, sensor, duration=5, person_id=person
-            )
-
-    def on_sensor_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when room presence sensor changes state."""
-        if new != old:
-            person_id = kwargs["person_id"]
-            person_entity = f"person.{person_id}"
-            areas = self.adbase.get_state("area")
-            area_entity = f"area.{new}"
-
-            # Remove person from other areas
-            for area in areas.keys():
-                if area != area_entity:
-                    persons = self.adbase.get_state(area, attribute="persons")
-                    if person_id in persons:
-                        persons.remove(person_id)
-                        self.adbase.set_state(area, persons=persons)
-
-            # Add person to new area
-            if new != "not_home":
-                persons = self.adbase.get_state(area_entity, attribute="persons")
-                if person_id not in persons:
-                    persons.append(person_id)
-                    self.adbase.set_state(area_entity, persons=persons)
-
-            # Set area for person
-            self.adbase.set_state(person_entity, area=new)
-            self.adbase.log(f"{person_id.capitalize()} Area: {new}")
-```
+Create a file called "presence.py" [Class RoomPresence - presence.py](appdaemon/apps/presence.py):
 
 Create a corresponding configuration file called "presence.yaml" and add the following:
 
@@ -1130,51 +899,7 @@ In the sensor section put the person_id (configured in the person app) and the c
 
 The person presence app sets the home state of the person to True or False based on the area the person is currently in. If the area is "not_home" for 3 minutes, the home state is set to False.
 
-Add another class in the "presence.py" file:
-
-```python
-class PersonPresence(AppBase):
-    """Define a base class for binary person presence."""
-
-    def configure(self) -> None:
-        """Configure."""
-        persons = self.adbase.get_state("person")
-
-        for person in persons.keys():
-            # Listen for person entering the house
-            self.adbase.listen_state(
-                self.on_person_arrival,
-                person,
-                attribute="area",
-            )
-
-            # area 3 minutes "not_home" -> person left
-            self.adbase.listen_state(
-                self.on_person_leave,
-                person,
-                attribute="area",
-                new="not_home",
-                duration=3 * 60
-            )
-
-    def on_person_arrival(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when person enters house."""
-        # Set person to "home"
-        not_home_states = ["not_home", "undefined", "unknown", None]
-        if new != old and old in not_home_states and new not in not_home_states:
-            self.adbase.set_state(entity, home=True)
-            self.adbase.log(f"{entity.split('.')[1].capitalize()}: home")
-            
-    def on_person_leave(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when person left house for 3 minutes."""
-        # Set person to "not home"
-        self.adbase.set_state(entity, home=False)
-        self.adbase.log(f"{entity.split('.')[1].capitalize()}: not home")
-```
+Add another class in the "presence.py"  -> [Class PersonPresence - presence.py](appdaemon/apps/presence.py)
 
 In the corresponding configuration file called "presence.yaml" and add the following:
 
@@ -1428,81 +1153,7 @@ This is based on a method of Phil Hawthorne, more details can be found in his tu
 
 The non binary presence app sets the state of the person to "just_left", "just_arrived", "home", "away" or "extended away" based on the room persons home state. 
 
-Add another class in the "presence.py" file:
-
-```python
-class NonBinaryPresence(AppBase):
-    """Define a base class for non binary person presence."""
-
-    def configure(self) -> None:
-        """Configure."""
-        persons = self.adbase.get_state("person")
-
-        for person in persons.keys():
-            # away/extended away -> just arrived
-            self.adbase.listen_state(
-                self.on_presence_change,
-                person,
-                attribute="home",
-                new=1,
-                non_binary_state="just_arrived",
-            )
-
-            # home -> just left
-            self.adbase.listen_state(
-                self.on_presence_change,
-                person,
-                attribute="home",
-                new=0,
-                non_binary_state="just_left",
-            )
-
-            # just arrived -> home, after 5 min
-            self.adbase.listen_state(
-                self.on_presence_change,
-                person,
-                attribute="non_binary_presence",
-                new="just_arrived",
-                duration=5 * 60,
-                non_binary_state="home",
-            )
-
-            # just left -> away, after 5 min
-            self.adbase.listen_state(
-                self.on_presence_change,
-                person,
-                attribute="non_binary_presence",
-                new="just_left",
-                duration=5 * 60,
-                non_binary_state="away",
-            )
-
-            # away -> extended away, after 24 hours
-            self.adbase.listen_state(
-                self.on_presence_change,
-                person,
-                attribute="non_binary_presence",
-                new="away",
-                duration=24 * 60 * 60,
-                non_binary_state="extended_away",
-            )
-
-    def on_presence_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when person changes presence state."""
-        # just left -> just arrived = home
-        if old == "just_left" and new == "just_arrived":
-            non_binary_state = "home"
-        else:
-            non_binary_state = kwargs["non_binary_state"]
-
-        # Set non binary presence state for person
-        self.adbase.set_state(entity, non_binary_presence=non_binary_state)
-        self.adbase.log(
-            f"{entity.split('.')[1].capitalize()}: {non_binary_state.replace('_',' ')}"
-        )
-```
+Add another class in the "presence.py" -> [Class NonBinaryPresence - presence.py](appdaemon/apps/presence.py)
 
 In the corresponding configuration file called "presence.yaml" and add the following:
 
@@ -1514,69 +1165,7 @@ non_binary_presence_app:
 
 The house presence app sets the state of the house to "someone_home", "nobody_home", "everyone_home" or "vacation" based on the persons peresence state.
 
-Add another class in the "presence.py" file:
-
-```python
-class HousePresence(AppBase):
-    """Define a base class for house presence."""
-
-    APP_SCHEMA = APP_SCHEMA.extend({vol.Required("house_id"): str})
-
-    def configure(self) -> None:
-        """Configure."""
-        house_id = self.args["house_id"]
-        self.house_entity_id = f"house.{house_id}"
-        persons = self.adbase.get_state("person")
-
-        # Listen for person changing home state
-        for person in persons.keys():
-            self.adbase.listen_state(self.on_presence_change, person, attribute="home")
-
-    def on_presence_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when person changes presence state."""
-        person_id = entity.split(".")[1]
-        persons = self.adbase.get_state("person")
-        
-        persons_home = self.adbase.get_state(self.house_entity_id, attribute="persons")
-        persons_extended_away = [
-            person
-            for person, attributes in persons.items()
-            if attributes["attributes"]["non_binary_presence"] == "extended_away"
-        ]
-
-        # Add/remove person from the house
-        if new == True:
-            persons_home.append(person_id)
-        elif person_id in persons_home:
-            persons_home.remove(person_id)
-
-        # Set occupancy of the house
-        if not persons_home:
-            occupied = False
-        else:
-            occupied = True
-
-        # Set presence state of the house
-        if len(persons.keys()) == len(persons_home):
-            presence_state = "everyone_home"
-        elif len(persons.keys()) == len(persons_extended_away):
-            presence_state = "vacation"
-        elif not persons_home:
-            presence_state = "nobody_home"
-        else:
-            presence_state = "someone_home"
-
-        self.adbase.set_state(
-            self.house_entity_id,
-            presence_state=presence_state,
-            occupied=occupied,
-            persons=persons_home,
-        )
-        self.adbase.log(f"House Presence: {presence_state.replace('_',' ')}")
-
-```
+Add another class in the "presence.py" -> [Class HousePresence - presence.py](appdaemon/apps/presence.py):
 
 In the corresponding configuration file called "presence.yaml" and add the following:
 
@@ -1606,147 +1195,6 @@ Now the the state of the persons non-binary presence and the presence state of t
     * At least one but not all -> house presence state = "someone home"
 * All persons' non-binary presence state neither "home" nor just arrived -> house presence state = "noone home"
 * All persons' non-binary presence state = "extended away" -> house presence state = "vacation"
-
-</p>
-</details>
-
-### Room Occupancy (AppDaemon)
-This app combines different factors to determine the occupancy of the room. I use this to turn off lights/devices once a room is not occupied anymore. A motion sensor alone is not sufficient, as it fails to detect motion when sitting/lying still. The app checks the persons in the room, whether motion has been detected (this is set by the motion light app later on) and whether any of the specified "occupancy" entities is "on". I still use the motion detector to turn the lights on because if I stay in the hallway close to a room, sometimes the room sensor shows me inside the room, even though I might just be standing there playing with the dog or whatever and then I don't want the lights to turn on. 
-
-<details><summary>Step-by-step Guide</summary>
-<p>
-
-Extend the "area.py" file to look like this:
-
-```python
-"""Define automations for areas."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-
-class Area(AppBase):
-    """Representation of an Area."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("area"): str,
-            vol.Optional("attributes"): vol.Schema(
-                {vol.Optional("friendly_name"): str}
-            ),
-            vol.Optional("occupancy"): vol.Schema(
-                {vol.Optional(cv.entity_id): str}
-            ),
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure an area."""
-        areas = self.adbase.get_state("area")
-        area = self.args["area"]
-        area_id = area.lower().replace(" ", "_")
-        attributes = self.args["attributes"]
-        self.area_entity = f"area.{area_id}"
-
-        # Create an entity for the area if it doesn't already exist
-        if self.area_entity not in areas.keys():
-            if "friendly_name" not in attributes:
-                attributes.update({"friendly_name": area.title()})
-
-            attributes.update(
-                {"id": area_id, "persons": [], "occupied": None, "occupancy": {}}
-            )
-
-            self.adbase.set_state(self.area_entity, state="idle", attributes=attributes)
-
-        # Listen for no changes in area state for 30 seconds
-        self.adbase.listen_state(self.on_state_change, self.area_entity, duration=30)
-
-        # Listen for changes in occupancy entities of area
-        if "occupancy_entities" in self.args:
-            occupancy_entities = self.args.get("occupancy_entities")
-            for entity, state in occupancy_entities.items():
-                self.hass.listen_state(
-                    self.on_occupancy_entity_change,
-                    entity,
-                    occupied_state=state,
-                )
-
-        # Listen for changes in occupancy of area
-        self.adbase.listen_state(
-            self.on_occupancy_change, self.area_entity, attribute="occupancy"
-        )
-
-        # Listen for changes in persons in area
-        self.adbase.listen_state(
-            self.on_occupancy_change, self.area_entity, attribute="persons"
-        )
-
-    def on_state_change(
-        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when area doesn't change state for 30s."""
-        # Set area to idle
-        self.adbase.set_state(entity, state="idle")
-
-    def on_occupancy_entity_change(
-        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
-    ) -> None: 
-        """Respond when occupancy factor changes."""
-        occupied_state = kwargs["occupied_state"]
-        # Determine occupancy state of entity
-        occupancy = self.adbase.get_state(self.area_entity, attribute="occupancy")
-        if new == occupied_state:
-            occupancy[entity] = True
-        else:
-            occupancy[entity] = False
-        
-        # Set state of occupancy entity
-        self.adbase.set_state(self.area_entity, occupancy=occupancy)
-        
-    def on_occupancy_change(
-        self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when occupancy factor changes."""
-        occupied = self.is_occupied(entity)
-        # Set occupancy of area
-        self.adbase.set_state(entity, occupied=occupied)
-        self.adbase.log(f"{entity.split('.')[1].capitalize()} Occupied: {occupied}")
-
-    def is_occupied(self, area: str) -> bool:
-        """Return occupancy of given area."""
-        """Return True if area is occupied."""
-        # Get state of occupancy entities
-        area_attr = self.adbase.get_state(area, attribute="attributes")
-        occupancy = area_attr["occupancy"]
-        # Check if persons in area
-        persons = len(area_attr["persons"]) > 0
-        return persons or any(value == True for key, value in occupancy.items())
-```
-
-You can now add entities and their corresponding "on" state in the config for an area. These will then be included when determining the occupancy of the room.
-
-E.g. I want the area to be occupied when the TV (switch.tv_office) in the office is on.
-So I add the following to the area config for the office:
-
-```yaml
-  occupancy_entities:
-    switch.tv_office: "on"
-```
-
-The complete office area config then looks like this:
-
-```yaml
-office:
-  module: area
-  class: Area
-  area: office
-  attributes:
-    friendly_name: Büro
-  occupancy_entities:
-    switch.tv_office: "on"
-```
 
 </p>
 </details>
@@ -1868,152 +1316,7 @@ Enter the IP or hostname of the ESP32 Sensor in the field "host", "port" can be 
 ### Make Bed Occupancy not so binary (AppDaemon)
 Same as the [not so binary presence detection](#make-presence-detection-not-so-binary-appdaemon) (just left, just arrived, home, etc.), we're going to create a not so binary bed occupancy state. The app sets the following states for the person entities' sleep state: "just laid down", "sleeping", "just got up", "awake", and "back to bed" for the "I quickly need to go to the toilet" situations. The app also sets the sleep state of the house entity to "somone in bed", "nobody in bed" and "everyone in bed".
 
-Create a file called "sleep.py" and add the following:
-
-```python
-"""Define automations for Sleeping."""
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-
-class Sleep(AppBase):
-    """Defina a class for Sleep automations."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("house_id"): str,
-            vol.Required("sensors"): vol.Schema({vol.Optional(str): cv.entity_id}),
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure."""
-        bed_sensors = self.args["sensors"]
-        self.house_entity = f"house.{self.args['house_id']}"
-
-        for person, sensor in bed_sensors.items():
-            person_entity = f"person.{person}"
-            # bed not occupied -> occupied
-            self.hass.listen_state(
-                self.on_sensor_change,
-                sensor,
-                new="on",
-                person=person_entity,
-                target_state="just_laid_down",
-            )
-            # bed occupied -> not occupied
-            self.hass.listen_state(
-                self.on_sensor_change,
-                sensor,
-                new="off",
-                person=person_entity,
-                target_state="just_got_up",
-            )
-            # just got up -> just laid down = back_to_bed
-            self.adbase.listen_state(
-                self.on_person_change,
-                person_entity,
-                attribute="sleep_state",
-                old="just_got_up",
-                new="just_laid_down",
-                target_state="back_to_bed",
-            )
-            # just laid down -> sleeping, after 5 min
-            self.adbase.listen_state(
-                self.on_person_change,
-                person_entity,
-                attribute="sleep_state",
-                new="just_laid_down",
-                duration=5 * 60,
-                target_state="sleeping",
-            )
-            # back to bed -> sleeping, after 5 min
-            self.adbase.listen_state(
-                self.on_person_change,
-                person_entity,
-                attribute="sleep_state",
-                new="back_to_bed",
-                duration=5 * 60,
-                target_state="sleeping",
-            )
-            # just got up -> awake, after 5 min
-            self.adbase.listen_state(
-                self.on_person_change,
-                person_entity,
-                attribute="sleep_state",
-                new="just_got_up",
-                duration=5 * 60,
-                target_state="awake",
-            )
-            # Listen to changes in persons' sleep state
-            self.adbase.listen_state(
-                self.on_person_change_house, person_entity, attribute="sleep_state"
-            )
-
-    def on_sensor_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when bed occupancy sensor changes state."""
-        if new != old:
-            # Set sleep state for person
-            person = kwargs["person"]
-            old_state = self.adbase.get_state(person, attribute="sleep_state")
-            target_state = kwargs["target_state"]
-
-            if old_state == "just_got_up" and target_state == "just_laid_down":
-                target_state = "back_to_bed"
-
-            self.adbase.set_state(person, sleep_state=target_state)
-            self.adbase.log(
-                f"{person.split('.')[1].capitalize()}: {target_state.replace('_',' ')}"
-            )
-
-    def on_person_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when person changes sleep state."""
-        if new != old:
-            # Set sleep state for person
-            target_state = kwargs["target_state"]
-            self.adbase.set_state(entity, sleep_state=target_state)
-            self.adbase.log(
-                f"{entity.split('.')[1].capitalize()}: {target_state.replace('_',' ')}"
-            )
-
-    def on_person_change_house(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Update the sleep state of the house."""
-        persons_home = self.adbase.get_state(self.house_entity, attribute="persons")
-        old_state = self.adbase.get_state(self.house_entity, attribute="sleep_state")
-        if set(persons_home) == set(self.persons_in_bed()):
-            target_state = "everyone_in_bed"
-        elif self.persons_in_bed():
-            target_state = "someone_in_bed"
-        else:
-            target_state = "nobody_in_bed"
-        if old_state != target_state:
-            self.adbase.set_state(self.house_entity, sleep_state=target_state)
-            self.adbase.log(f"House Sleep State: {target_state.replace('_', ' ')}")
-
-    def who_in_state(self, *states) -> list:
-        """Return list of persons in given states."""
-        persons = self.adbase.get_state("person")
-        return [
-            attributes["attributes"]["id"]
-            for attributes in persons.values()
-            if attributes["attributes"]["sleep_state"] in states
-        ]
-
-    def persons_in_bed(self) -> list:
-        """Return list of persons in bed."""
-        return self.who_in_state(
-            "just_got_up" "just_laid_down", "back_to_bed", "sleeping"
-        )
-
-```
+Create a file called "sleep.py" -> [sleep.py](appdaemon/apps/sleep.py)
 
 Create a corresponding configuration file called "sleep.yaml" and add the following:
 
@@ -2340,289 +1643,18 @@ The lights are turned on through motion and turned off through room occupancy. I
 
 The app consists of 3 parts, one for turning on the light on motion, one for adjusting the brightness of the lights to create a circadian rhythm and one for turning off the lights when everyone left the room.
 
-Motion Detection:
+**Motion Detection:**
 Below is the flow for the motion detection part:
 
 ![Alt text](/git-pictures/flowcharts/motion_light_flow.jpg?raw=true "Motion Light Flow")
 
-Adjust Brightness:
+**Adjust Brightness:**
 Brightness is adjusted to match circadian values at the specified interval. The automation is started whenever lights have turned on and stopped whenever lights have been turned off.
 
-Room Occupancy:
+**Room Occupancy:**
 When the occupancy of the area changes to "False", all the lights in the area are turned off. The Room Occupancy is determined by the [Room Occupancy App](#room-occupancy-appdaemon) from a previous step.
 
-Now to the app. Add a file called "lighting.py" and add the following:
-
-```python
-"""Define automations for lighting."""
-from color import color_temperature_to_rgb, color_temperature_kelvin_to_mired
-from enum import Enum
-from itertools import chain
-from typing import Union, Tuple
-import math
-import voluptuous as vol
-
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-
-class AreaLighting(AppBase):
-    """Define a class for Area Lighting."""
-
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("area"): str,
-            vol.Required("motion_sensors"): cv.entity_ids,
-            vol.Optional("delay_off", default=600): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=3600)
-            ),
-            vol.Optional("lights"): cv.entity_ids,
-            vol.Optional("lights_ct"): cv.entity_ids,
-            vol.Optional("lights_rgb"): cv.entity_ids,
-            vol.Optional("default_brightness", default=80): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=100)
-            ),
-            vol.Optional("lux_sensor"): cv.entity_id,
-            vol.Optional("lux_threshold", default=100): vol.Coerce(int),
-            vol.Optional("sleep_lights"): cv.entity_ids,
-            vol.Optional("sleep_lights_ct"): cv.entity_ids,
-            vol.Optional("sleep_brightness"): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=100)
-            ),
-            vol.Optional("circadian_sensor"): cv.entity_id,
-            vol.Optional("min_brightness", default=1): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=100)
-            ),
-            vol.Optional("max_brightness", default=100): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=100)
-            ),
-            vol.Optional("min_colortemp", default=2500): vol.All(
-                vol.Coerce(int), vol.Range(min=1000, max=12000)
-            ),
-            vol.Optional("max_colortemp", default=5500): vol.All(
-                vol.Coerce(int), vol.Range(min=1000, max=12000)
-            ),
-            vol.Optional("transition", default=60): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=3600)
-            ),
-            vol.Optional("update_interval", default=300): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=3600)
-            ),
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure."""
-        self.area_id = self.args["area"]
-        self.motion_sensors = self.args["motion_sensors"]
-        self.delay_off = self.args.get("delay_off")
-        self.lights = self.args.get("lights")
-        self.lights_ct = self.args.get("lights_ct")
-        self.lights_rgb = self.args.get("lights_rgb")
-        self.default_brightness = self.args.get("default_brightness")
-        self.lux_sensor = self.args.get("lux_sensor")
-        self.lux_threshold = self.args.get("lux_threshold")
-        self.sleep_lights = self.args.get("sleep_lights")
-        self.sleep_lights_ct = self.args.get("sleep_lights_ct")
-        self.sleep_brightness = self.args.get("sleep_brightness")
-        self.circadian_sensor = self.args.get("circadian_sensor")
-        self.min_brightness = self.args.get("min_brightness")
-        self.max_brightness = self.args.get("max_brightness")
-        self.min_colortemp = self.args.get("min_colortemp")
-        self.max_colortemp = self.args.get("max_colortemp")
-        self.transition = self.args.get("transition")
-        self.update_interval = self.args.get("update_interval")
-
-        # Build area entity and get friendly name
-        self.area_entity = f"area.{self.area_id}"
-        self.area_name = self.adbase.get_state(
-            self.area_entity, attribute="friendly_name"
-        )
-
-        # Create a list of all lights in the area
-        lights = [
-            self.lights,
-            self.lights_ct,
-            self.lights_rgb,
-            self.sleep_lights,
-            self.sleep_lights_ct,
-        ]
-        lights = [light for light in lights if light]
-        self.all_lights = set(chain(*lights))
-
-        # Listen for motion detected
-        for sensor in self.motion_sensors:
-            self.hass.listen_state(self.on_motion, sensor, new="on")
-
-        # Listen for changes in light state
-        if self.circadian_sensor:
-            for light in self.all_lights:
-                self.hass.listen_state(self.on_light_change, light)
-
-        # Listen for occupancy changes of area
-        self.adbase.listen_state(
-            self.on_occupancy_change, self.area_entity, attribute="occupied", new=False
-        )
-
-    def on_motion(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when motion is detected."""
-        self.adbase.log(f"Motion detected: {self.area_name}")
-        # Turn lights on if not already on
-        if not self.lights_on():
-            self.turn_lights_on()
-
-        # Set motion state of room to True
-        self.set_area_motion(True)
-
-        # Start/Restart timer to turn motion state to False
-        self.restart_motion_timer()
-
-    def on_light_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when light changes state."""
-        if new != old:
-            if new == "on":
-                if "circadian_timer" in self.handles:
-                    self.adbase.cancel_timer(self.handles["circadian_timer"])
-                    self.handles.pop("circadian_timer")
-                self.handles["circadian_timer"] = self.adbase.run_every(
-                    self.turn_lights_on,
-                    f"now+{self.update_interval}",
-                    self.update_interval,
-                    transition=self.transition,
-                )
-            elif new == "off":
-                if "motion_timer" in self.handles:
-                    self.adbase.cancel_timer(self.handles["motion_timer"])
-                    self.handles.pop("motion_timer")
-                if "circadian_timer" in self.handles:
-                    self.adbase.cancel_timer(self.handles["circadian_timer"])
-                    self.handles.pop("circadian_timer")
-
-    def on_occupancy_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when occupancy of area changed to False."""
-        for light in self.all_lights:
-            self.hass.turn_off(light)
-
-    def turn_lights_on(self, *args: list, **kwargs: dict) -> None:
-        """Turn on lights."""
-        if not self.lux_above_threshold():
-            if self.is_sleep():
-                lights = self.sleep_lights if self.sleep_lights else self.lights
-                lights_ct = (
-                    self.sleep_lights_ct if self.sleep_lights_ct else self.lights_ct
-                )
-            else:
-                lights = self.lights
-                lights_ct = self.lights_ct
-                lights_rgb = self.lights_rgb
-
-            brightness_pct = int(self.calc_brightness_pct())
-            colortemp = int(self.calc_colortemp(brightness_pct))
-            mired = color_temperature_kelvin_to_mired(colortemp)
-            rgb = (
-                tuple(map(int, self.calc_rgb(colortemp)))
-                if self.lights_rgb is not None
-                else None
-            )
-
-            transition = args[0]["transition"] if args else 0
-
-            if lights is not None:
-                for light in lights:
-                    self.hass.turn_on(
-                        light, brightness_pct=brightness_pct, transition=transition
-                    )
-            if lights_ct is not None:
-                for light in lights_ct:
-                    self.hass.turn_on(
-                        light,
-                        brightness_pct=brightness_pct,
-                        color_temp=mired,
-                        transition=transition,
-                    )
-            if lights_rgb is not None:
-                for light in lights_rgb:
-                    self.hass.turn_on(
-                        light,
-                        brightness_pct=brightness_pct,
-                        color_temp=mired,
-                        rgb_color=rgb,
-                        transition=transition,
-                    )
-
-    def set_area_motion(self, motion: bool) -> None:
-        """Set motion of area."""
-        occupancy = self.adbase.get_state(self.area_entity, attribute="occupancy")
-        occupancy["motion"] = motion
-        self.adbase.set_state(self.area_entity, occupancy=occupancy)
-
-    def restart_motion_timer(self) -> None:
-        """Set/Reset timer to set occupany of are to False."""
-        if "motion_timer" in self.handles:
-            self.adbase.cancel_timer(self.handles["motion_timer"])
-            self.handles.pop("motion_timer")
-        self.handles["motion_timer"] = self.adbase.run_in(
-            self.disable_area_motion, self.delay_off
-        )
-
-    def disable_area_motion(self, *args: list) -> None:
-        """Set area motion to False."""
-        self.set_area_motion(False)
-
-    def calc_brightness_pct(self) -> float:
-        """Calculate brightness percentage."""
-        if self.is_sleep() and self.sleep_brightness:
-            return self.sleep_brightness
-        else:
-            if self.circadian_sensor:
-                brightness_pct = self.hass.get_state(self.circadian_sensor)
-                if float(brightness_pct) > 0:
-                    return self.max_brightness
-                else:
-                    return (
-                        (self.max_brightness - self.min_brightness)
-                        * ((100 + float(brightness_pct)) / 100)
-                    ) + self.min_brightness
-            else:
-                return self.default_brightness
-
-    def calc_colortemp(self, brightness_pct: float) -> float:
-        if brightness_pct > 0:
-            return (
-                (self.max_colortemp - self.min_colortemp) * (brightness_pct / 100)
-            ) + self.min_colortemp
-        else:
-            return self.min_colortemp
-
-    def calc_rgb(self, colortemp: int) -> list:
-        return color_temperature_to_rgb(colortemp)
-
-    def lux_above_threshold(self) -> bool:
-        """Return true if lux is above threshold."""
-        if self.lux_sensor:
-            value = float(self.hass.get_state(self.lux_sensor))
-            return value > self.lux_threshold
-        else:
-            return False
-
-    def lights_on(self) -> list:
-        """Return lights currently on."""
-        return [
-            entity for entity in self.all_lights if self.hass.get_state(entity) == "on"
-        ]
-
-    def is_sleep(self) -> bool:
-        """Return true if someone is asleep."""
-        sleep_state = self.adbase.get_state(self.area_entity, attribute="sleep_state")
-        return sleep_state != "nobody_in_bed"
-
-```
+Now to the app. Add a file called "lighting.py" -> [lighting.py](appdaemon/apps/lighting.py)
 
 Now add the configuration for the app to the individual area yaml files. 
 
@@ -2678,3 +1710,13 @@ bedroom_lights:
 </details>
 
 
+
+
+
+
+##
+### Configure Unifi in Home Assistant
+#### Configure via UI
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Unifi" and click on it.
+Enter the IP of your Unifi Controller in the field "host".
+Enter your username and password and press "SUBMIT"

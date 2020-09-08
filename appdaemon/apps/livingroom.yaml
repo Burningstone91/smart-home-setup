@@ -9,11 +9,12 @@ livingroom:
   priority: 1
 
 livingroom_lights:
-  module: XXXXXXlighting
+  module: lighting
   class: AreaLighting
   area: livingroom
   motion_sensors: binary_sensor.motion_livingroom
   delay_off: 600
   lights_rgb: light.livingroom
+  default_brightness: 60
   min_colortemp: 2000
   max_colortemp: 6500

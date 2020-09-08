@@ -139,7 +139,9 @@ class AreaLighting(AppBase):
                     transition=self.transition,
                 )
             elif new == "off":
+                # Set motion to False and cancel any existing timers
                 if "motion_timer" in self.handles:
+                    self.set_area_motion(False)
                     self.adbase.cancel_timer(self.handles["motion_timer"])
                     self.handles.pop("motion_timer")
                 if "circadian_timer" in self.handles:
@@ -156,11 +158,10 @@ class AreaLighting(AppBase):
     def turn_lights_on(self, *args: list, **kwargs: dict) -> None:
         """Turn on lights."""
         if not self.lux_above_threshold():
-            if self.is_sleep():
-                lights = self.sleep_lights if self.sleep_lights else self.lights
-                lights_ct = (
-                    self.sleep_lights_ct if self.sleep_lights_ct else self.lights_ct
-                )
+            if self.is_sleep() and self.sleep_brightness:
+                lights = self.sleep_lights
+                lights_ct = self.sleep_lights_ct
+                lights_rgb = []
             else:
                 lights = self.lights
                 lights_ct = self.lights_ct
@@ -169,20 +170,16 @@ class AreaLighting(AppBase):
             brightness_pct = int(self.calc_brightness_pct())
             colortemp = int(self.calc_colortemp(brightness_pct))
             mired = color_temperature_kelvin_to_mired(colortemp)
-            rgb = (
-                tuple(map(int, self.calc_rgb(colortemp)))
-                if self.lights_rgb is not None
-                else None
-            )
+            rgb = tuple(map(int, self.calc_rgb(colortemp)))
 
             transition = args[0]["transition"] if args else 0
 
-            if lights is not None:
+            if lights:
                 for light in lights:
                     self.hass.turn_on(
                         light, brightness_pct=brightness_pct, transition=transition
                     )
-            if lights_ct is not None:
+            if lights_ct:
                 for light in lights_ct:
                     self.hass.turn_on(
                         light,
@@ -190,21 +187,18 @@ class AreaLighting(AppBase):
                         color_temp=mired,
                         transition=transition,
                     )
-            if lights_rgb is not None:
+            if lights_rgb:
                 for light in lights_rgb:
                     self.hass.turn_on(
                         light,
                         brightness_pct=brightness_pct,
-                        color_temp=mired,
                         rgb_color=rgb,
                         transition=transition,
                     )
 
     def set_area_motion(self, motion: bool) -> None:
         """Set motion of area."""
-        occupancy = self.adbase.get_state(self.area_entity, attribute="occupancy")
-        occupancy["motion"] = motion
-        self.adbase.set_state(self.area_entity, occupancy=occupancy)
+        self.adbase.set_state(self.area_entity, motion=motion)
 
     def restart_motion_timer(self) -> None:
         """Set/Reset timer to set occupany of are to False."""
