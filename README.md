@@ -761,6 +761,7 @@ For the room presence detection, we are going to create one app for areas, one a
 
 In the AppDaemon directory should be a folder called "apps". All the following apps need to be created inside this directory. 
 
+##### Area
 We are going to start with the area app. The are app creates area entities that will have attributes for the persons (list of persons in area), the occupied state(True | False), the friendly name and the identifier.
 
 Create a new file called "area.py" -> [area.py](appdaemon/apps/area.py)
@@ -808,6 +809,7 @@ office:
 
 Now we have an entity for each area configured this way, which exist only in AppDaemon and which we are going to use later in other apps and automations.
 
+##### Person
 Next the "person" app. The person app creates person entities that will have attributes for the home state (True | False), the non-binary-presence state (just_left | away | just_arrived | home | extended_away), the full name, the identifier and notifiers belonging to this person. 
 
 Create a new file called "person.py" -> [person.py](appdaemon/apps/person.py)
@@ -845,6 +847,7 @@ dimitri:
 
 Now you have one entity for each person configured this way, which exists only in AppDaemon and which we are going to use later in other apps and automations.
 
+##### House
 Next the "house" app. The house app creates house entities that will have attributes for the persons (list of persons in house), presence state (someone_home | nobody_home | vacation | everyone_home), the occupied state(True | False), the friendly name and the identifier.
 
 Create a new file called "house.py"  -> [house.py](appdaemon/apps/house.py)
@@ -879,7 +882,10 @@ house:
 ```
 Now we have an entity for the house, which exists only in AppDaemon and which we are going to use later in other apps and automations.
 
+##### Presence
 Next the presence apps, which set the different attributes of the areas, persons and the house.
+
+###### Room Presence
 The room presence app sets the area for each person entity and sets the person in the corresponding area entity whenever the room presence sensor changes state to a new state for 5 seconds. 
 
 Create a file called "presence.py" [Class RoomPresence - presence.py](appdaemon/apps/presence.py):
@@ -897,6 +903,7 @@ room_presence_app:
 
 In the sensor section put the person_id (configured in the person app) and the corresponding room presence sensor. 
 
+###### Person Presence
 The person presence app sets the home state of the person to True or False based on the area the person is currently in. If the area is "not_home" for 3 minutes, the home state is set to False.
 
 Add another class in the "presence.py"  -> [Class PersonPresence - presence.py](appdaemon/apps/presence.py)
