@@ -85,7 +85,7 @@ class PersonPresence(AppBase):
         if new != old and old in not_home_states and new not in not_home_states:
             self.adbase.set_state(entity, home=True)
             self.adbase.log(f"{entity.split('.')[1].capitalize()}: home")
-            
+
     def on_person_leave(
         self, entity: str, attribute: str, old: str, new: str, kwargs: dict
     ) -> None:
@@ -160,7 +160,7 @@ class NonBinaryPresence(AppBase):
 
         if old_state == "just_left" and non_binary_state == "just_arrived":
             non_binary_state = "home"
-            
+
         # Set non binary presence state for person
         self.adbase.set_state(entity, non_binary_presence=non_binary_state)
         self.adbase.log(
@@ -189,7 +189,7 @@ class HousePresence(AppBase):
         """Respond when person changes presence state."""
         person_id = entity.split(".")[1]
         persons = self.adbase.get_state("person")
-        
+
         persons_home = self.adbase.get_state(self.house_entity_id, attribute="persons")
         persons_extended_away = [
             person
@@ -198,7 +198,7 @@ class HousePresence(AppBase):
         ]
 
         # Add/remove person from the house
-        if new == True and person_id not in persons_home:
+        if new and person_id not in persons_home:
             persons_home.append(person_id)
         elif person_id in persons_home:
             persons_home.remove(person_id)

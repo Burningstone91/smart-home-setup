@@ -1,12 +1,9 @@
 """Define automations for lighting."""
-from color import color_temperature_to_rgb, color_temperature_kelvin_to_mired
-from enum import Enum
 from itertools import chain
-from typing import Union, Tuple
-import math
 import voluptuous as vol
 
 from appbase import AppBase, APP_SCHEMA
+from color import color_temperature_to_rgb, color_temperature_kelvin_to_mired
 from utils import config_validation as cv
 
 
@@ -170,9 +167,9 @@ class AreaLighting(AppBase):
             brightness_pct = int(self.calc_brightness_pct())
             colortemp = int(self.calc_colortemp(brightness_pct))
             mired = color_temperature_kelvin_to_mired(colortemp)
-            rgb = tuple(map(int, self.calc_rgb(colortemp)))
+            rgb = tuple(map(int, color_temperature_to_rgb(colortemp)))
 
-            transition = args[0]["transition"] if args else 0
+            transition = args[0]["transition"] if args else 2
 
             if lights:
                 for light in lights:
@@ -217,37 +214,35 @@ class AreaLighting(AppBase):
         """Calculate brightness percentage."""
         if self.is_sleep() and self.sleep_brightness:
             return self.sleep_brightness
-        else:
-            if self.circadian_sensor:
-                brightness_pct = self.hass.get_state(self.circadian_sensor)
-                if float(brightness_pct) > 0:
-                    return self.max_brightness
-                else:
-                    return (
-                        (self.max_brightness - self.min_brightness)
-                        * ((100 + float(brightness_pct)) / 100)
-                    ) + self.min_brightness
-            else:
-                return self.default_brightness
+
+        if self.circadian_sensor:
+            brightness_pct = self.hass.get_state(self.circadian_sensor)
+            if float(brightness_pct) > 0:
+                return self.max_brightness
+
+            return (
+                (self.max_brightness - self.min_brightness)
+                * ((100 + float(brightness_pct)) / 100)
+            ) + self.min_brightness
+
+        return self.default_brightness
 
     def calc_colortemp(self, brightness_pct: float) -> float:
+        """Calculate color temperature based on brightness."""
         if brightness_pct > 0:
             return (
                 (self.max_colortemp - self.min_colortemp) * (brightness_pct / 100)
             ) + self.min_colortemp
-        else:
-            return self.min_colortemp
 
-    def calc_rgb(self, colortemp: int) -> list:
-        return color_temperature_to_rgb(colortemp)
+        return self.min_colortemp
 
     def lux_above_threshold(self) -> bool:
         """Return true if lux is above threshold."""
         if self.lux_sensor:
             value = float(self.hass.get_state(self.lux_sensor))
             return value > self.lux_threshold
-        else:
-            return False
+
+        return False
 
     def lights_on(self) -> list:
         """Return lights currently on."""
@@ -259,4 +254,3 @@ class AreaLighting(AppBase):
         """Return true if someone is asleep."""
         sleep_state = self.adbase.get_state(self.area_entity, attribute="sleep_state")
         return sleep_state != "nobody_in_bed"
-

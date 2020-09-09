@@ -28,7 +28,7 @@ class House(AppBase):
         # Create an entity for the house if it doesn't already exist
         if entity_id not in houses.keys():
             if "friendly_name" not in attributes:
-                attributes.update({"friendly_name": area.title()})
+                attributes.update({"friendly_name": house_id.title()})
 
             attributes.update(
                 {
@@ -40,7 +40,7 @@ class House(AppBase):
                 }
             )
 
-            self.adbase.set_state(entity_id, state="idle", attributes=attributes) 
+            self.adbase.set_state(entity_id, state="idle", attributes=attributes)
 
         # Listen for no changes in house state for 30 seconds
         self.adbase.listen_state(

@@ -1723,7 +1723,11 @@ bedroom_lights:
 
 ##
 ### Configure Unifi in Home Assistant
-#### Configure via UI
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Unifi" and click on it.
 Enter the IP of your Unifi Controller in the field "host".
+Enter your username and password and press "SUBMIT"
+
+### Configure Denon AVR in Home Assistant
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Denon AVR" and click on it.
+Enter the IP of your Denon AVR in the field "IP address".
 Enter your username and password and press "SUBMIT"

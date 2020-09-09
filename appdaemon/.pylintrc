@@ -1,0 +1,34 @@
+[MESSAGES CONTROL]
+# Reasons disabled:
+# attribute-defined-outside-init - AppDaemon doesn't give access to __init__
+# bad-continuation - Incorrect attack on black
+# import-error
+# too-many-arguments - Lots of AppDaemon callbacks have lots of arguments
+# unnecessary-pass - This can hurt readability
+# unused-argument - Not all callback arguments are used
+disable=
+  attribute-defined-outside-init,
+  bad-continuation,
+  import-error,
+  too-many-arguments,
+  unnecessary-pass,
+  unused-argument
+
+[REPORTS]
+reports=no
+
+[FORMAT]
+expected-line-ending-format=LF
+
+[SIMILARITIES]
+#Minimum lines number of a similarity.
+min-similarity-lines=10
+
+# Ignore comments when computing similarities.
+ignore-comments=yes
+
+# Ignore docstrings when computing similarities.
+ignore-docstrings=yes
+
+# Ignore imports when computing similarities.
+ignore-imports=no

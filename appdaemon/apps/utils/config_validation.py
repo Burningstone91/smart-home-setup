@@ -31,7 +31,7 @@ def entity_ids(value: Union[str, list]):
         value = [ent_id.strip() for ent_id in value.split(",")]
 
     return [entity_id(ent_id) for ent_id in value]
-    
+
 def valid_date(value: Any) -> datetime.date:
     """Validate if a given object is a date."""
     try:
@@ -46,4 +46,3 @@ def valid_time(value: Any) -> datetime.datetime:
         return datetime.datetime.strptime(value, "%H:%M:%S")
     except ValueError:
         raise vol.Invalid(f"Invalid Time: {value}")
-

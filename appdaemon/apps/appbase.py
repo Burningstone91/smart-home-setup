@@ -1,8 +1,7 @@
 """Define a generic object which  all apps/automations inherit from."""
-from datetime import datetime as dt
-from typing import Union, Optional
-import adbase as ad
 import voluptuous as vol
+
+import adbase as ad
 
 from utils import config_validation as cv
 

@@ -128,7 +128,7 @@ class Sleep(AppBase):
             target_state = "everyone_in_bed"
         else:
             target_state = "someone_in_bed"
-          
+
         if old_state != target_state:
             self.adbase.set_state(self.house_entity, sleep_state=target_state)
             self.adbase.log(f"House Sleep State: {target_state.replace('_', ' ')}")

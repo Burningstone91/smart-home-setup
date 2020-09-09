@@ -4,8 +4,8 @@ livingroom:
   area: livingroom
   attributes:
     friendly_name: Wohnzimmer
-  # occupancy_entities:
-  #   - media_player.receiver_livingroom: "on"
+  occupancy_entities:
+    media_player.receiver_livingroom: "on"
   priority: 1
 
 livingroom_lights:
