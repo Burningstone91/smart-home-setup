@@ -36,10 +36,3 @@ office_light_switch:
       entity_id: 
         - media_player.buero_musik_main
         - light.office
-
-
-office_light_switch_test:
-  module: switches
-  class: XiaomiWXKG01LM
-  switch_id: switch_43
-  lights: light.office

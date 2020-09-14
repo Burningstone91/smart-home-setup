@@ -47,6 +47,9 @@ I will explain here the different parts of my home automation system and how I s
 * <a href="https://github.com/Burningstone91/smart-home-setup#lighting">
       Lighting
   </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#switches">
+      switches
+  </a>
 
 ## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"></a>
 
@@ -55,14 +58,14 @@ First some preparations and the install of [Home Assistant](https://www.home-ass
 ### Hardware used
 <table align="center" border="0">
 <tr>
-<td align="center" style="width:20%;">
+<td align="center" style="width:50%;">
 Intel NUC
 </td>
 </tr>
 
 <tr>
-<td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/nuc.jpg" raw=true height="100" alt="NUC" />
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/nuc.jpg" raw=true height="200" alt="NUC" />
 </td>
 </tr>
 
@@ -1226,10 +1229,10 @@ NodeMCU ESP32
 
 <tr>
 <td align="center" style="width:50%;">
-<img src="git-pictures/device_pictures/esp32.jpg" raw=true height="100" alt="ESP32" />
+<img src="git-pictures/device_pictures/esp32.jpg" raw=true height="250" alt="ESP32" />
 </td>
 <td align="center" style="width:50%;">
-<img src="git-pictures/device_pictures/pressure_mats.jpg" raw=true height="100" alt="Pressure Mats" />
+<img src="git-pictures/device_pictures/pressure_mats.jpg" raw=true height="250" alt="Pressure Mats" />
 </td>
 </tr>
 
@@ -1563,7 +1566,7 @@ The lighting behaviour is determined by motion, occupancy and light level in the
 <table align="center" border="0">
 <tr>
 <td align="center" style="width:20%;">
-Philips Hue Bulbs (8x Color E27, 3x White Ambiance GU10, 1x LED strip 5m)
+Philips Hue Bulbs (8x Color E27, 3x White GU10, 1x LED strip 5m)
 </td>
 <td align="center" style="width:20%;">
 1x IKEA Tradfri Plug
@@ -1581,19 +1584,19 @@ Philips Hue Bulbs (8x Color E27, 3x White Ambiance GU10, 1x LED strip 5m)
 
 <tr>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="100" alt="Philips Hue" />
+<img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="150" alt="Philips Hue" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="100" alt="IKEA Plug" />
+<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="150" alt="IKEA Plug" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/hue_motion.jpg" raw=true height="100" alt="Hue Motion" />
+<img src="git-pictures/device_pictures/hue_motion.jpg" raw=true height="150" alt="Hue Motion" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/aeotec_multi.jpg" raw=true height="100" alt="Aeotec Multisensor" />
+<img src="git-pictures/device_pictures/aeotec_multi.jpg" raw=true height="150" alt="Aeotec Multisensor" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/xiaomi_lux.jpg" raw=true height="100" alt="Xiaomi Lux" />
+<img src="git-pictures/device_pictures/xiaomi_lux.jpg" raw=true height="150" alt="Xiaomi Lux" />
 </td>
 </tr>
 
@@ -1674,16 +1677,16 @@ key | optional | type | default | description
 `area` | False | string | | The identifier for the area.
 `motion_sensors` | False | str, list | | List of motion sensor entity_ids.
 `delay_off` | True | int | 600 | Time in seconds until motion is turned off.
-`lights` | True | str, list | | List of light entity_ids for which only brightness should be set.
-`lights_ct` | True | str, list | | List of light entity_ids for which brightness and color temperature should be set.
-`lights_rgb` | True | str, list | | List of light entity_ids for which brightness, color temperature and RGB color should be set.
+`lights` | True | string, list | | List of light entity_ids for which only brightness should be set.
+`lights_ct` | True | string, list | | List of light entity_ids for which brightness and color temperature should be set.
+`lights_rgb` | True | string, list | | List of light entity_ids for which brightness, color temperature and RGB color should be set.
 `default_brightness` | True | int | 80 | Brightness in % to set light to. Needed if circadian sensor is not used.
-`lux_sensor` | True | str | | Entity_id of the light level sensor.
+`lux_sensor` | True | string | | Entity_id of the light level sensor.
 `lux_threshold` | True | int | 100 | Lux level below which light will not be turned on.
-`sleep_lights` | True | str, list | | List of light entity_ids to be used in sleep mode for which only brightness should be adjusted.
-`sleep_lights_ct` | True | str, list | | List of light entity_ids to be used in sleep mode for which brightness and color temperature should be adjusted.
+`sleep_lights` | True | string, list | | List of light entity_ids to be used in sleep mode for which only brightness should be adjusted.
+`sleep_lights_ct` | True | string, list | | List of light entity_ids to be used in sleep mode for which brightness and color temperature should be adjusted.
 `sleep_brightness` | True | int | | Brightness in % to be used in sleep mode. If not configured sleep mode will be ignored.
-`circadian_sensor` | True | str | | Entity_id of the circadian lighting sensor. If not configured lights will be turned on to default brightness and no periodical adjustment will take place.
+`circadian_sensor` | True | string | | Entity_id of the circadian lighting sensor. If not configured lights will be turned on to default brightness and no periodical adjustment will take place.
 `max_brightness` | True | int | 100 | Maximum brightness in %. Used in conjunction with circadian sensor.
 `min_brightness` | True | int | 1 | Minimum brightness in %. Used in conjunction with circadian sensor.
 `max_colortemp` | True | int | 12000 | Maximum color temperature. Used in conjunction with circadian sensor.
@@ -1717,9 +1720,171 @@ bedroom_lights:
 </details>
 
 
+## Switches/Remotes <a name="switches" href="https://github.com/Burningstone91/smart-home-setup#switches"></a>
+### Basic Explanation of Setup
+
+We use multiple switches/remotes around the house to control different things, mostly lights. The [Switches app](#switches-appdaemon) is used to contorl the behaviour of the switches/remotes. A remote can be configured as a light switch to automatically set certain light related behaviour, e.g. press ON button -> turn light on, hold DIM UP button -> increase brightness etc. 
+
+### Hardware used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:25%;">
+6x Philips Hue Dimmer Switch
+</td>
+<td align="center" style="width:25%;">
+2x IKEA Tradfri Switch
+</td>
+<td align="center" style="width:25%;">
+1x IKEA Symfonisk Controller
+</td>
+<td align="center" style="width:25%;">
+1x Xiaomi Mi Round Switch
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/hue_dimmer.jpg" raw=true height="100" alt="Hue Dimmer" />
+</td>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/ikea_tradfri_switch.png" raw=true height="100" alt="IKEA Switch" />
+</td>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/ikea_symfonisk_controller.png" raw=true height="100" alt="IKEA Symfonisk" />
+</td>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/xiaomi_round_switch.jpg" raw=true height="100" alt="Xiaomi Round Switch" />
+</td>
+</tr>
+
+<tr><td colspan="5">
+The Hue Dimmer Switches are used to replace the dumb light switches and as a master control for me and my wife next to the bed on the respective side. The IKEA Symfonisk Controller is used to control music volume and lights in the office for when I'm doing Home Office. The IKEA Tradfri Switches are used to control some basic lights on the balcony and the Xiaomi Switch is currently looking for a job :)
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Adding switches/remotes to the ZigBee network (Xiaomi, Philips, IKEA)
+Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute the following steps to integrate a switch/remote control:
+
+* In Phoscon go to Devices -> Switches and press "Add new switch" at the bottom of the page.
+* Choose "Philips" for the Hue Dimmer Switch and "Other" for the Xiaomi switch and IKEA switch/symfonisk.
+* Enable Pairing Mode on the device:
+  * Philips Hue Dimmer: Press and hold the small button in the hole on the back until the LED on the front blinks orange.
+  * IKEA Tradfri Switch: Loosen the screw on the back and remove the cover, press the button 4 times within 5 seconds.
+  * IKEA Symfonisk Controller: Loosen the screw on the back and remove the cover, press the button for approx. 10 seconds.
+  * Xiaomi Round Switch: Press and hold the small button in the hole on the back of the switch until the blue LED starts to blink.
+
+The switch should now show up in Phoscon. Switches will only show up as a battery entity within Home Assistant, the button presses are handled through events rather than entities. You can see what event occurs on which button press by going to (within Home Assistant) Developer Tools and then choose the events tab. In the Box "Listen to events" enter "deconz_event" in the field "Event to subscribe to" and press "START LISTENING". You should now see events like this, whenever you press a button on a remote.
+
+```json
+{
+    "event_type": "deconz_event",
+    "data": {
+        "id": "hue_dimmer_light_bedroom",
+        "unique_id": "00:15:8d:00:04:02:37:01",
+        "event": 1002
+    },
+    "origin": "LOCAL",
+    "time_fired": "2020-09-14T17:54:15.489321+00:00",
+    "context": {
+        "id": "4de8a92df6b311eaad170977b70ca3b3",
+        "parent_id": null,
+        "user_id": null
+    }
+}
+```
+
+In the above example the switch can be identified by `hue_dimmer_light_bedroom` and the event was `1002`. In the AppDaemon app created in the next section, these events are translated to button presses and the buttons can easily be configured to call a service or execute a script. 
+
+### Switches (AppDaemon)
+The app can be used with switches/remotes from different manufacturares like Xiaomi, IKEA and Philips. The currently implemented switches/remotes and their default behaviour is listed in the below section. Each switch is configured to have a default light behaviour, e.g. when you press turn on button it turns on the light.
+
+Now to the app. Add a file called "switches.py" -> [switches.py](appdaemon/apps/switches.py)
+
+Now add the configuration for the app to the individual area yaml files. There is a separate class for each type of switch/remote, this way it's easy to add new switches and configure default behaviour for them. Below are the currently implemented switches/remotes, the name of the the corresponding class and their default light behaviour.
+
+* Philips Hue Dimmer Switch -> Class: HueDimmerSwitch
+  * Short release Turn On -> Turn light on
+  * Long press Turn On -> Turn light on at 100%
+  * Short release Dim Up -> Increase brightness by 10%
+  * Long press Dim Up -> Smoothly increase brightness until released
+  * Long release Dim Up -> Stop light dimming
+  * Short release Dim Down -> Decrease brightness by 10%
+  * Long press Dim Down -> Smoothly decrease brightness until released
+  * Long release Dim Down -> Stop light dimming
+  * Short release Turn Off -> Turn light off
+* Xiaomi Mi Round Wireless Switch -> Class: XiaomiWXKG01LM
+  * Short release -> Toggle light
+  * Double press -> Turn light on at 100%
+  * Long press -> Smoothly increase brightness until released
+  * Long release -> Stop light dimming
+* Xiaomi Aqara Wireless Button 2016 version -> Class: XiaomiWXKG11LM2016
+  * Short press -> Toggle light
+  * Double press -> Turn light on at 100%
+* IKEA Tradfri On/Off Switch -> Class: IKEATradfriE1743
+  * Short release Turn On -> Turn light on
+  * Long press Turn On -> Smoothly increase brightness until released
+  * Long release Turn On -> Stop light dimming
+  * Short release Turn Off -> Turn light off
+  * Long press Turn Off -> Smoothly decrease brightness until released
+  * Long release Turn Off -> Stop light dimming
+* IKEA Symfonisk Sound Controller -> Class: IKEASymfonisk
+  * Short press -> Toggle light
+  * Double press -> Turn light on at 100%
+
+The configuration parameters are as follows:
+
+key | optional | type | default | description
+-- | -- | -- | -- | --
+`module` | False | string | switches | The module name of the app.
+`class` | False | string | | The name of the Class for the type of controller used.
+`switch_id` | False | str | | The idenfitifier of the switch/remote. Can be found in the field "id" in the event message.
+`lights` | True | string, list | | List of light entity_ids. If set, the default light behaviour will be applied to the switch/remote.
+`custom_button_config` | True | dict | | Configuration for unused button presses or to override button presses of the default light behaviour if enabled.
+
+Attributes configuration:
+key | optional | type | default | description
+-- | -- | -- | -- | --
+`service` | False | string | | The service to be executed, e.g. light.turn_on.
+`service` | True | string, list | | List of entity_ids to be used with the service call.
+`data` | True | dict | | Dict of additonal service data, e.g. brightness_pct to 100%.
 
 
+Example to configure turn on the lights in the office and living room at 100% brightness, on a long press of the Turn On button:
 
+```yaml
+custom_button_config:
+  long_press_turn_on:
+    service: light.turn_on
+    entity_id: 
+      - light.office
+      - light.livingroom
+    data:
+      brightness_pct: 100
+
+```
+
+Full example:
+
+```yaml
+office_light_switch:
+  module: switches
+  class: HueDimmerSwitch
+  switch_id: hue_dimmer_office
+  lights: light.office
+  custom_button_config:
+    long_press_turn_off:
+      service: homeassistant.turn_off
+      entity_id: 
+        - media_player.office
+        - light.office
+```
+When I need more complex actions on a button press, like calling multiple services with delays in between etc., I create a script in Home Assistant and call this script from the button press.
+
+</p>
+</details>
 
 ##
 ### Configure Unifi in Home Assistant

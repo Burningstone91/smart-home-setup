@@ -236,7 +236,7 @@ class XiaomiWXKG11LM2016(SwitchBase):
         }
 
 
-class TradfriE1743(SwitchBase):
+class IKEATradfriE1743(SwitchBase):
     """Define a base feature for IKEA Tradfri E1743 Switch."""
 
     def configure(self) -> None:
@@ -262,7 +262,7 @@ class TradfriE1743(SwitchBase):
         }
 
 
-class Symfonisk(SwitchBase):
+class IKEASymfonisk(SwitchBase):
     """Define a base feature for IKEA Symfonisk Sound Controller."""
 
     def configure(self) -> None:
