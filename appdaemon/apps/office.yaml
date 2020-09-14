@@ -7,7 +7,8 @@ office:
   occupancy_entities:
     device_tracker.desktop_dimitri: "home"
     device_tracker.desktop_sabrina: "home"
-  # media_player.receiver_office: "on"
+    device_tracker.laptop_work: "home"
+    media_player.receiver_office: "on"
   priority: 1
 
 office_lights:
@@ -18,9 +19,27 @@ office_lights:
   delay_off: 600
   lights_ct: light.office
   lux_sensor: sensor.lux_office
-  lux_threshold: 400
+  lux_threshold: 250
   circadian_sensor: sensor.circadian_values
   min_brightness: 80
   min_colortemp: 2000
   max_colortemp: 6500
-  
+
+office_light_switch:
+  module: switches
+  class: HueDimmerSwitch
+  switch_id: dimmschalter_buero
+  lights: light.office
+  custom_button_config:
+    long_press_turn_off:
+      service: homeassistant.turn_off
+      entity_id: 
+        - media_player.buero_musik_main
+        - light.office
+
+
+office_light_switch_test:
+  module: switches
+  class: XiaomiWXKG01LM
+  switch_id: switch_43
+  lights: light.office

@@ -22,3 +22,62 @@ bedroom_lights:
   min_colortemp: 2000
   max_colortemp: 6500
   update_interval: 900
+
+bedroom_light_switch:
+  module: switches
+  class: HueDimmerSwitch
+  switch_id: dimmschalter_schlafzimmer
+  lights: light.bedroom
+  custom_button_config:
+    long_press_on:
+      service: switch.turn_on
+      entity_id: switch.dehumidifier_bedroom
+    long_press_turn_off:
+      service: homeassistant.turn_off
+      entity_id: 
+        - switch.dehumidifier_bedroom
+        - light.bedroom
+
+bedroom_sabrina_switch:
+  module: switches
+  class: HueDimmerSwitch
+  switch_id: dimmschalter_sabrina
+  custom_button_config:
+    short_release_turn_on:
+      service: light.turn_on
+      entity_id: 
+        - light.bedroom_bed
+    long_press_turn_on:
+      service: light.turn_on
+      entity_id: 
+        - light.bedroom_ceiling
+    short_press_turn_off:
+      service: homeassistant.turn_off
+      entity_id: 
+        - switch.dehumidifier_bedroom
+        - light.bedroom
+        - light.livingroom
+        - light.dressroom
+        - light.office
+
+bedroom_dimitri_switch:
+  module: switches
+  class: HueDimmerSwitch
+  switch_id: dimmschalter_dimitri
+  custom_button_config:
+    short_release_turn_on:
+      service: light.turn_on
+      entity_id: 
+        - light.bedroom_bed
+    long_press_turn_on:
+      service: light.turn_on
+      entity_id: 
+        - light.bedroom_ceiling
+    short_press_turn_off:
+      service: homeassistant.turn_off
+      entity_id: 
+        - switch.dehumidifier_bedroom
+        - light.bedroom
+        - light.livingroom
+        - light.dressroom
+        - light.office

@@ -167,6 +167,8 @@ COLORS = {
 class XYPoint:
     """Represents a CIE 1931 XY coordinate pair."""
 
+    # pylint: disable=too-few-public-methods
+
     x: float = attr.ib()  # pylint: disable=invalid-name
     y: float = attr.ib()  # pylint: disable=invalid-name
 
@@ -174,6 +176,8 @@ class XYPoint:
 @attr.s()
 class GamutType:
     """Represents the Gamut of a light."""
+
+    # pylint: disable=too-few-public-methods
 
     # ColorGamut = gamut(xypoint(xR,yR),xypoint(xG,yG),xypoint(xB,yB))
     red: XYPoint = attr.ib()
@@ -248,6 +252,7 @@ def color_xy_to_RGB(
     vX: float, vY: float, Gamut: Optional[GamutType] = None
 ) -> Tuple[int, int, int]:
     """Convert from XY to a normalized RGB."""
+
     return color_xy_brightness_to_RGB(vX, vY, 255, Gamut)
 
 
@@ -257,6 +262,7 @@ def color_xy_brightness_to_RGB(
     vX: float, vY: float, ibrightness: int, Gamut: Optional[GamutType] = None
 ) -> Tuple[int, int, int]:
     """Convert from XYZ to RGB."""
+    # pylint: disable=too-many-locals
     if Gamut:
         if not check_point_in_lamps_reach((vX, vY), Gamut):
             xy_closest = get_closest_point_to_point((vX, vY), Gamut)

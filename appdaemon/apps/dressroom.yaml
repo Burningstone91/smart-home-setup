@@ -18,3 +18,9 @@ dressroom_lights:
   min_colortemp: 2000
   max_colortemp: 6500
   update_interval: 900
+
+dressroom_light_switch:
+  module: switches
+  class: HueDimmerSwitch
+  switch_id: dimmschalter_ankleidezimmer
+  lights: light.dressroom

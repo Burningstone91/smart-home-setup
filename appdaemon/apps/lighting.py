@@ -10,6 +10,8 @@ from utils import config_validation as cv
 class AreaLighting(AppBase):
     """Define a class for Area Lighting."""
 
+    # pylint: disable=too-many-instance-attributes
+
     APP_SCHEMA = APP_SCHEMA.extend(
         {
             vol.Required("area"): str,
@@ -169,7 +171,7 @@ class AreaLighting(AppBase):
             mired = color_temperature_kelvin_to_mired(colortemp)
             rgb = tuple(map(int, color_temperature_to_rgb(colortemp)))
 
-            transition = args[0]["transition"] if args else 2
+            transition = args[0]["transition"] if args else 1
 
             if lights:
                 for light in lights:

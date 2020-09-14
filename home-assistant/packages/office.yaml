@@ -1,3 +1,8 @@
+# Yamaha MusicCast Receiver
+media_player:
+  platform: yamaha_musiccast
+  host: 10.10.80.7
+
 # Entity Customization
 homeassistant:
   customize:
