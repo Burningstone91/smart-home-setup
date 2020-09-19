@@ -8,7 +8,23 @@ from utils import config_validation as cv
 class SwitchBase(AppBase):
     """Define a base class for switches."""
 
-    APP_SCHEMA = APP_SCHEMA.extend({vol.Optional("lights"): cv.entity_ids})
+    APP_SCHEMA = APP_SCHEMA.extend(
+        {
+            vol.Required("switch_id"): str,
+            vol.Optional("lights"): cv.entity_ids,
+            vol.Optional("custom_button_config"): vol.Schema(
+                {
+                    vol.Required(str): vol.Schema(
+                        {
+                            vol.Required("service"): str,
+                            vol.Optional("entity_id"): cv.entity_ids,
+                            vol.Optional("data"): dict,
+                        }
+                    )
+                }
+            ),
+        }
+    )
 
     def configure(self) -> None:
         """Configure."""

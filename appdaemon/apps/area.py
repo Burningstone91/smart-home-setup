@@ -67,11 +67,11 @@ class Area(AppBase):
         self, entity: str, attribute: dict, old: str, new: str, kwargs: dict
     ) -> None:
         """Respond when occupancy factor changes."""
-        old = self.adbase.get_state(entity, attribute="occupied")
-        occupied = self.is_occupied(entity)
+        old = self.adbase.get_state(self.area_entity, attribute="occupied")
+        occupied = self.is_occupied(self.area_entity)
         # Set occupancy of area
         if old != occupied:
-            self.adbase.set_state(entity, occupied=occupied)
+            self.adbase.set_state(self.area_entity, occupied=occupied)
             self.adbase.log(f"{entity.split('.')[1].capitalize()} Occupied: {occupied}")
 
     def is_occupied(self, area: str) -> bool:

@@ -1365,13 +1365,13 @@ Aeotec Z-Stick Gen 5
 
 <tr>
 <td align="center" style="width:33%;">
-<img src="git-pictures/device_pictures/pi_3.jpg" raw=true height="250" alt="Pi 3"/>
+<img src="git-pictures/device_pictures/pi_3.jpg" raw=true height="200" alt="Pi 3"/>
 </td>
 <td align="center" style="width:33%;">
-<img src="git-pictures/device_pictures/conbee_stick.jpg" raw=true height="250" alt="ConBee" />
+<img src="git-pictures/device_pictures/conbee_stick.jpg" raw=true height="200" alt="ConBee" />
 </td>
 <td align="center" style="width:34%;">
-<img src="git-pictures/device_pictures/aeotec_stick.jpg" raw=true height="250" alt="Philips Hue" />
+<img src="git-pictures/device_pictures/aeotec_stick.jpg" raw=true height="200" alt="Philips Hue" />
 </td>
 
 </tr>
@@ -1844,7 +1844,7 @@ key | optional | type | default | description
 `lights` | True | string, list | | List of light entity_ids. If set, the default light behaviour will be applied to the switch/remote.
 `custom_button_config` | True | dict | | Configuration for unused button presses or to override button presses of the default light behaviour if enabled.
 
-Attributes configuration:
+Custom button configuration:
 key | optional | type | default | description
 -- | -- | -- | -- | --
 `service` | False | string | | The service to be executed, e.g. light.turn_on.

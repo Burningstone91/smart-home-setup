@@ -1,1 +1,2 @@
-voluptuous==0.11.5
+voluptuous==0.11.7
+geopy
