@@ -1,0 +1,3385 @@
+views:
+  ####################################################
+  #                                                  #
+  #                 Home Server                      #
+  #                                                  #
+  ####################################################
+  - title: server
+    path: server
+    panel: true
+    icon: mdi:server
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          ####################################################
+          #                                                  #
+          #                   NUC - Proxmox                  #
+          #                                                  #
+          ####################################################
+          - type: custom:stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  ####################################################
+                  #                   NUC                            #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <img width="140" src="https://www.intel.com/content/dam/products/hero/foreground/nuc8-i7i5i3-beh-front-straight.png.rendition.intel.web.320.180.png">
+                        style: |
+                          ha-card {
+                            margin-left: 95px;
+                            margin-top: 20px;
+                          }
+                  ####################################################
+                  #                  Server Details                  #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Title, RAM size, Disk size and Proxmox version
+                      - type: markdown
+                        content: >
+                          **HOME SERVER**<br>
+                          **RAM:** 8GB<br>
+                          **SSD:** 256GB<br>
+                          **Proxmox VE:**
+                          {{ states('sensor.version_proxmox_ve') }}<br>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            padding-top: 30px;
+                          }
+                  ####################################################
+                  #                   Proxmox                        #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <img width="140" src="https://whattheserver.com/wp-content/uploads/2018/08/proxmox-logo.png">
+                        style: |
+                          ha-card {
+                            margin-left: 95px;
+                          }
+                  ####################################################
+                  #                    HA Production                 #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>HA - Production</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: 5px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="50" src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Home_Assistant_Logo.svg">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Running status
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Status:
+                            {{ states('binary_sensor.pve_master_running') }}</h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -45px;
+                          }
+                  ####################################################
+                  #                    HA Development                #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>HA - Development</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: 5px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="50" src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Home_Assistant_Logo.svg">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Running status
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Status:
+                            {{ states('binary_sensor.pve_hass_dev_running') }}</h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -45px;
+                          }
+                  ####################################################
+                  #                    HA Testing                    #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:                
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>HA - Testing</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: 5px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="50" src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Home_Assistant_Logo.svg">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Running status
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Status:
+                            {{ states('binary_sensor.pve_hassio_test_running') }}</h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -45px;
+                          }
+          ####################################################
+          #                                                  #
+          #                   Home Assistant VM              #
+          #                                                  #
+          ####################################################
+          - type: custom:stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  ####################################################
+                  #                  Home Assistant                  #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <img width="140" src="https://raw.githubusercontent.com/eifinger/appdaemon-scripts/master/images/logo-round-192x192.png">
+                        style: |
+                          ha-card {
+                            margin-left: 95px;
+                          }
+                  ####################################################
+                  #                  VM Details                      #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Title, RAM size, Disk size and Uptime
+                      - type: markdown
+                        content: >
+                          **HOME ASSISTANT VM**<br>
+                          **RAM:** 4GB<br>
+                          **SSD:** 64GB<br>
+                          **Ubuntu:** 18.04.3 LTS<br>
+                          **Uptime:**
+                          {{ states('sensor.uptime_home_assistant') }}
+                        style: |
+                          ha-card {
+                            color: teal;
+                            padding-top: 20px;
+                          }
+                  ####################################################
+                  #                  VM Resources                    #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # CPU
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                        height: 20px
+                        width: 60%
+                        entities:
+                          - entity: sensor.cpu_load_ha
+                            name: CPU
+                            icon: mdi:speedometer
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                          ha-icon	 {
+                            margin-left: -15px;
+                            margin-top: -5px;
+                          }
+                            bar-card-name	 {
+                              margin-top: 0px;
+                              margin-left: -15px;
+                              padding-left: 10px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -2.5px;
+                              margin-left: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -2.5px;
+                              margin-left: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: 0px;
+                              margin-right: -50px;
+                              padding-left: 5px;
+                            }
+                      # Temperature
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                        height: 20px
+                        width: 60%
+                        entities:
+                          - entity: sensor.temperature_cpu_nuc
+                            name: Temp
+                            icon: mdi:thermometer
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                          ha-icon	 {
+                            margin-left: -15px;
+                            margin-top: -17.5px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -15px;
+                              margin-left: -15px;
+                              padding-left: 10px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -10px;
+                              margin-left: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -10px;
+                              margin-left: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -15px;
+                              margin-right: -50px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                        height: 20px
+                        width: 60%
+                        entities:
+                          - entity: sensor.ram_use_pct_ha
+                            name: RAM
+                            icon: mdi:memory
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                          ha-icon	 {
+                            margin-left: -15px;
+                            margin-top: -35px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -30px;
+                              margin-left: -15px;
+                              padding-left: 10px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -17.5px;
+                              margin-left: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -17.5px;
+                              margin-left: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -30px;
+                              margin-right: -50px;
+                              padding-left: 5px;
+                            }
+                      # Disk
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                        height: 20px
+                        width: 60%
+                        entities:
+                          - entity: sensor.disk_use_pct_ha
+                            name: SSD
+                            icon: mdi:harddisk
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                          ha-icon	 {
+                            margin-left: -15px;
+                            margin-top: -50px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -45px;
+                              margin-left: -15px;
+                              padding-left: 10px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -25px;
+                              margin-left: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -25px;
+                              margin-left: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -45px;
+                              margin-right: -50px;
+                              padding-left: 5px;
+                            }
+                  ####################################################
+                  #                  Empty Column                    #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      - type: markdown
+                        content: " "
+                  ####################################################
+                  #                 Network Throghput                #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:                   
+                      - type: custom:mini-graph-card
+                        name: Network Throughput
+                        icon: mdi:network
+                        entities:
+                          - entity: sensor.network_throughput_in_ha
+                            name: IN
+                          - entity: sensor.network_throughput_out_ha
+                            name: OUT
+                        height: 100
+                        line_width: 2
+                        font_size: 70
+                        hours_to_show: 168
+                        points_per_hour: 1
+                        show:
+                          extrema: false
+                          fill: true
+                          state: false
+                          legend: false
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            margin-right: -65px;
+                            margin-left: 15px;
+                            margin-top: 5px;
+                            margin-bottom: 5px;
+                            height: 130px;
+                              }
+                  ####################################################
+                  #                  Empty Column                    #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      - type: markdown
+                        content: " "
+          ####################################################
+          #                                                  #
+          #                  Docker Stack                    #
+          #                                                  #
+          ####################################################
+          - type: custom:stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  ####################################################
+                  #                    Docker                        #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="200" src="https://cdn.worldvectorlogo.com/logos/docker.svg">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: 80px;
+                            margin-left: 2.5px;
+                          }
+                      # Version
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Docker Version:
+                            {{ states('sensor.docker_version') }}</h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -20px;
+                          }
+                  
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #                    HASS Core                     #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Home Assistant</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -10px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="50" src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Home_Assistant_Logo.svg">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Current and newest version
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Installed:
+                            {{ states('sensor.hass_installed') }}<br>
+                            Newest:
+                            {{ states('sensor.hass_available') }}</h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -54px;
+                          }
+                      # CPU
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_hass_cpu
+                            name: CPU
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -97.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -97.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_hass_memory_percent
+                            name: RAM
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -130px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -130px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                  ####################################################
+                  #                    Mosquitto                     #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Mosquitto MQTT</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -75px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="50" src="https://raw.githubusercontent.com/docker-library/docs/757578e3a44e5460a8a11d32a81776f8b74231a9/eclipse-mosquitto/logo.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Updates
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Software:
+                            {{ states('sensor.update_mosquitto') }}<br><br></h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -54px;
+                          }
+                      # CPU
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_mqtt_cpu
+                            name: CPU
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -97.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -97.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_mqtt_memory_percent
+                            name: RAM
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -130px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -130px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }    
+
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #                  InFluxDB                        #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>InFluxDB</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -10px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="50" src="https://cdn.iconscout.com/icon/free/png-512/influxdb-285211.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Updates
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Software:
+                            {{ states('sensor.update_influxdb') }}<br><br></h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -54px;
+                          }
+                      # CPU
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_influxdb_cpu
+                            name: CPU
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -97.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -97.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_influxdb_memory_percent
+                            name: RAM
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -130px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -130px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                  ####################################################
+                  #                   Grafana                        #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Grafana</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -75px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="46.5" src="https://seeklogo.com/images/G/grafana-logo-15BA0AFA8A-seeklogo.com.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Updates
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Software:
+                            {{ states('sensor.update_grafana') }}<br><br></h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -54px;
+                          }
+                      # CPU
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_grafana_cpu
+                            name: CPU
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -97.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -97.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_grafana_memory_percent
+                            name: RAM
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -130px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -130px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                    
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #                    AppDaemon                     #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>AppDaemon</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -10px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="50" src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Home_Assistant_Logo.svg">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Current and newest version
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Installed:
+                            {{ states('sensor.docker_appdaemon_image').split(':')[1] }}<br>
+                            Newest:
+                            {{ states('sensor.appdaemon_available') }}</h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -54px;
+                          }
+                      # CPU
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_appdaemon_cpu
+                            name: CPU
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -97.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -97.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_appdaemon_memory_percent
+                            name: RAM
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -130px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -130px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                  ####################################################
+                  #                    ESP Home                      #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>ESP Home Dashboard</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -75px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                          <img width="60" src="https://cyberjunky.nl/content/images/size/w2000/2019/01/esphomelogo.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Updates
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Software:
+                            {{ states('sensor.update_esphome') }}<br><br></h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -54px;
+                          }
+                      # CPU
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_esphome_dashboard_cpu
+                            name: CPU
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -97.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -97.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_esphome_dashboard_memory_percent
+                            name: RAM
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -130px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -130px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #                    Postgres                      #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Postgres</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -10px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="50" src="https://upload.wikimedia.org/wikipedia/de/thumb/4/4b/Postgresql.svg/1200px-Postgresql.svg.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # DB Size
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Database Size:
+                            {{ states('sensor.db_size_hass') }} MB<br><br></h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -54px;
+                          }
+                      # CPU
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_hass_db_cpu
+                            name: CPU
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -97.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -97.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_hass_db_memory_percent
+                            name: RAM
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -130px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -130px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                  ####################################################
+                  #                    Portainer                     #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Portainer</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -75px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                          <img width="50" src="https://avatars1.githubusercontent.com/u/22225832?s=400&v=4">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -45.5px;
+                          }
+                      # Updates
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Software:
+                            {{ states('sensor.update_portainer') }}<br><br></h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -54px;
+                          }
+                      # CPU
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_portainer_cpu
+                            name: CPU
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -97.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -50px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -97.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                          icon: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.docker_portainer_memory_percent
+                            name: RAM
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -130px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -67.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -130px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+  ####################################################
+  #                                                  #
+  #                  System Monitoring               #
+  #                                                  #
+  ####################################################
+  - title: system-monitoring
+    path: system-monitoring
+    panel: true
+    icon: mdi:cog-outline
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          ####################################################
+          #                                                  #
+          #                  Issues                          #
+          #                                                  #
+          ####################################################
+          - type: custom:stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  ####################################################
+                  #                  Warnings                        #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="140" src="/local/system_monitoring/warning_sign.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: 15.5px;
+                          }
+                  ####################################################
+                  #                  Unavailable                     #
+                  ####################################################
+                  - type: 'custom:auto-entities'
+                    show_empty: false
+                    card:
+                      type: entities
+                      show_header_toggle: false
+                    filter:
+                      include:
+                        - state: unavailable
+                  ####################################################
+                  #                  Unknown                         #
+                  ####################################################
+                  - type: 'custom:auto-entities'
+                    show_empty: false
+                    card:
+                      type: entities
+                      show_header_toggle: false
+                    filter:
+                      include:
+                        - state: unknown
+                  ####################################################
+                  #                  None                            #
+                  ####################################################
+                  - type: 'custom:auto-entities'
+                    show_empty: false
+                    card:
+                      type: entities
+                      show_header_toggle: false
+                    filter:
+                      include:
+                        - state: none
+                          
+          ####################################################
+          #                                                  #
+          #                  PiZero W                        #
+          #                                                  #
+          ####################################################
+          - type: custom:stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  ####################################################
+                  #                  Living Room                     #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Room Assistant - Livingroom</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -10px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="70" src="/local/system_monitoring/room-assistant.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -35.5px;
+                          }
+                      # Heartbeat, Last Boot and Voltage
+                      - type: glance
+                        entities:
+                          - entity: sensor.last_boot_pi_livingroom
+                            name: Last Boot
+                          - entity: sensor.last_message_pi_livingroom
+                            name: Heartbeat
+                          - entity: binary_sensor.undervoltage_pi_livingroom
+                            name: Voltage
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -10px;
+                            margin-bottom: 10px;
+                            font-size: 11px;
+                            font-weight: bold;
+                      # CPU Load
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                        height: 15px
+                        width: 80%
+                        icon: mdi:speedometer
+                        entities:
+                          - entity: sensor.cpu_load_pi_livingroom
+                            name: CPU
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 10
+                              - color: rgb(206,133,0,0.60)
+                                from: 11
+                                to: 25
+                              - color: rgb(163,0,0,0.60)
+                                from: 26
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                          ha-icon	 {
+                            margin-top: -45px;
+                            --mdc-icon-size: 20px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -40px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -20px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -20px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -40px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # Temperature
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.temperature_pi_livingroom
+                            name: Temp
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                          ha-icon	 {
+                            margin-top: -77.5px;
+                            --mdc-icon-size: 20px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -72.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -37.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -37.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -72.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # RAM
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.ram_use_pct_pi_livingroom
+                            name: RAM
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                          ha-icon	 {
+                            margin-top: -107.5px;
+                            --mdc-icon-size: 20px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -105px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -55px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -55px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -105px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+                      # Disk
+                      - type: custom:bar-card
+                        positions:
+                          name: outside
+                          value: outside
+                          indicator: 'off'
+                        height: 15px
+                        width: 80%
+                        entities:
+                          - entity: sensor.disk_use_pct_pi_livingroom
+                            name: Disk
+                            severity:
+                              - color: rgb(26,204,147,0.33)
+                                from: 0
+                                to: 69.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 70
+                                to: 85
+                              - color: rgb(163,0,0,0.60)
+                                from: 85
+                                to: 150
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            border-radius: 2.5px;
+                            height: 40px;
+                          }
+                          ha-icon	 {
+                            margin-top: -140px;
+                            --mdc-icon-size: 20px;
+                          }
+                            bar-card-name	 {
+                              margin-top: -137.5px;
+                              margin-left: 40px;
+                            }
+                            bar-card-backgroundbar	 {
+                              margin-top: -72.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-currentbar	 {
+                              margin-top: -72.5px;
+                              border-radius: 2.5px;
+                            }
+                            bar-card-value	 {
+                              margin-top: -137.5px;
+                              margin-right: 30px;
+                              padding-left: 5px;
+                            }
+          ####################################################
+          #                                                  #
+          #                  Batteries                       #
+          #                                                  #
+          ####################################################
+          - type: custom:stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  ####################################################
+                  #                  Batteries                       #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="150" src="/local/system_monitoring/battery_main.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: 150px;
+                          }
+                  
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #                  Hue Dimmer                      #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Philips Hue<br>
+                            Dimmer Switches </h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -7.5px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="140" src="/local/system_monitoring/hue_dimmer.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -50px;
+                          }
+                      # Battery Type
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Battery Type: CR2450 </h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -60px;
+                          }
+                  ####################################################
+                  #               Aeotec Multisensor                 #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Aeotec<br>
+                            Multisensor </h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -10px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="120" src="/local/system_monitoring/aeotec_multisensor.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -30px;
+                          }
+                      # Battery Type
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Battery Type: CR123A (2x) </h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -40px;
+                          }
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #            Hue Dimmer Battery Levels             #
+                  ####################################################
+                      # Living Room Light switch
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_remote_light_livingroom
+                            name: Licht Wohnzimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: 25px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Dressroom Light switch
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_remote_light_dressroom
+                            name: Licht Ankleidezimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Bedroom Light switch
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_remote_light_bedroom
+                            name: Licht Schlafzimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Office Light switch
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_remote_light_office
+                            name: Licht Büro
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Sabrina Bed switch
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_remote_sabrina
+                            name: Fernbedienung Sabrina
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Dimitri Bed switch
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_remote_dimitri
+                            name: Fernbedienung Dimitri
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                  ####################################################
+                  #        Aeotec Multisensor Battery Levels         #
+                  ####################################################
+                      # Dress Room Motion Sensor
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_multisensor_dressroom
+                            name: Ankleidezimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: 110px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Bedroom Motion Sensor
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_multisensor_bedroom
+                            name: Schlafzimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Small Bathroom Motion Sensor
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_multisensor_bathroomsmall
+                            name: Kleines Bad
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                  
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #               Xiaomi Temp/Humidity               #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Xiaomi<br>
+                            Temp-/Luftfeuchtigkeit</h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -10px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="90" src="/local/system_monitoring/xiaomi_temp.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -30px;
+                          }
+                      # Battery Type
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Battery Type: CR2032 3V</h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -35px;
+                          }
+                  ####################################################
+                  #                     Xiaomi Lux                   #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Xiaomi<br>
+                            Lux Sensor </h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -10px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="90" src="/local/system_monitoring/xiaomi_lux.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -30px;
+                          }
+                      # Battery Type
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Battery Type: CR2032 3V</h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -35px;
+                          }
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #           Xiaomi Temp Battery Levels             #
+                  ####################################################
+                      # Small Bathroom
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_temperature_bathroomsmall
+                            name: Kleines Bad
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: 70px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Living Room
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_temperature_livingroom
+                            name: Wohnzimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Storage Room
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_temperature_storageroom
+                            name: Reduit
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                  ####################################################
+                  #           Xiaomi Lux Battery Levels             #
+                  ####################################################
+                      # Outside
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_lux_outside
+                            name: Aussen
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: 155px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Office
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_lux_office
+                            name: Büro
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Dressroom
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_lux_dressroom
+                            name: Reduit
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #            Xiaomi Door/Window Sensor             #
+                  ####################################################
+                      # Title
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h3>Xiaomi<br>
+                            Tür-/Fenstersensor </h3>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: 90px;
+                          }
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="90" src="/local/system_monitoring/xiaomi_door.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: -20px;
+                          }
+                      # Battery Type
+                      - type: markdown
+                        content: >
+                          <center>
+                            <h5>Battery Type: CR1632</h5>
+                          </center>
+                        style: |
+                          ha-card {
+                            color: teal;
+                            margin-top: -35px;
+                          }
+                  - type: vertical-stack
+                    cards:
+                  ####################################################
+                  #           Xiaomi Door Battery Levels             #
+                  ####################################################
+                      # Large Bathroom Door
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_door_bathroomlarge
+                            name: Tür Grosses Bad
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: 20px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Large Bathroom Window
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_window_bathroomlarge
+                            name: Fenster Grosses Bad
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Small Bathroom Door
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_door_bathroomsmall
+                            name: Tür Kleines Bad
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Office Door
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_door_office
+                            name: Tür Büro
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Office Window
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_window_office
+                            name: Fenster Büro
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Bedroom Door
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_door_bedroom
+                            name: Tür Schlafzimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Bedroom Window
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_window_bedroom
+                            name: Fenster Schlafzimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Dressroom Door
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_door_dressroom
+                            name: Tür Ankleidezimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Dressroom Window
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_window_dressroom
+                            name: Fenster Ankleidezimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Storageroom Door
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_door_storageroom
+                            name: Tür Reduit
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Kitchen Door
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_door_kitchen
+                            name: Tür Küche
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Kitchen Window
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_window_kitchen
+                            name: Fenster Küche
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Livingroom Door
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_door_livingroom
+                            name: Tür Wohnzimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Livingroom Window
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_window_livingroom
+                            name: Fenster Wohnzimmer
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                      # Main Entrance Door
+                      - type: custom:bar-card
+                        positions:
+                          name: inside
+                          value: inside
+                          icon: 'off'
+                          indicator: 'off'
+                        height: 20px
+                        width: 80%
+                        icon: mdi:battery
+                        entities:
+                          - entity: sensor.battery_level_door_main
+                            name: Haustür
+                            severity:
+                              - color: rgb(163,0,0,0.60)
+                                from: 0
+                                to: 24.9
+                              - color: rgb(206,133,0,0.60)
+                                from: 25
+                                to: 59.9
+                              - color: rgb(26,204,147,0.33)
+                                from: 60
+                                to: 100
+                        style: |
+                          ha-card {
+                            border-radius: 5px;
+                            margin-top: -22.5px;
+                          }
+                            bar-card-backgroundbar	 {
+                              border-radius: 5px;
+                            }
+                            bar-card-currentbar	 {
+                              border-radius: 5px;
+                            }
+                  
+
+
+
+
+  ####################################################
+  #                                                  #
+  #                  Network                         #
+  #                                                  #
+  ####################################################
+  - title: network
+    path: network
+    panel: true
+    icon: mdi:lan
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          ####################################################
+          #                                                  #
+          #                  Pi Hole                         #
+          #                                                  #
+          ####################################################
+          - type: custom:stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  ####################################################
+                  #                  Pi-Hole                         #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <center>
+                            <img width="140" src="/local/system_monitoring/pi_hole.png">
+                          </center>
+                        style: |
+                          ha-card {
+                            margin-top: 15.5px;
+                          }
+                  ####################################################
+                  #                  Unavailable                     #
+                  ####################################################
+                  - type: 'custom:auto-entities'
+                    show_empty: false
+                    card:
+                      type: entities
+                      show_header_toggle: false
+                    filter:
+                      include:
+                        - state: unavailable
+          ####################################################
+          #                                                  #
+          #                   Unifi Router                   #
+          #                                                  #
+          ####################################################
+          - type: custom:stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  ####################################################
+                  #                  USG Router                      #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <img width="140" src="/local/system_monitoring/usg_3.png">
+                        style: |
+                          ha-card {
+                            margin-left: 95px;
+                            margin-top: 40px;
+                          }
+                  ####################################################
+                  #                 Router Details                   #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Title, Model, Firmware, Uptime
+                      - type: markdown
+                        content: >
+                          **Router**<br>
+                          **Model:**
+                          USG 3P<br>
+                          **IP:**
+                          10.10.0.1<br>
+                          **Firmware:**
+                          {{ states('sensor.firmware_usg') }}<br>
+                          **Uptime:**
+                          {{ states('sensor.uptime_usg') }}
+                        style: |
+                          ha-card {
+                            color: teal;
+                            padding-top: 20px;
+                          }
+                  ####################################################
+                  #                 Network Throghput                #
+                  ####################################################
+                  - type: vertical-stack
+                    cards: 
+                      # WAN In                  
+                      - type: custom:mini-graph-card
+                        name: WAN In
+                        icon: mdi:network
+                        entities:
+                          - entity: sensor.wan_in_usg_mbps
+                            name: IN
+                        height: 40
+                        line_width: 2
+                        font_size: 70
+                        hours_to_show: 168
+                        points_per_hour: 1
+                        show:
+                          extrema: true
+                          fill: true
+                          state: false
+                          legend: false
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            margin-top: 5px;
+                            margin-bottom: 10px;
+                            height: 50px;
+                            margin-right: 20px; 
+                              }
+                  - type: vertical-stack
+                    cards: 
+                      # WAN Out
+                      - type: custom:mini-graph-card
+                        name: WAN Out
+                        icon: mdi:network
+                        entities:
+                          - entity: sensor.wan_out_usg_mbps
+                            name: OUT
+                        height: 40
+                        line_width: 2
+                        font_size: 70
+                        hours_to_show: 168
+                        points_per_hour: 1
+                        show:
+                          extrema: true
+                          fill: true
+                          state: false
+                          legend: false
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            margin-top: 5px;
+                            margin-bottom: 10px;
+                            height: 50px;
+                            margin-right: 20px;
+                              }
+          ####################################################
+          #                                                  #
+          #                   Unifi Devices                  #
+          #                                                  #
+          ####################################################
+          - type: custom:stack-in-card
+            cards:
+              - type: horizontal-stack
+                cards:
+                  ####################################################
+                  #                  Access Point                    #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <img width="140" src="/local/system_monitoring/unifi_ap.png">
+                        style: |
+                          ha-card {
+                            margin-left: 95px;
+                          }
+                  ####################################################
+                  #                 AP Details                       #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Title, Model, Firmware, Uptime
+                      - type: markdown
+                        content: >
+                          **Access Point Wohnzimmer**<br>
+                          **Model:**
+                          {{ states('sensor.model_ap_livingroom') }}<br>
+                          **IP:**
+                          10.10.0.14<br>
+                          **Firmware:**
+                          {{ states('sensor.firmware_ap_livingroom') }}<br>
+                          **Uptime:**
+                          {{ states('sensor.uptime_ap_livingroom') }}
+                        style: |
+                          ha-card {
+                            color: teal;
+                            padding-top: 20px;
+                          }
+                  ####################################################
+                  #                  Switch Livingroom               #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <img width="200" src="/local/system_monitoring/us_8_150w.png">
+                        style: |
+                          ha-card {
+                            margin-left: 95px;
+                            margin-top: 20px;
+                          }
+                  ####################################################
+                  #                 Switch Details                   #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Title, Model, Firmware, Uptime
+                      - type: markdown
+                        content: >
+                          **Switch Wohnzimmer**<br>
+                          **Model:**
+                          {{ states('sensor.model_switch_livingroom') }}<br>
+                          **IP:**
+                          10.10.0.6<br>
+                          **Firmware:**
+                          {{ states('sensor.firmware_switch_livingroom') }}<br>
+                          **Uptime:**
+                          {{ states('sensor.uptime_switch_livingroom') }}
+                        style: |
+                          ha-card {
+                            color: teal;
+                            padding-top: 20px;
+                          }
+                  ####################################################
+                  #                  Switch Storageroom              #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Image
+                      - type: markdown
+                        content: >
+                          <img width="120" src="/local/system_monitoring/us_8_60w.png">
+                        style: |
+                          ha-card {
+                            margin-left: 95px;
+                            margin-top: 20px;
+                          }
+                  ####################################################
+                  #                 Switch Details                   #
+                  ####################################################
+                  - type: vertical-stack
+                    cards:
+                      # Title, Model, Firmware, Uptime
+                      - type: markdown
+                        content: >
+                          **Switch Reduit**<br>
+                          **Model:**
+                          {{ states('sensor.model_switch_storageroom') }}<br>
+                          **IP:**
+                          10.10.0.10<br>
+                          **Firmware:**
+                          {{ states('sensor.firmware_switch_storageroom') }}<br>
+                          **Uptime:**
+                          {{ states('sensor.uptime_switch_storageroom') }}
+                        style: |
+                          ha-card {
+                            color: teal;
+                            padding-top: 20px;
+                          }
+
+                            
