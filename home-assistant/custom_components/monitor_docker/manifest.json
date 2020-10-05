@@ -1,0 +1,8 @@
+{
+  "domain": "monitor_docker",
+  "name": "Monitor Docker",
+  "documentation": "https://github.com/ualex73/monitor_docker",
+  "issue_tracker": "https://github.com/ualex73/monitor_docker/issues",
+  "requirements": ["aiodocker==0.18.8", "python-dateutil==2.8.1"],
+  "codeowners": ["@ualex73"]
+}

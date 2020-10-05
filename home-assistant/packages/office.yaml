@@ -46,4 +46,4 @@ homeassistant:
     sensor.battery_level_window_office:
       friendly_name: Fenster Sensor Büro
     sensor.battery_level_remote_light_office:
-      friendly_name: Remote Lichtr Büro
+      friendly_name: Remote Licht Büro
