@@ -48,7 +48,13 @@ I will explain here the different parts of my home automation system and how I s
       Lighting
   </a>
 * <a href="https://github.com/Burningstone91/smart-home-setup#switches">
-      switches
+      Switches
+  </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#system-monitoring">
+      System Monitoring
+  </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#history-databases">
+      History & Databases
   </a>
 
 ## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"></a>
@@ -1886,13 +1892,871 @@ When I need more complex actions on a button press, like calling multiple servic
 </p>
 </details>
 
-##
-### Configure Unifi in Home Assistant
+## System Monitoring <a name="system-monitoring" href="https://github.com/Burningstone91/smart-home-setup#system-monitoring"></a>
+### Basic Explanation of Setup
+I use various integrations, custom components and scripts to montior most of the devices in my home. All this configuration is in one package called system_monitoring.yaml.
+
+(To Do) Add System Monitoring Screenshots
+
+Create a file called system_monitoring.yaml inside the packages directory of Home Assistant.
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Create and distribute SSH keys
+In order to execute shell commands on remote machines throught SSH, we create SSH keys on the host running Home Assistant and copy the public key to the remote machines. 
+
+SSH into the host running Home Assistant
+
+Create new keys
+```bash
+ssh-keygen
+```
+Enter a name for the keys or press Enter to use the default.
+
+Copy the keys to the remote machine
+```bash
+ssh-copy-id username@ip-of-remote-machine
+```
+Enter the SSH password to login to the remote machine.
+
+e.g.
+```bash
+ssh-copy-id pi@10.10.70.7
+```
+
+If everything was sucessful, you will be able to SSH into the host without entering a password. 
+
+Now we need to mount the SSH keys from the host to the Home Assistant docker container. In order to do this, add the following line to the `volumes:` section of the Home Assistant container in the `docker-compose.yml` file.
+
+```yaml
+- /home/pi/.ssh:/root/.ssh
+```
+Replace `pi` with your username on the host machine running Home Assistant.
+
+Start the docker stack:
+```bash
+docker-compose up -d
+```
+
+### Proxmox
+#### Virtual Machines status
+To get the status of the virtual machines running inside Proxmox we can use the [Proxmox VE integration](https://www.home-assistant.io/integrations/proxmoxve/). First follow the directions from the docs [here](https://www.home-assistant.io/integrations/proxmoxve/#proxmox-permissions) to create a user in Proxmox with sufficient permissions to read the status of the virtuals machines. Next, add the following to the system_monitoring.yaml file:
+
+```yaml
+proxmoxve:
+  host: 10.10.40.6
+  username: secretuser
+  password: supersecretpassword
+  realm: pve
+  verify_ssl: false
+  nodes:
+    - node: pve
+      vms:
+        - 101
+        - 102
+        - 103
+        - 105
+```
+
+The numbers in the section vms are the ids of the VMs running in Proxmox. 
+
+#### Proxmox version
+To get the currently installed version we can use the [command line sensor integration](https://www.home-assistant.io/integrations/sensor.command_line/). Before creating the sensor, make sure that you copied the SSH keys (as describted [here](#create-and-distribute-ssh-keys)) from the host machine to the machine running Proxmox.
+
+Add the following to the system_monitoring.yaml file:
+
+```yaml
+sensor:
+  - platform: command_line
+    name: Version Proxmox VE 
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.40.6 pveversion | cut -f2 -d/'
+    scan_interval: 3600
+```
+
+In the `command` field in the part `root@10.10.40.6`, replace root with the username used to SSH into the Proxmox host and 10.10.40.6 with the IP of the Proxmox host.
+
+Restart Home Assistant. You should now have a sensor called `sensor.version_proxmox_ve`, which shows the current running Proxmox VE version and which will be updated every hour (scan_interval: 3600).
+
+### Host Monitoring
+#### System statistics
+To get statistics like cpu load, memory usage, etc. we use the [System Monitor integration](https://www.home-assistant.io/integrations/systemmonitor/). Add the following in the `sensor:` section of the system_monitoring.yaml file:
+
+
+```yaml
+  - platform: systemmonitor
+    resources:
+    - type: disk_use_percent
+      arg: /home
+    - type: disk_use
+      arg: /home
+    - type: disk_free
+      arg: /home
+    - type: memory_free
+    - type: memory_use
+    - type: memory_use_percent
+    - type: swap_use_percent
+    - type: swap_use
+    - type: swap_free
+    - type: load_1m
+    - type: load_5m
+    - type: load_15m
+    - type: network_in
+      arg: ens18
+    - type: network_out
+      arg: ens18
+    - type: throughput_network_in
+      arg: ens18
+    - type: throughput_network_out
+      arg: ens18
+    - type: packets_in
+      arg: ens18
+    - type: packets_out
+      arg: ens18
+    - type: processor_use
+    - type: last_boot   
+    - type: ipv4_address
+      arg: ens18
+```
+Restart Home Assistant. 
+
+#### CPU Temperature
+As I run Home Assistant inside a Virtual machine, I don't have direct access to the CPU temperature of the machine running Home Assistant. As a workaround we can use a [command line sensor integration](https://www.home-assistant.io/integrations/sensor.command_line/). Before creating the sensor, make sure that you copied the SSH keys (as describted [here](#create-and-distribute-ssh-keys)) from the virtual machine to the host running the virtual machines.
+
+Add the following in the `sensor:` section of the system_monitoring.yaml file:
+
+```yaml
+  - platform: command_line
+    name: temperature_cpu_nuc
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.40.6 cat /sys/class/thermal/thermal_zone3/temp'
+    value_template: "{{ value | int / 1000 }}"
+    unit_of_measurement: "°C"
+```
+
+In the `command` field in the part `root@10.10.40.6`, replace root with the username used to SSH into the Proxmox host and 10.10.40.6 with the IP of the Proxmox host.
+
+To get the correct thermal zone issue the following command on the host machine running Home Assistant:
+```
+cat /sys/class/thermal/thermal_zone*/type
+```
+Example output:
+
+```bash
+root@pve:~# cat /sys/class/thermal/thermal_zone*/type
+acpitz ## <-thermal zone 0
+pch_skylake ## <-thermal zone 1
+iwlwifi_1 ## <-thermal zone 2
+x86_pkg_temp ## <-thermal zone 3
+```
+For the Intel NUC the type to look for is `x86_pkg_temp`.
+
+### Docker Monitoring
+To monitor docker containers we can use a nice little custom component called [Monitor Docker](https://github.com/ualex73/monitor_docker). Install as per instructions on the Github Repository. This requires to have MQTT setup in Home Assistant and it doesn't work for Home Assistant Supervised (there's a workaround shown [here](https://github.com/ualex73/monitor_docker/issues/31)) or Home Assistant OS (no workaround that would be persistent). This gives you a bunch of sensors such as processor use, ram use, image for each docker container and some statistics about docker such as total number of running containers and version.
+
+Here's my example config from system_monitoring.yaml:
+
+```yaml
+monitor_docker:
+  - name: Docker
+    containers:
+      - appdaemon
+      - esphome-dashboard
+      - hass
+      - hass-db
+      - mqtt
+      - influxdb
+      - grafana
+      - portainer
+      - unifi-poller
+    rename:
+      appdaemon: AppDaemon
+      esphome-dashboard: "ESPHome-Dashboard"
+      hass: Home Assistant
+      hass-db: Postgres
+      mqtt: Mosquitto
+      influxdb: InfluxDB
+      grafana: Grafana
+      portainer: Portainer
+      unifi-poller: "Unifi-Poller"
+    monitored_conditions:
+      - version
+      - status
+      - image
+      - cpu_percentage
+      - memory_percentage
+```
+
+### Software versions
+#### Home Assistant
+To get the installed and latest available version of Home Assistant we can use the [version integration](https://www.home-assistant.io/integrations/version/).
+
+Add the following in the `sensor:` section of the system_monitoring.yaml file:
+Installed:
+```yaml
+  - platform: version
+    name: HASS Installed
+```
+Latest(example for docker install, showing beta versions):
+```yaml
+  - platform: version
+    name: HASS Available
+    source: docker
+    beta: true
+```
+Restart Home Assistant.
+
+#### AppDaemon
+To get the latest available version of AppDaemon we can use the [command line sensor integration](https://www.home-assistant.io/integrations/sensor.command_line/) to curl the PyPi address of AppDaemon.
+
+Add the following in the `sensor:` section of the system_monitoring.yaml file:
+
+```yaml
+  - platform: command_line
+    name: AppDaemon Available
+    command: >-
+      curl -L
+      -H "User-Agent: Home Assistant"
+      -H "Content-Type: application/json"
+      https://pypi.python.org/pypi/appdaemon/json
+    value_template: '{{ value_json.info.version }}'
+    scan_interval: 3600
+```
+To get the installed version:
+(To Do)
+
+Restart Home Assistant.
+
+#### PiHole
+To get the installed and latest available version of Pi Hole we can use the [command line sensor integration](https://www.home-assistant.io/integrations/sensor.command_line/). Before creating the sensor, make sure that you copied the SSH keys (as describted [here](#create-and-distribute-ssh-keys)) from the machine running Home Assistant to the machine running PiHole.
+
+Add the following in the `sensor:` section of the system_monitoring.yaml file:
+Installed:
+```yaml  
+  - platform: command_line
+    name: current_version_pi_hole
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q pi@10.10.0.8 pihole -v -p -c | grep -Po "\d.\d.\d"'
+    scan_interval: 3600
+```
+Latest:
+```yaml  
+  - platform: command_line
+    name: latest_version_pi_hole
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q pi@10.10.0.8 pihole -v -p -l | grep -Po "\d.\d.\d"'
+    scan_interval: 3600
+```
+In the `command` field in the part `root@10.10.40.6`, replace root with the username used to SSH into the machine running PiHole and 10.10.40.6 with the IP of the machine running PiHole.
+
+Restart Home Assistant.
+
+#### Docker Containers
+To monitor the whether the docker containers use the latest available image, I use a shell script I wrote. It doesn't work for all containers (couldn't get it to work with ozwdaemon) and my shell script skills are pretty basic.
+
+The script checks the digest of the local image and compares it to the digest in the remote repository.
+The script publishes “Error” if the local or the remote digest can not be found, it publishes “Update available” if the local digest is not equal to the remote digest and it publishes “Up-to-Date” if the local digest matches the remote digest.
+This script needs to be put on the host machine running the docker stack.
+
+```bash
+#!/bin/bash
+# Example usage:
+# ./check_docker_latest.sh check_docker_list.txt
+
+IMAGES="$1"
+
+LINES=$(cat $IMAGES)
+
+for LINE in $LINES
+do
+    NAME=$(echo $LINE | cut -f1 -d,)
+    REMOTE_IMAGE=$(echo $LINE | cut -f2 -d,)
+    LOCAL_IMAGE=$(echo $LINE | cut -f3 -d,)
+    # Get token
+    token=$(curl --silent "https://auth.docker.io/token?scope=repository:$REMOTE_IMAGE:pull&service=registry.docker.io" | jq -r '.token')
+    # Get remote checksum
+    digest=$(curl --silent -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+            -H "Authorization: Bearer $token" \
+            "https://registry.hub.docker.com/v2/$REMOTE_IMAGE/manifests/latest" | jq -r '.config.digest')
+    # Get local checksum
+    local_digest=$(docker images -q --no-trunc $LOCAL_IMAGE:latest)
+    # Check remote against local checksum
+    if [[ $digest != sha256* ]] || [[ $local_digest != sha256* ]]; then
+           payload="Error"
+    elif [ "$digest" != "$local_digest" ] ; then
+           payload="Update available"
+    else
+           payload="Up-to-date"
+    fi
+    # publish result to MQTT
+    mosquitto_pub -h localhost -t "docker-image-updates/$NAME" -m "$payload" -u "username" -P "password" -r
+done
+```
+You need to replace “username” and “password” with your credentials to log in to the MQTT broker in the second last line.
+The shell script takes a .txt file as an input to configure the containers to be checked.
+
+Here's the example from my system:
+
+```
+mosquitto,library/eclipse-mosquitto,eclipse-mosquitto
+esphome,esphome/esphome,esphome/esphome
+grafana,grafana/grafana,grafana/grafana
+influxdb,library/influxdb,influxdb
+unifi-poller,golift/unifi-poller,golift/unifi-poller
+portainer,portainer/portainer,portainer/portainer
+```
+Each line represents one image. Each line has three values separated by a comma, the first value is the name of the MQTT topic that the info will be published to, the second value is the remote repository and the third value is the local repository.
+
+E.g. for InfluxDB
+I choose influxdb as the MQTT topic name. The remote repository can be found here 1 in the section "Quick reference (cont.) under the title “image-updates” -> **library/influxdb**. The local repository is what I defined in docker-compose in the field “image”-> **influxdb**
+
+```yaml
+influxdb:
+    container_name: influxdb
+    environment:
+      - INFLUXDB_DB=smart_home
+      - INFLUXDB_ADMIN_USER=username
+      - INFLUXDB_ADMIN_PASSWORD=supersecretpassword
+    image: influxdb:latest
+    ports:
+      - "8086:8086"
+    restart: unless-stopped
+    volumes:
+      - ./influxdb:/var/lib/influxdb
+      - /etc/localtime:/etc/localtime:ro
+```
+
+Now on the Home Assistant side we can use the [MQTT sensor integration](https://www.home-assistant.io/integrations/sensor.mqtt/). 
+
+Add the following in the `sensor:` section of the system_monitoring.yaml file (e.g. for InfluxDB):
+```yaml
+  - platform: mqtt
+    state_topic: "docker-image-updates/influxdb"
+    name: Update InfluxDB
+```
+
+### Synology NAS
+#### Statistics
+To monitor the Synology NAS we can use the [Synology DSM integration](https://www.home-assistant.io/integrations/synology_dsm/). In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Synology DSM" and click on it. In the host field enter the IP of your NAS, fill in the username and password to log into the NAS and press Submit. You should now have sensors for the disk temperature, disk size, cpu load etc.
+
+#### Model and Firmware
+To get the model, current firmware and whether an update is available we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP on the NAS. Login to the Web Interface of the NAS, go to "Control Panel" and then choose "Terminal & SNMP". Go to the tab "SNMP" and enable the SNMP Service.
+Add the following in the `sensor:` section of the system_monitoring.yaml file:
+Model:
+```yaml
+  - platform: snmp
+    name: Model NAS
+    host: 10.10.40.15
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.6574.1.5.1.0
+```
+Firmware:
+```yaml
+  - platform: snmp
+    name: Firmware NAS
+    host: 10.10.40.15
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.6574.1.5.3.0
+```
+Firmware Upgrade Available:
+```yaml
+  - platform: snmp
+    name: Firmware Upgrade NAS
+    host: 10.10.40.15
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.6574.1.5.4.0
+    value_template: >
+      {% set mapping = {
+        '1': 'Upgrade available',
+        '2': 'Up-to-date',
+        '3': 'Unknown',
+        '4': 'Unknown',
+        '5': 'Unknown'
+      } %}
+      {{ mapping[value] if value in mapping else 'error' }}
+```
+This sensor will show "Upgrade Available", "Up-to-date" or "unknown" if the value can be read, otherwise it shows "error".
+
+### Unifi Devices
+#### Unifi Controller
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Unifi" and click on it.
 Enter the IP of your Unifi Controller in the field "host".
 Enter your username and password and press "SUBMIT"
+
+This will give you a device_tracker for each network device and some additional data, such as IP address as attributes of the device trackers.
+
+#### Unifi Device statistics
+To get the model, current firmware and other measures we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP in Unifi. Login to the Web Interface of the Unifi Controller. Go to "Settings", then "Services". In the tab "SNMP" enable "SNMPV1, SNMPV2C".
+
+Add the following in the `sensor:` section of the system_monitoring.yaml file:
+**AP-AC Pro**
+```yaml
+  ## Model
+  - platform: snmp
+    name: Model AP livingroom
+    host: 10.10.0.14
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.41112.1.6.3.3.0
+  ## Uptime
+  - platform: snmp
+    name: Uptime AP livingroom
+    host: 10.10.0.14
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.41112.1.6.3.5.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ## Firmware
+  - platform: snmp
+    name: Firmware AP livingroom
+    host: 10.10.0.14
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.41112.1.6.3.6.0
+```
+**Switch US8-150w**
+```yaml
+  ## Temperature
+  - platform: snmp
+    name: Temperature Switch Livingroom
+    host: 10.10.0.6
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.43.1.8.1.5.1.0
+    unit_of_measurement: "°C"
+  ## Uptime
+  - platform: snmp
+    name: Uptime Switch Livingroom
+    host: 10.10.0.6
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.1.3.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ## Model
+  - platform: snmp
+    name: Model Switch Livingroom
+    host: 10.10.0.6
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.2.0
+  ## Firmware
+  - platform: snmp
+    name: Firmware Switch Livingroom
+    host: 10.10.0.6
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.13.0  
+```
+**Switch US8-60w**
+```yaml
+  ## Uptime
+  - platform: snmp
+    name: Uptime Switch Storageroom
+    host: 10.10.0.10
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.1.3.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ## Model
+  - platform: snmp
+    name: Model Switch Storageroom
+    host: 10.10.0.10
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.2.0
+  ## Firmware
+  - platform: snmp
+    name: Firmware Switch Storageroom
+    host: 10.10.0.10
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.13.0
+```
+**Unifi Security Gateway 3**
+```yaml
+  ## Uptime
+  - platform: snmp
+    name: Uptime USG
+    host: 10.10.0.1
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.1.3.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ## Firmware
+  - platform: snmp
+    name: Firmware USG
+    host: 10.10.0.1
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.1.1.0
+    value_template: "{{ '.'.join(value.split('.')[:3]) }}"
+  ## WAN In
+  - platform: snmp
+    name: WAN In USG
+    host: 10.10.0.1
+    baseoid: 1.3.6.1.2.1.31.1.1.1.6.2
+    community: 'public'
+    version: '2c'
+    scan_interval: 10
+  - platform: derivative
+    source: sensor.wan_in_usg
+    unit_time: s
+    unit: B
+    name: wan_in_usg_derivative  
+  - platform: template
+    sensors:
+      wan_in_usg_mbps:
+        value_template:  "{{ ((states('sensor.wan_in_usg_derivative')|float*8)/1000000)|round(2) }}"
+        unit_of_measurement: 'Mbps'
+        friendly_name: WAN In USG Mbps
+  ## WAN Out
+  - platform: snmp
+    name: WAN Out USG
+    host: 10.10.0.1
+    baseoid: 1.3.6.1.2.1.31.1.1.1.10.2
+    community: 'public'
+    version: '2c'
+    scan_interval: 10
+  - platform: derivative
+    source: sensor.wan_out_usg
+    unit_time: s
+    unit: B
+    name: wan_out_usg_derivative
+  - platform: template
+    sensors:
+      wan_out_usg_mbps:
+        value_template:  "{{ ((states('sensor.wan_out_usg_derivative')|float*8)/1000000)|round(2) }}"
+        unit_of_measurement: 'Mbps'
+        friendly_name: WAN Out USG Mbps
+```
+
+### PiHole
+To monitor a PiHole instance we can use the [Pi-Hole integration](https://www.home-assistant.io/integrations/pi_hole/). In order to enable/disable PiHole, we need to get the API key first. Log into the Web interface of Pi-Hole go to "Settings". In the tab "API/Web Interface" click on the button "Show API token". Copy the token.
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Pi-Hole" and click on it.
+Enter the IP of your Pi-Hole instance in the field "Host".
+Paste the token from the previous step in the field "API key" and press "SUBMIT".
+
+### Speedtest
+To get Speedtest data we can use the [Speedtest.net integration](https://www.home-assistant.io/integrations/speedtestdotnet/).
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "speedtest" and click on it. Press "SUBMIT".
+
+
+### Remote Raspberry Pis
+To monitor remote Raspberry Pis such as my Room Assistant instances, I use this nice little shell script called [System Sensors](https://github.com/Sennevds/system_sensors) that publishes statistics about the Pi such as updates available, last boot, cpu load, etc. to MQTT. It uses Audo-Discovery, therefore we don't need to do anything on Home Assistant's side.
+
+Instructions how to set it up on a Pi:
+Install dependencies and download script.
+```bash
+sudo apt-get install git
+sudo apt-get install git python3-pip python3-apt
+git clone https://github.com/Sennevds/system_sensors.git
+cd system_sensors
+pip3 install -r requirements.txt
+```
+
+Edit config:
+```bash
+nano settings_example.yaml
+```
+
+```yaml
+mqtt:
+  hostname: 10.10.40.6
+  port: 1883
+  user: secretuser
+  password: supersecretpassword
+deviceName: pi_dressroom
+client_id: pi_dressroom_system_monitor
+timezone: Europe/Zurich
+update_interval: 60
+check_wifi_strength: true
+check_available_updates: true
+```
+
+Rename settings file:
+```bash
+mv settings_example.yaml setting.yaml
+```
+
+Create a systemd service:
+```bash
+sudo nano /etc/systemd/system/system_sensors.service
+```
+
+[Unit]
+Description=System Sensor service
+After=multi-user.target
+
+[Service]
+User=pi
+Type=idle
+ExecStart=/usr/bin/python3 /home/pi/system_sensors/src/system_sensors.py /home/pi/system_sensors/src/settings.yaml
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and start the service:
+```bash
+sudo systemctl enable system_sensors.service
+sudo systemctl start system_sensors.service
+```
+
+### Portainer
+To manage docker containers through a GUI, we can use [Portainer](https://www.portainer.io/).
+Add the following to docker-compose.yml to configure the portainer docker container:
+```yaml
+  portainer:
+    container_name: portainer
+    image: "portainer/portainer:1.24.1-alpine"
+    ports:
+      - "9000:9000"
+      - "8000:8000"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer:/data
+```
+
+Start docker stack:
+```bash
+docker-compose up -d
+```
+
+Now you can manage your docker containers through the GUI at http://ip-of-home-assistant-server:9000.
+
+</p>
+</details>
+
+
+
+## History & Databases <a name="history-databases" href="https://github.com/Burningstone91/smart-home-setup#history-databases"></a>
+### Basic Explanation of Setup
+For storing historical data, I use two databases. One database for short-term data, to show some history graphs in the frontend, debugging etc. and one database for long-term data such as temperature levels, power consumption etc. For the short-term data I use [PostgreSQL](https://www.postgresql.org/) and for long-term data [InfluxDB](https://www.influxdata.com/) and to make graphs for long-term data I use [Grafana](https://grafana.com/)
+
+(ToDo) Add some Grafana Chart screenshots
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### PostgreSQL
+Create a new directory called "home-assistant-db" on the level where the home-assistant and appdaemon directories are located to store the data.
+Add the following to docker-compose.yml to configure the PostgreSQL docker container:
+
+```yaml
+  hass-db:
+    container_name: hass-db
+    environment:
+      POSTGRES_DB: "smart_home"
+      POSTGRES_PASSWORD: "supersecretpassword"
+      POSTGRES_USER: "secretusername"
+    image: "postgres:9.6.19-alpine"
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./home-assistant-db:/var/lib/postgresql/data
+```
+
+Start docker stack:
+```bash
+docker-compose up -d
+```
+
+Now you have a database called "smart_home", which we can use in the next step as the Home Assistant DB.
+
+### Recorder
+To use the PostgreSQL database created in the previous step, we need to configure and setup the [recorder integration](https://www.home-assistant.io/integrations/recorder/). I set the purge_keep_days to 7, which means that the Database will be purged every 7 days. I explicitly choose, which entities to include (whitelist) to not spam my DB with unnecessary data such as what time it was 5 days ago when the sun was at -6 elevation. The db url is as follows: 
+`postgresql://username:password@127.0.0.1/smart_home `
+
+Add a new file called history.yaml in the directory `packages`. 
+Here's an example from my config:
+
+```yaml
+recorder:
+  db_url: !secret db_url
+  purge_keep_days: 7
+  include:
+    domains:
+      - person
+    entity_globs:
+      - sensor.temperature*
+      - sensor.humidity*
+      - sensor.lux*
+      - sensor.speedtest*
+      - sensor.ram_use_pct*
+      - sensor.cpu_load*
+      - binary_sensor.door*
+      - binary_sensor.window*
+      - binary_sensor.motion*
+      - binary_sensor.tamper*
+    entities:
+      - binary_sensor.bed_dimitri
+      - sensor.location_phone_dimitri
+      - sensor.network_throughput_in_ha
+      - sensor.network_throughput_out_ha
+      - sensor.wan_in_usg_mbps
+      - sensor.wan_out_usg_mbps
+      - sensor.network_in_ha
+      - sensor.network_out_ha
+      - sensor.network_down_nas
+      - sensor.network_up_nas
+      - light.balcony_ceiling
+      - light.bedroom
+      - light.bedroom_bed
+      - light.bedroom_ceiling
+      - light.livingroom
+      - light.dressroom
+      - light.office
+      - media_player.buero_musik_main
+      - media_player.receiver_livingroom
+```
+
+There's an excellent guide on the forums [here](https://community.home-assistant.io/t/how-to-reduce-your-database-size-and-extend-the-life-of-your-sd-card/205299) that explains how you can reduce the size of your DB, if this should be an issue for you.
+
+### History
+To enable the [history integration](https://www.home-assistant.io/integrations/history/) in Home Assistant add the following to history.yaml
+```
+history:
+```
+
+### InfluxDB
+#### Setup Database
+Create a new directory called "influxdb" on the level where the home-assistant and appdaemon directories are located to store the data.
+Add the following to docker-compose.yml to configure the influxdb docker container:
+
+```yaml
+InfluxDB
+  influxdb:
+    container_name: influxdb 
+    environment:
+      - INFLUXDB_DB=smart_home
+      - INFLUXDB_ADMIN_USER=username
+      - INFLUXDB_ADMIN_PASSWORD=yoursupersecretpassword
+    image: influxdb:latest
+    ports:
+      - '8086:8086'
+    restart: unless-stopped
+    volumes:
+      - ./influxdb:/var/lib/influxdb
+      - /etc/localtime:/etc/localtime:ro
+```
+
+Start docker stack:
+```bash
+docker-compose up -d
+```
+
+#### Configure InfluxDB in Home Assistant
+To push data from Home Assistant to InfluxDB we can use the [InfluxDB integration](https://www.home-assistant.io/integrations/influxdb/). 
+Add the following to the history.yaml file, here's an example from my config:
+
+```yaml
+influxdb:
+  username: !secret username
+  password: !secret yoursupersecretpassword
+  database: smart_home
+  include:
+    domains:
+      - person
+    entity_globs:
+      - sensor.temperature*
+      - sensor.humidity*
+      - sensor.lux*
+      - sensor.speedtest*
+      - sensor.ram_use_pct*
+      - sensor.cpu_load*
+    entities:
+      - binary_sensor.bed_dimitri
+      - sensor.network_throughput_in_ha
+      - sensor.network_throughput_out_ha
+      - sensor.wan_in_usg_mbps
+      - sensor.wan_out_usg_mbps
+      - sensor.network_in_ha
+      - sensor.network_out_ha
+      - sensor.network_down_nas
+      - sensor.network_up_nas
+      - light.balcony_ceiling
+      - light.bedroom
+      - light.bedroom_bed
+      - light.bedroom_ceiling
+      - light.livingroom
+      - light.dressroom
+      - light.office
+      - media_player.buero_musik_main
+      - media_player.receiver_livingroom
+```
+
+### Grafana
+To create nice graphs and statistics out of the InfluxDB, we use Grafana.
+
+Get the user id:
+```bash
+id -u 
+```
+Enter the number below in the field `user:`
+Add the following to docker-compose.yml to configure the grafana docker container:
+
+```yaml
+
+
+  grafana:
+    container_name: grafana
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=username
+      - GF_SECURITY_ADMIN_PASSWORD=yoursupersecretpassword
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    user: "1000"
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - /etc/localtime:/etc/localtime:ro
+```
+
+Start docker stack:
+```bash
+docker-compose up -d
+```
+
+Go to the Web Interface of Grafana under http://ip-of-home-assistant-server:3000.
+Go to "Configuration", then "Data Sources", choose "Add Data Source" then choose "Influx DB".
+Enter the username and password of the InfluxDB. The URL for the InfluxDB database is http://ip-of-home-assistant-server:8086 and the database name is `smart_home`.
+
+
+</p>
+</details>
+
+
+
+
+
 
 ### Configure Denon AVR in Home Assistant
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Denon AVR" and click on it.
 Enter the IP of your Denon AVR in the field "IP address".
 Enter your username and password and press "SUBMIT"
+
+### HACS
