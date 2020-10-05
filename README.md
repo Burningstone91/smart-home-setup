@@ -2090,7 +2090,7 @@ monitor_docker:
 #### Home Assistant
 To get the installed and latest available version of Home Assistant we can use the [version integration](https://www.home-assistant.io/integrations/version/).
 
-Add the following in the `sensor:` section of the system_monitoring.yaml file:
+Add the following in the `sensor:` section of the system_monitoring.yaml file:\
 Installed:
 ```yaml
   - platform: version
@@ -2129,7 +2129,7 @@ Restart Home Assistant.
 #### PiHole
 To get the installed and latest available version of Pi Hole we can use the [command line sensor integration](https://www.home-assistant.io/integrations/sensor.command_line/). Before creating the sensor, make sure that you copied the SSH keys (as describted [here](#create-and-distribute-ssh-keys)) from the machine running Home Assistant to the machine running PiHole.
 
-Add the following in the `sensor:` section of the system_monitoring.yaml file:
+Add the following in the `sensor:` section of the system_monitoring.yaml file:\
 Installed:
 ```yaml  
   - platform: command_line
@@ -2238,7 +2238,7 @@ To monitor the Synology NAS we can use the [Synology DSM integration](https://ww
 
 #### Model and Firmware
 To get the model, current firmware and whether an update is available we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP on the NAS. Login to the Web Interface of the NAS, go to "Control Panel" and then choose "Terminal & SNMP". Go to the tab "SNMP" and enable the SNMP Service.
-Add the following in the `sensor:` section of the system_monitoring.yaml file:
+Add the following in the `sensor:` section of the system_monitoring.yaml file:\
 Model:
 ```yaml
   - platform: snmp
@@ -2285,7 +2285,7 @@ This will give you a device_tracker for each network device and some additional 
 #### Unifi Device statistics
 To get the model, current firmware and other measures we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP in Unifi. Login to the Web Interface of the Unifi Controller. Go to "Settings", then "Services". In the tab "SNMP" enable "SNMPV1, SNMPV2C".
 
-Add the following in the `sensor:` section of the system_monitoring.yaml file:
+Add the following in the `sensor:` section of the system_monitoring.yaml file:\
 **AP-AC Pro**
 ```yaml
   ## Model
@@ -2499,7 +2499,7 @@ Create a systemd service:
 ```bash
 sudo nano /etc/systemd/system/system_sensors.service
 ```
-
+```bash
 [Unit]
 Description=System Sensor service
 After=multi-user.target
