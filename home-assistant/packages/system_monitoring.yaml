@@ -1,0 +1,380 @@
+################################
+# Proxmox for VM running on NUC
+################################
+proxmoxve:
+  host: 10.10.40.6
+  username: !secret pve_user
+  password: !secret pve_pass
+  realm: pve
+  verify_ssl: false
+  nodes:
+    - node: pve
+      vms:
+        - 101
+        - 102
+        - 103
+        - 105
+
+###############################
+# Monitoring Docker Containers
+###############################
+monitor_docker:
+  - name: Docker
+    containers:
+      - appdaemon
+      - esphome-dashboard
+      - hass
+      - hass-db
+      - mqtt
+      - influxdb
+      - grafana
+      - portainer
+      - unifi-poller
+    rename:
+      appdaemon: AppDaemon
+      esphome-dashboard: "ESPHome-Dashboard"
+      hass: Home Assistant
+      hass-db: Postgres
+      mqtt: Mosquitto
+      influxdb: InfluxDB
+      grafana: Grafana
+      portainer: Portainer
+      unifi-poller: "Unifi-Poller"
+    monitored_conditions:
+      - version
+      - status
+      - image
+      - cpu_percentage
+      - memory_percentage
+
+sensor:
+  ########################
+  # SystemMonitor for NUC
+  ########################
+  - platform: systemmonitor
+    resources:
+    - type: disk_use_percent
+      arg: /home
+    - type: disk_use
+      arg: /home
+    - type: disk_free
+      arg: /home
+    - type: memory_free
+    - type: memory_use
+    - type: memory_use_percent
+    - type: swap_use_percent
+    - type: swap_use
+    - type: swap_free
+    - type: load_1m
+    - type: load_5m
+    - type: load_15m
+    - type: network_in
+      arg: ens18
+    - type: network_out
+      arg: ens18
+    - type: throughput_network_in
+      arg: ens18
+    - type: throughput_network_out
+      arg: ens18
+    - type: packets_in
+      arg: ens18
+    - type: packets_out
+      arg: ens18
+    - type: processor_use
+    - type: last_boot   
+    - type: ipv4_address
+      arg: ens18
+  ##################
+  # Temperature NUC
+  ##################
+  - platform: command_line
+    name: temperature_cpu_nuc
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.40.6 cat /sys/class/thermal/thermal_zone3/temp'
+    value_template: "{{ value | int / 1000 }}"
+    unit_of_measurement: "°C"
+  #################
+  # Home Assistant
+  #################
+  # Uptime
+  - platform: uptime
+    name: uptime_home_assistant_minutes
+    unit_of_measurement: minutes
+  - platform: template
+    sensors:
+      uptime_home_assistant:
+        value_template: >
+          {%- set value = states('sensor.uptime_home_assistant_minutes') | float %}
+          {%- set time = (value * 60) | int %}
+          {%- set minutes = ((time % 3600) // 60) %}
+          {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+          {%- set hours = ((time % 86400) // 3600) %}
+          {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+          {%- set days = (time // 86400) %}
+          {%- set days = '{}d '.format(days) if days > 0 else '' %}
+          {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ###################
+  # Postgres DB Size
+  ###################
+  - platform: sql
+    db_url: !secret db_url
+    queries:
+      - name: DB size Hass
+        query: "SELECT (pg_database_size('smart_home')/1024/1024) as db_size;"
+        column: "db_size"
+        unit_of_measurement: MB
+  ####################
+  # Software Versions
+  ####################
+  # Home Assistant
+  - platform: version
+    name: HASS Available
+    source: docker
+    beta: true
+  - platform: version
+    name: HASS Installed
+  # AppDaemon
+  - platform: command_line
+    name: AppDaemon Available
+    command: >-
+      curl -L
+      -H "User-Agent: Home Assistant"
+      -H "Content-Type: application/json"
+      https://pypi.python.org/pypi/appdaemon/json
+    value_template: '{{ value_json.info.version }}'
+    scan_interval: 3600
+  # Pi-hole
+  - platform: command_line
+    name: current_version_pi_hole
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q pi@10.10.0.8 pihole -v -p -c | grep -Po "\d.\d.\d"'
+    scan_interval: 3600
+  - platform: command_line
+    name: latest_version_pi_hole
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q pi@10.10.0.8 pihole -v -p -l | grep -Po "\d.\d.\d"'
+    scan_interval: 3600
+    # Mosquitto
+  - platform: mqtt
+    state_topic: "docker-image-updates/mosquitto"
+    name: Update Mosquitto
+  # ESP Home
+  - platform: mqtt
+    state_topic: "docker-image-updates/esphome"
+    name: Update ESPHome
+  # Grafana
+  - platform: mqtt
+    state_topic: "docker-image-updates/grafana"
+    name: Update Grafana
+  # InfluxDB
+  - platform: mqtt
+    state_topic: "docker-image-updates/influxdb"
+    name: Update InfluxDB
+  # UniFi Poller
+  - platform: mqtt
+    state_topic: "docker-image-updates/unifi-poller"
+    name: Update UniFi Poller
+  # Portainer
+  - platform: mqtt
+    state_topic: "docker-image-updates/portainer"
+    name: Update Portainer
+  # Proxmox
+  - platform: command_line
+    name: Version Proxmox VE 
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.40.6 pveversion | cut -f2 -d/'
+    scan_interval: 3600
+  ###############
+  # Synology NAS
+  ###############
+  # Model
+  - platform: snmp
+    name: Model NAS
+    host: 10.10.40.15
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.6574.1.5.1.0
+  # Firmware
+  - platform: snmp
+    name: Firmware NAS
+    host: 10.10.40.15
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.6574.1.5.3.0
+  # Firmware Upgrade Available
+  - platform: snmp
+    name: Firmware Upgrade NAS
+    host: 10.10.40.15
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.6574.1.5.4.0
+    value_template: >
+      {% set mapping = {
+        '1': 'Upgrade available',
+        '2': 'Up-to-date',
+        '3': 'Unknown',
+        '4': 'Unknown',
+        '5': 'Unknown'
+      } %}
+      {{ mapping[value] if value in mapping else 'error' }}
+  ################
+  # Unifi Devices
+  ################
+  # AP Livingroom
+  ## Model
+  - platform: snmp
+    name: Model AP livingroom
+    host: 10.10.0.14
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.41112.1.6.3.3.0
+  ## Uptime
+  - platform: snmp
+    name: Uptime AP livingroom
+    host: 10.10.0.14
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.41112.1.6.3.5.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ## Firmware
+  - platform: snmp
+    name: Firmware AP livingroom
+    host: 10.10.0.14
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.41112.1.6.3.6.0
+  # Switch Livingroom
+  ## Temperature
+  - platform: snmp
+    name: Temperature Switch Livingroom
+    host: 10.10.0.6
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.43.1.8.1.5.1.0
+    unit_of_measurement: "°C"
+  ## Uptime
+  - platform: snmp
+    name: Uptime Switch Livingroom
+    host: 10.10.0.6
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.1.3.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ## Model
+  - platform: snmp
+    name: Model Switch Livingroom
+    host: 10.10.0.6
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.2.0
+  ## Firmware
+  - platform: snmp
+    name: Firmware Switch Livingroom
+    host: 10.10.0.6
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.13.0
+  # Switch Storageroom
+  ## Uptime
+  - platform: snmp
+    name: Uptime Switch Storageroom
+    host: 10.10.0.10
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.1.3.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ## Model
+  - platform: snmp
+    name: Model Switch Storageroom
+    host: 10.10.0.10
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.2.0
+  ## Firmware
+  - platform: snmp
+    name: Firmware Switch Storageroom
+    host: 10.10.0.10
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.13.0
+  # USG Router Livingroom
+  ## Uptime
+  - platform: snmp
+    name: Uptime USG
+    host: 10.10.0.1
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.1.3.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ## Firmware
+  - platform: snmp
+    name: Firmware USG
+    host: 10.10.0.1
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.1.1.0
+    value_template: "{{ '.'.join(value.split('.')[:3]) }}"
+  ## WAN In
+  - platform: snmp
+    name: WAN In USG
+    host: 10.10.0.1
+    baseoid: 1.3.6.1.2.1.31.1.1.1.6.2
+    community: 'public'
+    version: '2c'
+    scan_interval: 10
+  - platform: derivative
+    source: sensor.wan_in_usg
+    unit_time: s
+    unit: B
+    name: wan_in_usg_derivative  
+  - platform: template
+    sensors:
+      wan_in_usg_mbps:
+        value_template:  "{{ ((states('sensor.wan_in_usg_derivative')|float*8)/1000000)|round(2) }}"
+        unit_of_measurement: 'Mbps'
+        friendly_name: WAN In USG Mbps
+  ## WAN Out
+  - platform: snmp
+    name: WAN Out USG
+    host: 10.10.0.1
+    baseoid: 1.3.6.1.2.1.31.1.1.1.10.2
+    community: 'public'
+    version: '2c'
+    scan_interval: 10
+  - platform: derivative
+    source: sensor.wan_out_usg
+    unit_time: s
+    unit: B
+    name: wan_out_usg_derivative
+  - platform: template
+    sensors:
+      wan_out_usg_mbps:
+        value_template:  "{{ ((states('sensor.wan_out_usg_derivative')|float*8)/1000000)|round(2) }}"
+        unit_of_measurement: 'Mbps'
+        friendly_name: WAN Out USG Mbps
+
+# Entity Customization
+homeassistant:
+  customize:
+    # Lights
+    binary_sensor.pve_hass_dev_running:
+      friendly_name: HA dev VM
+    binary_sensor.pve_hassio_test_running:
+      friendly_name: HA test VM
+    binary_sensor.pve_investment_running:
+      friendly_name: Investment VM
+    binary_sensor.pve_master_running:
+      friendly_name: HA prod VM
