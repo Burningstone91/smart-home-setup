@@ -14,7 +14,7 @@ secrets.yaml
 zwcfg_*
 mosquitto/config/passwd
 mosquitto/data
-esphome/
+mosquitto/log
 appdaemon/logs
 appdaemon/dashboards
 scratch
@@ -22,3 +22,12 @@ home-assistant/www/person_pictures/
 known_devices.yaml
 appdaemon/namespaces/
 index-1.html
+ha-dockermon/
+grafana/
+influxdb/
+unifi-poller/
+portainer/
+home-assistant-db/
+esphome/
+check_docker_latest.sh
+check_docker_list.txt
