@@ -1,0 +1,73 @@
+recorder:
+  db_url: !secret db_url
+  purge_keep_days: 7
+  include:
+    domains:
+      - person
+    entity_globs:
+      - sensor.temperature*
+      - sensor.humidity*
+      - sensor.lux*
+      - sensor.speedtest*
+      - sensor.ram_use_pct*
+      - sensor.cpu_load*
+      - binary_sensor.door*
+      - binary_sensor.window*
+      - binary_sensor.motion*
+      - binary_sensor.tamper*
+    entities:
+      - binary_sensor.bed_dimitri
+      - sensor.location_phone_dimitri
+      - sensor.network_throughput_in_ha
+      - sensor.network_throughput_out_ha
+      - sensor.wan_in_usg_mbps
+      - sensor.wan_out_usg_mbps
+      - sensor.network_in_ha
+      - sensor.network_out_ha
+      - sensor.network_down_nas
+      - sensor.network_up_nas
+      - light.balcony_ceiling
+      - light.bedroom
+      - light.bedroom_bed
+      - light.bedroom_ceiling
+      - light.livingroom
+      - light.dressroom
+      - light.office
+      - media_player.buero_musik_main
+      - media_player.receiver_livingroom
+
+history:
+
+influxdb:
+  username: !secret influxdb_user
+  password: !secret influxdb_pass
+  database: smart_home
+  include:
+    domains:
+      - person
+    entity_globs:
+      - sensor.temperature*
+      - sensor.humidity*
+      - sensor.lux*
+      - sensor.speedtest*
+      - sensor.ram_use_pct*
+      - sensor.cpu_load*
+    entities:
+      - binary_sensor.bed_dimitri
+      - sensor.network_throughput_in_ha
+      - sensor.network_throughput_out_ha
+      - sensor.wan_in_usg_mbps
+      - sensor.wan_out_usg_mbps
+      - sensor.network_in_ha
+      - sensor.network_out_ha
+      - sensor.network_down_nas
+      - sensor.network_up_nas
+      - light.balcony_ceiling
+      - light.bedroom
+      - light.bedroom_bed
+      - light.bedroom_ceiling
+      - light.livingroom
+      - light.dressroom
+      - light.office
+      - media_player.buero_musik_main
+      - media_player.receiver_livingroom
