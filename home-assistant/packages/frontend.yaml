@@ -1,0 +1,11 @@
+frontend:
+
+lovelace:
+  mode: storage
+  dashboards:
+    computer-view:
+      mode: yaml
+      title: Home
+      icon: mdi:matrix
+      show_in_sidebar: true
+      filename: ./dashboards/computer-view.yaml
