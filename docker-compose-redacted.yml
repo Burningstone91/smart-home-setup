@@ -19,6 +19,21 @@ services:
     volumes: 
       - ./esphome:/config
       - /etc/localtime:/etc/localtime:ro
+  grafana:
+    container_name: grafana
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=secretusername
+      - GF_SECURITY_ADMIN_PASSWORD=supersecretpassword
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    user: "1000"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - /etc/localtime:/etc/localtime:ro
   hass:
     container_name: hass
     image: homeassistant/home-assistant:0.115.0
@@ -28,6 +43,33 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - ./home-assistant:/config
+      - /home/burningstone/.ssh:/root/.ssh
+  hass-db:
+    container_name: hass-db
+    environment:
+      POSTGRES_DB: "smart_home"
+      POSTGRES_PASSWORD: "supersecretpassword"
+      POSTGRES_USER: "secretusername"
+    image: "postgres:9.6.19-alpine"
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./home-assistant-db:/var/lib/postgresql/data
+  influxdb:
+    container_name: influxdb
+    environment:
+      - INFLUXDB_DB=smart_home
+      - INFLUXDB_ADMIN_USER=secretusername
+      - INFLUXDB_ADMIN_PASSWORD=supersecretpassword
+    image: influxdb:latest
+    ports:
+      - "8086:8086"
+    restart: unless-stopped
+    volumes:
+      - ./influxdb:/var/lib/influxdb
+      - /etc/localtime:/etc/localtime:ro
   mqtt:
     container_name: mqtt
     image: eclipse-mosquitto
@@ -39,3 +81,14 @@ services:
       - ./mosquitto/config:/mosquitto/config
       - ./mosquitto/log:/mosquitto/log
       - ./mosquitto/data:/mosquitto/data
+  portainer:
+    container_name: portainer
+    image: "portainer/portainer:latest"
+    ports:
+      - "9000:9000"
+      - "8000:8000"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer:/data
