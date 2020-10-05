@@ -4,9 +4,6 @@ bedroom:
   area: bedroom
   attributes:
     friendly_name: Schlafzimmer
-  occupancy_entities:
-    binary_sensor.bed_dimitri: "on"
-  #   binary_sensor.bed_sabrina: "on"
   priority: 1
 
 bedroom_lights:

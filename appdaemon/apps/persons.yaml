@@ -4,6 +4,7 @@ dimitri:
   person: Dimitri
   attributes:
     full_name: Dimitri Steiner
+    notifiers: mobile_app_sm_g981b
   priority: 1
 
 sabrina:

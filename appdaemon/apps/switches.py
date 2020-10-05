@@ -43,7 +43,10 @@ class SwitchBase(AppBase):
     def on_button_press(self, event_name: str, data: dict, kwargs: dict) -> None:
         """Respond on button press."""
         button_name = self.get_button_name(data["event"])
-        action_map = {**self.action_map, **self.custom_action_map}
+        if self.lights:
+            action_map = {**self.action_map, **self.custom_action_map}
+        else:
+            action_map = {**self.custom_action_map}
 
         # Check if button press is configured
         try:

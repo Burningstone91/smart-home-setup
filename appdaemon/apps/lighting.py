@@ -241,8 +241,9 @@ class AreaLighting(AppBase):
     def lux_above_threshold(self) -> bool:
         """Return true if lux is above threshold."""
         if self.lux_sensor:
-            value = float(self.hass.get_state(self.lux_sensor))
-            return value > self.lux_threshold
+            value = self.hass.get_state(self.lux_sensor)
+            if value not in ["unavailable", "unknown"]:
+                return float(value) > self.lux_threshold
 
         return False
 

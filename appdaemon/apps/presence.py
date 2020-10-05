@@ -26,9 +26,10 @@ class RoomPresence(AppBase):
         self, entity: str, attribute: str, old: str, new: str, kwargs: dict
     ) -> None:
         """Respond when room presence sensor changes state."""
-        if new != old:
-            person_id = kwargs["person_id"]
-            person_entity = f"person.{person_id}"
+        person_id = kwargs["person_id"]
+        person_entity = f"person.{person_id}"
+        old_state = self.adbase.get_state(person_entity, attribute="area")
+        if new != old_state:
             areas = self.adbase.get_state("area")
             area_entity = f"area.{new}"
 
