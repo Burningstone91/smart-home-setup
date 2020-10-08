@@ -35,6 +35,7 @@ recorder:
       - light.office
       - media_player.buero_musik_main
       - media_player.receiver_livingroom
+      - sensor.pi_hole_ads_blocked_today
 
 history:
 

@@ -127,14 +127,14 @@ sensor:
   ####################
   # Home Assistant
   - platform: version
-    name: HASS Available
+    name: latest_version_homeassistant
     source: docker
     beta: true
   - platform: version
-    name: HASS Installed
+    name: current_version_homeassistant
   # AppDaemon
   - platform: command_line
-    name: AppDaemon Available
+    name: latest_version_appdaemon
     command: >-
       curl -L
       -H "User-Agent: Home Assistant"
@@ -143,15 +143,34 @@ sensor:
     value_template: '{{ value_json.info.version }}'
     scan_interval: 3600
   # Pi-hole
-  - platform: command_line
-    name: current_version_pi_hole
-    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q pi@10.10.0.8 pihole -v -p -c | grep -Po "\d.\d.\d"'
-    scan_interval: 3600
-  - platform: command_line
-    name: latest_version_pi_hole
-    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q pi@10.10.0.8 pihole -v -p -l | grep -Po "\d.\d.\d"'
-    scan_interval: 3600
-    # Mosquitto
+  ## Pi-hole Core
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: latest_version_pihole_core
+    value_template: "{{ value_json.core_latest[1:] }}"
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: current_version_pihole_core
+    value_template: "{{ value_json.core_current[1:] }}"
+  ## Pi-hole Web
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: latest_version_pihole_web
+    value_template: "{{ value_json.web_latest[1:] }}"
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: current_version_pihole_web
+    value_template: "{{ value_json.web_current[1:] }}"
+  ## Pi-hole FTL
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: latest_version_pihole_ftl
+    value_template: "{{ value_json.FTL_latest[1:] }}"
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: current_version_pihole_ftl
+    value_template: "{{ value_json.FTL_current[1:] }}"
+  # Mosquitto
   - platform: mqtt
     state_topic: "docker-image-updates/mosquitto"
     name: Update Mosquitto

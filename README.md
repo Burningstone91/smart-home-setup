@@ -2094,12 +2094,12 @@ Add the following in the `sensor:` section of the system_monitoring.yaml file:\
 Installed:
 ```yaml
   - platform: version
-    name: HASS Installed
+    name: current_version_homeassistant
 ```
 Latest(example for docker install, showing beta versions):
 ```yaml
   - platform: version
-    name: HASS Available
+    name: latest_version_homeassistant
     source: docker
     beta: true
 ```
@@ -2112,7 +2112,7 @@ Add the following in the `sensor:` section of the system_monitoring.yaml file:
 
 ```yaml
   - platform: command_line
-    name: AppDaemon Available
+    name: latest_version_appdaemon
     command: >-
       curl -L
       -H "User-Agent: Home Assistant"
@@ -2127,24 +2127,51 @@ To get the installed version:
 Restart Home Assistant.
 
 #### PiHole
-To get the installed and latest available version of Pi Hole we can use the [command line sensor integration](https://www.home-assistant.io/integrations/sensor.command_line/). Before creating the sensor, make sure that you copied the SSH keys (as describted [here](#create-and-distribute-ssh-keys)) from the machine running Home Assistant to the machine running PiHole.
+To get the installed and latest available version of Pi Hole we can use the [rest sensor integration](https://www.home-assistant.io/integrations/rest/).
 
 Add the following in the `sensor:` section of the system_monitoring.yaml file:\
-Installed:
+Core Installed:
 ```yaml  
-  - platform: command_line
-    name: current_version_pi_hole
-    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q pi@10.10.0.8 pihole -v -p -c | grep -Po "\d.\d.\d"'
-    scan_interval: 3600
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: current_version_pihole_core
+    value_template: "{{ value_json.core_current[1:] }}"
 ```
-Latest:
+Core Latest:
 ```yaml  
-  - platform: command_line
-    name: latest_version_pi_hole
-    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q pi@10.10.0.8 pihole -v -p -l | grep -Po "\d.\d.\d"'
-    scan_interval: 3600
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: latest_version_pihole_core
+    value_template: "{{ value_json.core_latest[1:] }}"
 ```
-In the `command` field in the part `root@10.10.40.6`, replace root with the username used to SSH into the machine running PiHole and 10.10.40.6 with the IP of the machine running PiHole.
+Web Installed:
+```yaml  
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: current_version_pihole_core
+    value_template: "{{ value_json.core_current[1:] }}"
+```
+Web Latest:
+```yaml  
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: current_version_pihole_web
+    value_template: "{{ value_json.web_current[1:] }}"
+```
+FTL Installed:
+```yaml  
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: current_version_pihole_ftl
+    value_template: "{{ value_json.FTL_current[1:] }}"
+```
+FTL Latest:
+```yaml  
+  - platform: rest
+    resource: http://10.10.0.8/admin/api.php?versions
+    name: latest_version_pihole_ftl
+    value_template: "{{ value_json.FTL_latest[1:] }}"
+```
 
 Restart Home Assistant.
 

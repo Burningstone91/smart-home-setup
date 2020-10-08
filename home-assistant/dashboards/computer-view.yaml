@@ -548,10 +548,10 @@ views:
                       - type: markdown
                         content: >
                           <center>
-                            <h5>Installed:
-                            {{ states('sensor.hass_installed') }}<br>
-                            Newest:
-                            {{ states('sensor.hass_available') }}</h5>
+                            <h5>Current:
+                            {{ states('sensor.current_version_homeassistant') }}<br>
+                            Latest:
+                            {{ states('sensor.latest_version_homeassistant') }}</h5>
                           </center>
                         style: |
                           ha-card {
@@ -1050,7 +1050,7 @@ views:
                       - type: markdown
                         content: >
                           <center>
-                            <img width="50" src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Home_Assistant_Logo.svg">
+                            <img width="50" src="https://github.com/AppDaemon/appdaemon/blob/dev/appdaemon/assets/images/android-chrome-512x512.png?raw=true">
                           </center>
                         style: |
                           ha-card {
@@ -1060,10 +1060,10 @@ views:
                       - type: markdown
                         content: >
                           <center>
-                            <h5>Installed:
+                            <h5>Current:
                             {{ states('sensor.docker_appdaemon_image').split(':')[1] }}<br>
-                            Newest:
-                            {{ states('sensor.appdaemon_available') }}</h5>
+                            Latest:
+                            {{ states('sensor.latest_version_appdaemon') }}</h5>
                           </center>
                         style: |
                           ha-card {
@@ -3153,16 +3153,67 @@ views:
                             margin-top: 15.5px;
                           }
                   ####################################################
-                  #                  Unavailable                     #
+                  #                  Versions                        #
                   ####################################################
-                  - type: 'custom:auto-entities'
-                    show_empty: false
-                    card:
-                      type: entities
-                      show_header_toggle: false
-                    filter:
-                      include:
-                        - state: unavailable
+                  - type: entities
+                    entities:
+                      - entity: sensor.current_version_pihole_core
+                        type: custom:multiple-entity-row
+                        name: Pi Hole Core
+                        show_state: false
+                        entities:
+                          - entity: sensor.current_version_pihole_core
+                            name: Installed
+                          - entity: sensor.latest_version_pihole_core
+                            name: Latest
+                      - entity: sensor.current_version_pihole_core
+                        type: custom:multiple-entity-row
+                        name: Pi Hole Web
+                        show_state: false
+                        entities:
+                          - entity: sensor.current_version_pihole_web
+                            name: Installed
+                          - entity: sensor.latest_version_pihole_web
+                            name: Latest
+                      - entity: sensor.current_version_pihole_core
+                        type: custom:multiple-entity-row
+                        name: Pi Hole FTL
+                        show_state: false
+                        entities:
+                          - entity: sensor.current_version_pihole_ftl
+                            name: Installed
+                          - entity: sensor.latest_version_pihole_ftl
+                            name: Latest
+                  ####################################################
+                  #                 Network Throghput                #
+                  ####################################################
+                  - type: vertical-stack
+                    cards: 
+                      # WAN In                  
+                      - type: custom:mini-graph-card
+                        name: Ads Blocked Today
+                        icon: mdi:network
+                        entities:
+                          - sensor.pi_hole_ads_blocked_today
+                        height: 40
+                        line_width: 2
+                        font_size: 70
+                        hours_to_show: 168
+                        points_per_hour: 1
+                        show:
+                          extrema: false
+                          fill: true
+                          state: false
+                          legend: false
+                        style: |
+                          ha-card {
+                            --paper-item-icon-color: rgb(47,186,229);
+                            margin-top: 5px;
+                            margin-bottom: 10px;
+                            height: 80px;
+                            margin-right: 20px;
+                            margin-left: 20px;
+                              }
           ####################################################
           #                                                  #
           #                   Unifi Router                   #
