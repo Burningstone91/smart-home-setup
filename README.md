@@ -2412,6 +2412,51 @@ Add the following in the `sensor:` section of the system_monitoring.yaml file:\
 ```
 **Unifi Security Gateway 3**
 ```yaml
+  ## CPU 1 min
+  - platform: snmp
+    name: cpu_load_1m_usg
+    host: 10.10.0.1
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.2021.10.1.3.1
+    value_template: "{{ ( value | float * 100 )| int }}"
+    unit_of_measurement: "%"
+  ## CPU 5 mins
+  - platform: snmp
+    name: cpu_load_5m_usg
+    host: 10.10.0.1
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.2021.10.1.3.2
+    value_template: "{{ ( value | float * 100 )| int }}"
+    unit_of_measurement: "%"
+  ## CPU 15 mins
+  - platform: snmp
+    name: cpu_load_15m_usg
+    host: 10.10.0.1
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.2021.10.1.3.3
+    value_template: "{{ ( value | float * 100 )| int }}"
+    unit_of_measurement: "%"
+  ## CPU 0 Load
+  - platform: snmp
+    name: cpu_0_load_usg
+    host: 10.10.0.1
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.25.3.3.1.2.196608
+    unit_of_measurement: "%"
+  ## CPU 1 Load
+  - platform: snmp
+    name: cpu_1_load_usg
+    host: 10.10.0.1
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.25.3.3.1.2.196609
+    unit_of_measurement: "%"
+  ### CPU Load average
+  - platform: min_max
+    name: cpu_load_usg
+    type: mean
+    entity_ids:
+      - sensor.cpu_0_load_usg
+      - sensor.cpu_1_load_usg  
   ## Uptime
   - platform: snmp
     name: Uptime USG
