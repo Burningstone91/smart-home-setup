@@ -1,3 +1,4 @@
+
 ################################
 # Proxmox for VM running on NUC
 ################################
@@ -48,6 +49,13 @@ monitor_docker:
       - memory_percentage
 
 sensor:
+  ################
+  # Date and Time
+  ################
+  - platform: time_date
+    display_options:
+      - 'time'
+      - 'date'
   ########################
   # SystemMonitor for NUC
   ########################
@@ -429,7 +437,26 @@ sensor:
         value_template:  "{{ ((states('sensor.wan_out_usg_derivative')|float*8)/1000000)|round(2) }}"
         unit_of_measurement: 'Mbps'
         friendly_name: WAN Out USG Mbps
-
+  ######################
+  # Pi Updtime Friendly
+  ######################
+  # Network Pi
+  - platform: template
+    sensors:
+      uptime_pi_network:
+        friendly_name: uptime_pi_network
+        value_template: >
+          {%- set updater = states('sensor.time') %}
+          {%- set last_boot = states('sensor.last_boot_pi_network') %}
+          {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+          {%- set time = uptime | int %}
+          {%- set minutes = ((time % 3600) // 60) %}
+          {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+          {%- set hours = ((time % 86400) // 3600) %}
+          {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+          {%- set days = (time // 86400) %}
+          {%- set days = '{}d '.format(days) if days > 0 else '' %}
+          {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
 # Entity Customization
 homeassistant:
   customize:

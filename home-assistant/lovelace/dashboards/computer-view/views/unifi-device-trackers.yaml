@@ -1,0 +1,1138 @@
+####################################################
+#                                                  #
+#            Unifi Device Trackers                 #
+#                                                  #
+####################################################
+title: unifi-device-trackers
+path: unifi-device-trackers
+panel: true
+icon: mdi:lan
+badges: []
+cards:
+  - type: vertical-stack
+    cards:
+      ####################################################
+      #                                                  #
+      #                   Unifi Router                   #
+      #                                                  #
+      ####################################################
+      - type: custom:stack-in-card
+        cards:
+          ####################################################
+          #                  Unifi Controller                #
+          ####################################################
+          - type: horizontal-stack
+            cards:
+              - type: vertical-stack
+                cards:
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="250" src="/local/system_monitoring/unifi_logo.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: 170px;
+                        margin-left: 20px;
+                      }
+              ####################################################
+              #            Unifi Device Trackers                 #
+              ####################################################
+              # First Column
+              - type: vertical-stack
+                cards:
+                  # Desktop Dimitri
+                  - type: custom:button-card
+                    entity: 'device_tracker.desktop_dimitri'
+                    size: 12%
+                    name: Desktop Dimitri
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/desktop_dimitri.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # NUC
+                  - type: custom:button-card
+                    entity: 'device_tracker.server_nuc'
+                    size: 20%
+                    name: Main Server
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/nuc.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 20px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Pi Livingroom
+                  - type: custom:button-card
+                    entity: 'device_tracker.pi_livingroom'
+                    size: 15%
+                    name: Pi Wohnzimmer
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/pi_zero_w.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 10px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # ESP32 Bed sensor
+                  - type: custom:button-card
+                    entity: 'device_tracker.bed_sensor_bedroom'
+                    size: 30%
+                    name: Bett Sensor
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/esp32.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 10px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 5px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red 
+              # Second Column
+              - type: vertical-stack
+                cards:
+                  # Desktop Sabrina
+                  - type: custom:button-card
+                    entity: 'device_tracker.desktop_sabrina'
+                    size: 12%
+                    name: Desktop Sabrina
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/desktop_dimitri.png
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # NAS
+                  - type: custom:button-card
+                    entity: 'device_tracker.nas'
+                    size: 15%
+                    name: NAS
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/nas.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 10px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Pi Dressroom
+                  - type: custom:button-card
+                    entity: 'device_tracker.pi_dressroom'
+                    size: 15%
+                    name: Pi Ankleidezimmer
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/pi_zero_w.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 10px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # MyStrom Plug Dishwasher
+                  - type: custom:button-card
+                    entity: 'device_tracker.plug_dishwasher'
+                    size: 15%
+                    name: Plug Geschirrspüler
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/mystrom_plug.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 26px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 10px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+              # Third Column
+              - type: vertical-stack
+                cards:
+                  # Laptop Dimitri
+                  - type: custom:button-card
+                    entity: 'device_tracker.laptop_dimitri'
+                    size: 18%
+                    name: Laptop
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/laptop_dimitri.png
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: -3px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Pi Network
+                  - type: custom:button-card
+                    entity: 'device_tracker.unifi_controller'
+                    size: 15%
+                    name: Pi Netzwerk
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/pi3.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 29px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Denon AVR Livingroom
+                  - type: custom:button-card
+                    entity: 'device_tracker.receiver_livingroom'
+                    size: 25%
+                    name: Denon Wohnzimmer
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/denon_avr.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 21px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 10px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Harmony Remote Living Room
+                  - type: custom:button-card
+                    entity: 'device_tracker.remote_livingroom'
+                    size: 20%
+                    name: Fernbedienung Wohnzimmer
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/harmony.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 13px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 10px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+              # Forth Column
+              - type: vertical-stack
+                cards:
+                  # iPad
+                  - type: custom:button-card
+                    entity: 'device_tracker.ipad'
+                    size: 20%
+                    name: iPad
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/ipad.png
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 7px
+                        - margin-top: 2px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Pi Livingroom
+                  - type: custom:button-card
+                    entity: 'device_tracker.pi_zigbee_zwave'
+                    size: 15%
+                    name: Pi ZigBee/Z-Wave
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/pi3.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 29px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Denon Heos Bedroom
+                  - type: custom:button-card
+                    entity: 'device_tracker.receiver_bedroom'
+                    size: 20%
+                    name: Musik Schlafzimmer
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/heos.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: -2px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Nintendo Switch
+                  - type: custom:button-card
+                    entity: 'device_tracker.nintendo_switch'
+                    size: 30%
+                    name: Nintendo Switch
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/nintendo_switch.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 46px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 10px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+              # Fifth Column
+              - type: vertical-stack
+                cards:
+                  # Smartphone Dimitri
+                  - type: custom:button-card
+                    entity: 'device_tracker.phone_dimitri_unifi'
+                    size: 7%
+                    name: Handy Dimitri
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/galaxy_s20.png
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 7px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Pi Small Bathroom
+                  - type: custom:button-card
+                    entity: 'device_tracker.pi_bathroomsmall'
+                    size: 15%
+                    name: Pi Kleines Bad
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/pi_zero_w.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 2px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Yamaha Stereo Office
+                  - type: custom:button-card
+                    entity: 'device_tracker.receiver_office'
+                    size: 30%
+                    name: Musik Büro
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/yamaha_stereo.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: -10px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: -15px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Laptop Work
+                  - type: custom:button-card
+                    entity: 'device_tracker.laptop_work'
+                    size: 20%
+                    name: Laptop Arbeit
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/laptop_dimitri.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 20px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 5px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+              # Sixth Column
+              - type: vertical-stack
+                cards:
+                  # Smartphone Sabrina
+                  - type: custom:button-card
+                    entity: 'device_tracker.phone_sabrina_unifi'
+                    size: 7%
+                    name: Handy Sabrina
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/galaxy_s20.png
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 7px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Pi Office
+                  - type: custom:button-card
+                    entity: 'device_tracker.pi_office'
+                    size: 15%
+                    name: Pi Büro
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/pi_zero_w.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: 2px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 8px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red
+                  # Vacuum Robot Livingroom
+                  - type: custom:button-card
+                    entity: 'device_tracker.vacuum_livingroom'
+                    size: 20%
+                    name: Staubsauger
+                    label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                    show_name: true
+                    show_state: false
+                    show_label: true
+                    show_entity_picture: true
+                    entity_picture: /local/system_monitoring/roomba.png
+                    style: |
+                      ha-card {
+                        margin-left: 0px;
+                        margin-top: -2px;
+                      }
+                    styles:
+                      name:
+                        - font-size: 12px
+                      label:
+                        - font-size: 12px
+                      entity_picture:
+                        - margin-bottom: 7px
+                    state:
+                      - value: "home" 
+                        styles:
+                          card:
+                            - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                            - opacity: 1.0
+                            - box-shadow: none
+                          icon:
+                            - color: var(--paper-item-icon-active-color)
+                      - value: "not_home"
+                        styles:
+                          card:
+                            - opacity: 0.5
+                          state:
+                            - color: "Gray"
+                          name:
+                            - color: "Gray"
+                      - value: "unavailable"
+                        styles:
+                          card:
+                            - opacity: 0.4
+                          name:
+                            - color: red
+                          label:
+                            - color: red

@@ -5,6 +5,7 @@ docker-compose.yml
 .HA_VERSION
 home-assistant/tts
 home-assistant/deps
+home-assistant/image
 home-assistant/.storage
 home-assistant/.cloud
 home-assistant_v2.db

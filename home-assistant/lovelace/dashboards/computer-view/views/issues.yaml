@@ -1,0 +1,70 @@
+####################################################
+#                                                  #
+#                  Issues                          #
+#                                                  #
+####################################################                               
+title: issues
+path: issues
+panel: true
+icon: mdi:alert
+badges: []
+cards:
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        cards:
+          - type: horizontal-stack
+            cards:
+              ####################################################
+              #                  Warnings                        #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="140" src="/local/system_monitoring/warning_sign.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: 15.5px;
+                      }
+              ####################################################
+              #                  Unavailable                     #
+              ####################################################
+              - type: 'custom:auto-entities'
+                show_empty: false
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - state: unavailable
+              ####################################################
+              #                  Unknown                         #
+              ####################################################
+              - type: 'custom:auto-entities'
+                show_empty: false
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - state: unknown
+              ####################################################
+              #                  None                            #
+              ####################################################
+              - type: 'custom:auto-entities'
+                show_empty: false
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - state: none
+
+################################################
+# Link to logs
+# Set log levels
+# Restart HA

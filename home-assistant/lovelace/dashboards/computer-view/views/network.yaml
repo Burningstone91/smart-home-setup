@@ -1,0 +1,630 @@
+####################################################
+#                                                  #
+#                  Network                         #
+#                                                  #
+####################################################
+title: network
+path: network
+panel: true
+icon: mdi:lan
+badges: []
+cards:
+  - type: vertical-stack
+    cards:
+      ####################################################
+      #                                                  #
+      #                   Unifi Router                   #
+      #                                                  #
+      ####################################################
+      - type: custom:stack-in-card
+        cards:
+          - type: horizontal-stack
+            cards:
+              ####################################################
+              #                  USG Router                      #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Image
+                  - type: markdown
+                    content: >
+                      <img width="140" src="/local/system_monitoring/usg_3.png">
+                    style: |
+                      ha-card {
+                        margin-left: 95px;
+                        margin-top: 40px;
+                      }
+              ####################################################
+              #                 Router Details                   #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Title, Model, Firmware, Uptime
+                  - type: markdown
+                    content: >
+                      **Router**<br>
+                      **Model:**
+                      USG 3P<br>
+                      **IP:**
+                      10.10.0.1<br>
+                      **Firmware:**
+                      {{ states('sensor.firmware_usg') }}<br>
+                      **Uptime:**
+                      {{ states('sensor.uptime_usg') }}
+                    style: |
+                      ha-card {
+                        color: teal;
+                        padding-top: 20px;
+                      }
+              ####################################################
+              #                 Network Throghput                #
+              ####################################################
+              - type: vertical-stack
+                cards: 
+                  # WAN In                  
+                  - type: custom:mini-graph-card
+                    name: WAN In
+                    icon: mdi:network
+                    entities:
+                      - entity: sensor.wan_in_usg_mbps
+                        name: IN
+                    height: 40
+                    line_width: 2
+                    font_size: 70
+                    hours_to_show: 168
+                    points_per_hour: 1
+                    show:
+                      extrema: true
+                      fill: true
+                      state: false
+                      legend: false
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        margin-top: 5px;
+                        margin-bottom: 10px;
+                        height: 50px;
+                        margin-right: 20px; 
+                          }
+              - type: vertical-stack
+                cards: 
+                  # WAN Out
+                  - type: custom:mini-graph-card
+                    name: WAN Out
+                    icon: mdi:network
+                    entities:
+                      - entity: sensor.wan_out_usg_mbps
+                        name: OUT
+                    height: 40
+                    line_width: 2
+                    font_size: 70
+                    hours_to_show: 168
+                    points_per_hour: 1
+                    show:
+                      extrema: true
+                      fill: true
+                      state: false
+                      legend: false
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        margin-top: 5px;
+                        margin-bottom: 10px;
+                        height: 50px;
+                        margin-right: 20px;
+                          }
+      ####################################################
+      #                                                  #
+      #                   Unifi Devices                  #
+      #                                                  #
+      ####################################################
+      - type: custom:stack-in-card
+        cards:
+          - type: horizontal-stack
+            cards:
+              ####################################################
+              #                  Access Point                    #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Image
+                  - type: markdown
+                    content: >
+                      <img width="140" src="/local/system_monitoring/unifi_ap.png">
+                    style: |
+                      ha-card {
+                        margin-left: 95px;
+                      }
+              ####################################################
+              #                 AP Details                       #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Title, Model, Firmware, Uptime
+                  - type: markdown
+                    content: >
+                      **ACCESS POINT - WOHNZIMMER**<br>
+                      **Model:**
+                      {{ states('sensor.model_ap_livingroom') }}<br>
+                      **IP:**
+                      10.10.0.14<br>
+                      **Firmware:**
+                      {{ states('sensor.firmware_ap_livingroom') }}<br>
+                      **Uptime:**
+                      {{ states('sensor.uptime_ap_livingroom') }}
+                    style: |
+                      ha-card {
+                        color: teal;
+                        padding-top: 20px;
+                      }
+              ####################################################
+              #                  Switch Livingroom               #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Image
+                  - type: markdown
+                    content: >
+                      <img width="200" src="/local/system_monitoring/us_8_150w.png">
+                    style: |
+                      ha-card {
+                        margin-left: 95px;
+                        margin-top: 20px;
+                      }
+              ####################################################
+              #                 Switch Details                   #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Title, Model, Firmware, Uptime
+                  - type: markdown
+                    content: >
+                      **SWITCH - WOHNZIMMER**<br>
+                      **Model:**
+                      {{ states('sensor.model_switch_livingroom') }}<br>
+                      **IP:**
+                      10.10.0.6<br>
+                      **Firmware:**
+                      {{ states('sensor.firmware_switch_livingroom') }}<br>
+                      **Uptime:**
+                      {{ states('sensor.uptime_switch_livingroom') }}
+                    style: |
+                      ha-card {
+                        color: teal;
+                        padding-top: 20px;
+                      }
+              ####################################################
+              #                  Switch Storageroom              #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Image
+                  - type: markdown
+                    content: >
+                      <img width="120" src="/local/system_monitoring/us_8_60w.png">
+                    style: |
+                      ha-card {
+                        margin-left: 95px;
+                        margin-top: 20px;
+                      }
+              ####################################################
+              #                 Switch Details                   #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Title, Model, Firmware, Uptime
+                  - type: markdown
+                    content: >
+                      **SWITCH - REDUIT**<br>
+                      **Model:**
+                      {{ states('sensor.model_switch_storageroom') }}<br>
+                      **IP:**
+                      10.10.0.10<br>
+                      **Firmware:**
+                      {{ states('sensor.firmware_switch_storageroom') }}<br>
+                      **Uptime:**
+                      {{ states('sensor.uptime_switch_storageroom') }}
+                    style: |
+                      ha-card {
+                        color: teal;
+                        padding-top: 20px;
+                      }
+      ####################################################
+      #                                                  #
+      #                   Network Pi                     #
+      #                                                  #
+      ####################################################
+      - type: custom:stack-in-card
+        cards:
+          - type: horizontal-stack
+            cards:
+              ####################################################
+              #                    Pi                            #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="160" src="/local/system_monitoring/pi3.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: 20px;
+                        margin-left: 2.5px;
+                      }
+              ####################################################
+              #                    Pi Details                    #
+              ####################################################
+              # Title, Model, Firmware, Uptime
+              - type: markdown
+                content: >
+                  **NETWORK PI**<br>
+                  **Model:**
+                  Raspberry Pi 3 Model B Rev 1.2<br>
+                  **IP:**
+                  10.10.0.8<br>
+                  **OS:**
+                  Raspbian 10 Buster<br>
+                  **Updates:**
+                  {{ states('sensor.updates_pi_network') }}<br>
+                  **Uptime:**
+                  {{ states('sensor.uptime_pi_network') }}
+                style: |
+                  ha-card {
+                    color: teal;
+                    padding-top: 20px;
+                  }
+              ####################################################
+              #                    Pi Statistics                 #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # CPU Load
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                    height: 15px
+                    width: 80%
+                    icon: mdi:speedometer
+                    entities:
+                      - entity: sensor.cpu_load_pi_network
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                        margin-top: 20px;
+                      }
+                      ha-icon	 {
+                        --mdc-icon-size: 20px;
+                      }
+                        bar-card-name	 {
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # Temperature
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.temperature_pi_network
+                        name: Temp
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                        margin-top: -15px;
+                      }
+                      ha-icon	 {
+                        --mdc-icon-size: 20px;
+                      }
+                        bar-card-name	 {
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.ram_use_pct_pi_network
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                        margin-top: -15px;
+                      }
+                      ha-icon	 {
+                        --mdc-icon-size: 20px;
+                      }
+                        bar-card-name	 {
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # Disk
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.disk_use_pct_pi_network
+                        name: Disk
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                        margin-top: -15px;
+                      }
+                      ha-icon	 {
+                        --mdc-icon-size: 20px;
+                      }
+                        bar-card-name	 {
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+              ####################################################
+              #                  Empty Column                    #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  - type: markdown
+                    content: " "
+
+          ####################################################
+          #                  Pi-Hole                         #
+          ####################################################
+          - type: horizontal-stack
+            cards:
+              # Pi Hole Enabled Switch
+              - type: custom:button-card
+                entity: 'switch.pi_hole'
+                size: 23%
+                show_name: false
+                show_state: false
+                show_label: true
+                show_entity_picture: true
+                entity_picture: /local/system_monitoring/pi_hole.png
+                label: "[[[ if (typeof(entity) === 'undefined') return; { return 'Status: ' + entity.state } ]]]"
+                tap_action:
+                  action: toggle
+                style: |
+                  ha-card {
+                    margin-left: 0px;
+                  }
+                styles:
+                  card: 
+                    - box-shadow: none
+                  name:
+                    - font-size: 12px
+                  label:
+                    - font-size: 12px
+                  entity_picture:
+                    - margin-bottom: 10px
+                state:
+                  - value: "on" 
+                    styles:
+                      card:
+                        - --ha-card-background: 'rgba(255, 255, 255, 1.0)'
+                        - opacity: 1.0
+                      label:
+                        - color: teal
+                  - value: "off"
+                    styles:
+                      card:
+                        - opacity: 0.5
+                      state:
+                        - color: "Gray"
+                  - value: "unavailable"
+                    styles:
+                      card:
+                        - opacity: 0.4
+                      label:
+                        - color: red
+              ####################################################
+              #                  PiHole Details                  #
+              ####################################################
+              - type: entities
+                style: |
+                  ha-card {
+                    color: teal;
+                      }
+                entities:
+                  - entity: sensor.pi_hole_ads_percentage_blocked_today
+                    name: Werbung Blockiert
+                  - entity: sensor.pi_hole_dns_unique_clients
+                    name: Unique Clients
+                  ####################################################
+                  #                  Versions                        #
+                  ####################################################
+                  - type: custom:fold-entity-row
+                    head:
+                      type: section
+                      label: Versions
+                    entities:
+                      # Pi-Hole Core
+                      - entity: sensor.current_version_pihole_core
+                        type: custom:multiple-entity-row
+                        name: Pi Hole Core
+                        icon: mdi:cog-refresh
+                        show_state: false
+                        entities:
+                          - entity: sensor.current_version_pihole_core
+                            name: Installed
+                          - entity: sensor.latest_version_pihole_core
+                            name: Latest
+                      # Pi-Hole Web
+                      - entity: sensor.current_version_pihole_core
+                        type: custom:multiple-entity-row
+                        name: Pi Hole Web
+                        icon: mdi:cloud-download-outline
+                        show_state: false
+                        entities:
+                          - entity: sensor.current_version_pihole_web
+                            name: Installed
+                          - entity: sensor.latest_version_pihole_web
+                            name: Latest
+                      # Pi-Hole FTL
+                      - entity: sensor.current_version_pihole_core
+                        type: custom:multiple-entity-row
+                        name: Pi Hole FTL
+                        icon: mdi:download-circle-outline
+                        show_state: false
+                        entities:
+                          - entity: sensor.current_version_pihole_ftl
+                            name: Installed
+                          - entity: sensor.latest_version_pihole_ftl
+                            name: Latest
+              ####################################################
+              #                 Ads Blocked Today                #
+              ####################################################
+              - type: vertical-stack
+                cards:                
+                  - type: custom:mini-graph-card
+                    name: Werbung Blockiert Heute
+                    icon: mdi:block-helper
+                    entities:
+                      - sensor.pi_hole_ads_blocked_today
+                    height: 75
+                    line_width: 2
+                    font_size: 70
+                    hours_to_show: 24
+                    points_per_hour: 1
+                    show:
+                      extrema: false
+                      fill: true
+                      state: true
+                      legend: false
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        margin-top: 5px;
+                        margin-bottom: 10px;
+                        height: 80px;
+                        margin-right: 20px;
+                        margin-left: 40px;
+                          }
+              ####################################################
+              #                 DNS Queries Today                #
+              ####################################################
+              - type: vertical-stack
+                cards:                 
+                  - type: custom:mini-graph-card
+                    name: DNS Queries Heute
+                    icon: mdi:comment-question-outline
+                    entities:
+                      - sensor.pi_hole_dns_queries_today
+                    height: 75
+                    line_width: 2
+                    font_size: 70
+                    hours_to_show: 24
+                    points_per_hour: 1
+                    show:
+                      extrema: false
+                      fill: true
+                      state: true
+                      legend: false
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        margin-top: 5px;
+                        margin-bottom: 10px;
+                        height: 80px;
+                        margin-right: 20px;
+                        margin-left: 20px;
+                          }

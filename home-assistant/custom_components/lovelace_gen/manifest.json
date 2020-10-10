@@ -1,0 +1,8 @@
+{
+  "domain": "lovelace_gen",
+  "name": "Lovelace Gen",
+  "documentation": "",
+  "dependencies": ["lovelace"],
+  "codeowners": [],
+  "requirements": ["jinja2"]
+}
