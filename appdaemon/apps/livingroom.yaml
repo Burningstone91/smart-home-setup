@@ -22,5 +22,5 @@ livingroom_lights:
 livingroom_light_switch:
   module: switches
   class: HueDimmerSwitch
-  switch_id: dimmschalter_wohnzimmer
+  switch_id: remote_light_livingroom
   lights: light.livingroom

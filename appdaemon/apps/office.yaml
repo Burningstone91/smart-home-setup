@@ -28,7 +28,7 @@ office_lights:
 office_light_switch:
   module: switches
   class: HueDimmerSwitch
-  switch_id: dimmschalter_buero
+  switch_id: remote_light_office
   lights: light.office
   custom_button_config:
     long_press_turn_off:
