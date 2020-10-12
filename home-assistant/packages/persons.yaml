@@ -21,7 +21,6 @@ homeassistant:
     # Dimitri
     person.dimitri:
       friendly_name: Dimitri
-      entity_picture: /local/person_pictures/dimitri_home.jpg
       icon: mdi:account
     ## Phone
     sensor.battery_level_phone_dimitri:
@@ -50,7 +49,6 @@ homeassistant:
     # Sabrina
     person.sabrina:
       friendly_name: Sabrina
-      entity_picture: /local/person_pictures/sabrina_home.jpg
       icon: mdi:account
     device_tracker.room_presence_sabrina:
       friendly_name: Schlüssel Sabrina

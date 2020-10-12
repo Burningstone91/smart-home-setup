@@ -264,12 +264,12 @@ cards:
                         }
                         bar-card-backgroundbar	 {
                           margin-top: -2.5px;
-                          margin-left: -66px;
+                          margin-left: -67px;
                           border-radius: 2.5px;
                         }
                         bar-card-currentbar	 {
                           margin-top: -2.5px;
-                          margin-left: -66px;
+                          margin-left: -67px;
                           border-radius: 2.5px;
                         }
                         bar-card-value	 {

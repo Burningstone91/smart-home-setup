@@ -237,6 +237,21 @@ sensor:
         '5': 'Unknown'
       } %}
       {{ mapping[value] if value in mapping else 'error' }}
+  # Uptime
+  - platform: snmp
+    name: Uptime NAS
+    host: 10.10.40.15
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.25.1.1.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
   ################
   # Unifi Devices
   ################
@@ -252,7 +267,7 @@ sensor:
     name: Uptime AP livingroom
     host: 10.10.0.14
     community: 'public'
-    baseoid: 1.3.6.1.4.1.41112.1.6.3.5.0
+    baseoid: 1.3.6.1.2.1.1.3.0
     value_template: >
       {%- set time = value | int // 100 %}
       {%- set minutes = ((time % 3600) // 60) %}
@@ -438,25 +453,175 @@ sensor:
         unit_of_measurement: 'Mbps'
         friendly_name: WAN Out USG Mbps
   ######################
-  # Pi Updtime Friendly
+  # Last Boot to Uptime
   ######################
   # Network Pi
   - platform: template
     sensors:
       uptime_pi_network:
-        friendly_name: uptime_pi_network
+        friendly_name: Uptime Pi Netzwerk
         value_template: >
-          {%- set updater = states('sensor.time') %}
+          {%- set x = states('sensor.time') %}
           {%- set last_boot = states('sensor.last_boot_pi_network') %}
-          {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
-          {%- set time = uptime | int %}
-          {%- set minutes = ((time % 3600) // 60) %}
-          {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
-          {%- set hours = ((time % 86400) // 3600) %}
-          {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
-          {%- set days = (time // 86400) %}
-          {%- set days = '{}d '.format(days) if days > 0 else '' %}
-          {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+            unknown
+          {%- else %}
+            {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+            {%- set time = uptime | int %}
+            {%- set minutes = ((time % 3600) // 60) %}
+            {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+            {%- set hours = ((time % 86400) // 3600) %}
+            {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+            {%- set days = (time // 86400) %}
+            {%- set days = '{}d '.format(days) if days > 0 else '' %}
+            {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+          {%- endif %}
+  # ZigBee/Z-Wave Pi
+  - platform: template
+    sensors:
+      uptime_pi_zigbee_zwave:
+        friendly_name: Uptime Pi ZigBee/ZWave
+        value_template: >
+          {%- set x = states('sensor.time') %}
+          {%- set last_boot = states('sensor.last_boot_pi_zigbee_zwave') %}
+          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+            unknown
+          {%- else %}
+            {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+            {%- set time = uptime | int %}
+            {%- set minutes = ((time % 3600) // 60) %}
+            {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+            {%- set hours = ((time % 86400) // 3600) %}
+            {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+            {%- set days = (time // 86400) %}
+            {%- set days = '{}d '.format(days) if days > 0 else '' %}
+            {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+          {%- endif %}
+  # Office Pi
+  - platform: template
+    sensors:
+      uptime_pi_office:
+        friendly_name: Uptime Pi Büro
+        value_template: >
+          {%- set x = states('sensor.time') %}
+          {%- set last_boot = states('sensor.last_boot_pi_office') %}
+          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+            unknown
+          {%- else %}
+            {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+            {%- set time = uptime | int %}
+            {%- set minutes = ((time % 3600) // 60) %}
+            {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+            {%- set hours = ((time % 86400) // 3600) %}
+            {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+            {%- set days = (time // 86400) %}
+            {%- set days = '{}d '.format(days) if days > 0 else '' %}
+            {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+          {%- endif %}
+  # Pi Livingroom
+  - platform: template
+    sensors:
+      uptime_pi_livingroom:
+        friendly_name: Uptime Pi Wohnzimmer
+        value_template: >
+          {%- set x = states('sensor.time') %}
+          {%- set last_boot = states('sensor.last_boot_pi_livingroom') %}
+          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+            unknown
+          {%- else %}
+            {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+            {%- set time = uptime | int %}
+            {%- set minutes = ((time % 3600) // 60) %}
+            {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+            {%- set hours = ((time % 86400) // 3600) %}
+            {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+            {%- set days = (time // 86400) %}
+            {%- set days = '{}d '.format(days) if days > 0 else '' %}
+            {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+          {%- endif %}
+  # Dressroom Pi
+  - platform: template
+    sensors:
+      uptime_pi_dressroom:
+        friendly_name: Uptime Pi Ankleidezimmer
+        value_template: >
+          {%- set x = states('sensor.time') %}
+          {%- set last_boot = states('sensor.last_boot_pi_dressroom') %}
+          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+            unknown
+          {%- else %}
+            {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+            {%- set time = uptime | int %}
+            {%- set minutes = ((time % 3600) // 60) %}
+            {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+            {%- set hours = ((time % 86400) // 3600) %}
+            {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+            {%- set days = (time // 86400) %}
+            {%- set days = '{}d '.format(days) if days > 0 else '' %}
+            {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+          {%- endif %}
+  # Small Bathroom Pi
+  - platform: template
+    sensors:
+      uptime_pi_bathroomsmall:
+        friendly_name: Uptime Pi Kleines Bad
+        value_template: >
+          {%- set x = states('sensor.time') %}
+          {%- set last_boot = states('sensor.last_boot_pi_bathroomsmall') %}
+          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+            unknown
+          {%- else %}
+            {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+            {%- set time = uptime | int %}
+            {%- set minutes = ((time % 3600) // 60) %}
+            {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+            {%- set hours = ((time % 86400) // 3600) %}
+            {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+            {%- set days = (time // 86400) %}
+            {%- set days = '{}d '.format(days) if days > 0 else '' %}
+            {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+          {%- endif %}
+
+
+#####################
+# Logger integration
+#####################  
+logger:
+  default: warning
+
+input_select:
+  ####################
+  # Default Log Level
+  ####################
+  default_log_level:
+    name: Log Level
+    options:
+      - critical
+      - fatal
+      - error
+      - warning
+      - warn
+      - info
+      - debug
+      - notset
+    initial: warning
+    icon: mdi:math-log
+
+automation:
+  ########################
+  # Set Default Log Level
+  ########################
+  - alias: "Set Default Log Level"
+    initial_state: true
+    trigger:
+      platform: state
+      entity_id: input_select.default_log_level
+    action:
+      service: logger.set_default_level
+      data:
+        level: "{{ trigger.to_state.state }}"
+    mode: single
+
 # Entity Customization
 homeassistant:
   customize:

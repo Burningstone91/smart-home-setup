@@ -13,7 +13,7 @@ cards:
     cards:
       ####################################################
       #                                                  #
-      #                  PiZero W                        #
+      #                      Pis                         #
       #                                                  #
       ####################################################
       - type: custom:stack-in-card
@@ -29,7 +29,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Room Assistant - Livingroom</h3>
+                        <h3>Pi - Wohnzimmer</h3>
                       </center>
                     style: |
                       ha-card {
@@ -45,6 +45,22 @@ cards:
                     style: |
                       ha-card {
                         margin-top: -35.5px;
+                      }
+                  # Updates, Last Boot, Undervoltage
+                  - type: markdown
+                    content: >
+                      <center>
+                        <b>Updates:</b>
+                        {{ states('sensor.updates_pi_livingroom') }}<br>
+                        <b>Unterspannung:</b>
+                        {{ states('binary_sensor.undervoltage_pi_livingroom') }}<br>
+                        <b>Uptime:</b>
+                        {{ states('sensor.uptime_pi_livingroom') }}
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -20px;
                       }
                   # CPU Load
                   - type: custom:bar-card
@@ -246,7 +262,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>ZigBee/Z-Wave</h3>
+                        <h3>Pi ZigBee/Z-Wave</h3>
                       </center>
                     style: |
                       ha-card {
@@ -262,6 +278,22 @@ cards:
                     style: |
                       ha-card {
                         margin-top: -35.5px;
+                      }
+                  # Updates, Last Boot, Undervoltage
+                  - type: markdown
+                    content: >
+                      <center>
+                        <b>Updates:</b>
+                        {{ states('sensor.updates_pi_zigbee_zwave') }}<br>
+                        <b>Unterspannung:</b>
+                        {{ states('binary_sensor.undervoltage_pi_zigbee_zwave') }}<br>
+                        <b>Uptime:</b>
+                        {{ states('sensor.uptime_pi_zigbee_zwave') }}
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -20px;
                       }
                   # CPU Load
                   - type: custom:bar-card
@@ -465,7 +497,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Room Assistant - Dressroom</h3>
+                        <h3>Pi - Ankleidezimmer</h3>
                       </center>
                     style: |
                       ha-card {
@@ -481,6 +513,22 @@ cards:
                     style: |
                       ha-card {
                         margin-top: -35.5px;
+                      }
+                  # Updates, Last Boot, Undervoltage
+                  - type: markdown
+                    content: >
+                      <center>
+                        <b>Updates:</b>
+                        {{ states('sensor.updates_pi_dressroom') }}<br>
+                        <b>Unterspannung:</b>
+                        {{ states('binary_sensor.undervoltage_pi_dressroom') }}<br>
+                        <b>Uptime:</b>
+                        {{ states('sensor.uptime_pi_dressroom') }}
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -20px;
                       }
                   # CPU Load
                   - type: custom:bar-card
@@ -684,7 +732,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Room Assistant - Small Bathroom</h3>
+                        <h3>Pi - Kleines Bad</h3>
                       </center>
                     style: |
                       ha-card {
@@ -700,6 +748,22 @@ cards:
                     style: |
                       ha-card {
                         margin-top: -35.5px;
+                      }
+                  # Updates, Last Boot, Undervoltage
+                  - type: markdown
+                    content: >
+                      <center>
+                        <b>Updates:</b>
+                        {{ states('sensor.updates_pi_bathroomsmall') }}<br>
+                        <b>Unterspannung:</b>
+                        {{ states('binary_sensor.undervoltage_pi_bathroomsmall') }}<br>
+                        <b>Uptime:</b>
+                        {{ states('sensor.uptime_pi_bathroomsmall') }}
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -20px;
                       }
                   # CPU Load
                   - type: custom:bar-card
@@ -903,7 +967,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Room Assistant - Office</h3>
+                        <h3>Pi - Büro</h3>
                       </center>
                     style: |
                       ha-card {
@@ -919,6 +983,22 @@ cards:
                     style: |
                       ha-card {
                         margin-top: -35.5px;
+                      }
+                  # Updates, Last Boot, Undervoltage
+                  - type: markdown
+                    content: >
+                      <center>
+                        <b>Updates:</b>
+                        {{ states('sensor.updates_pi_office') }}<br>
+                        <b>Unterspannung:</b>
+                        {{ states('binary_sensor.undervoltage_pi_office') }}<br>
+                        <b>Uptime:</b>
+                        {{ states('sensor.uptime_pi_office') }}
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -20px;
                       }
                   # CPU Load
                   - type: custom:bar-card

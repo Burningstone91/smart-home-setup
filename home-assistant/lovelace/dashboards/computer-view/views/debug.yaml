@@ -5,7 +5,7 @@
 ####################################################                               
 title: issues
 path: issues
-panel: true
+panel: false
 icon: mdi:alert
 badges: []
 cards:
@@ -63,6 +63,47 @@ cards:
                 filter:
                   include:
                     - state: none
+      ####################################################
+      #                                                  #
+      #                    Logging                       #
+      #                                                  #
+      ####################################################   
+      - type: custom:stack-in-card
+        cards:
+          # Title
+          - type: markdown
+            content: >
+              <center>
+                <h3>Standard Log Level</h3>
+              </center>
+            style: |
+              ha-card {
+                color: teal;
+              }
+          # Description
+          - type: markdown
+            content: >
+              <center>
+                <h5>Alle Levels unter diesem Level werden nicht geloggt.</h5>
+              </center>
+            style: |
+              ha-card {
+                color: teal;
+                margin-top: -50px;
+              }
+          # Default Log Level Selector
+          - type: entities
+            entities:
+              - entity: input_select.default_log_level
+                name: Standard Log Level
+            style: |
+              ha-card {
+                color: teal;
+                margin-top: -40px;
+              }
+
+
+
 
 ################################################
 # Link to logs

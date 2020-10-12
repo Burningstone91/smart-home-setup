@@ -6,7 +6,7 @@
 title: unifi-device-trackers
 path: unifi-device-trackers
 panel: true
-icon: mdi:lan
+icon: mdi:ip-network-outline
 badges: []
 cards:
   - type: vertical-stack
