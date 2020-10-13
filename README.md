@@ -2326,7 +2326,7 @@ Add the following in the `sensor:` section of the system_monitoring.yaml file:\
     name: Uptime AP livingroom
     host: 10.10.0.14
     community: 'public'
-    baseoid: 1.3.6.1.4.1.41112.1.6.3.5.0
+    baseoid: 1.3.6.1.2.1.1.3.0
     value_template: >
       {%- set time = value | int // 100 %}
       {%- set minutes = ((time % 3600) // 60) %}
