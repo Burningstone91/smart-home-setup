@@ -17,13 +17,12 @@ office_lights:
   area: office
   motion_sensors: binary_sensor.motion_office
   delay_off: 600
-  lights_ct: light.office
+  lights: light.office
   lux_sensor: sensor.lux_office
   lux_threshold: 250
   circadian_sensor: sensor.circadian_values
   min_brightness: 80
-  min_colortemp: 2000
-  max_colortemp: 6500
+  transition: 5
 
 office_light_switch:
   module: switches

@@ -12,12 +12,10 @@ bedroom_lights:
   area: bedroom
   motion_sensors: binary_sensor.motion_bedroom
   delay_off: 600
-  lights_rgb: light.bedroom_ceiling
-  sleep_lights_ct: light.bedroom_bed
+  lights: light.bedroom_ceiling
+  sleep_lights: light.bedroom_bed
   sleep_brightness: 10
   circadian_sensor: sensor.circadian_values
-  min_colortemp: 2000
-  max_colortemp: 6500
   update_interval: 900
 
 bedroom_light_switch:

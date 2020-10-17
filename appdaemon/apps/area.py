@@ -46,14 +46,13 @@ class Area(AppBase):
             for entity in self.occupancy_entities.keys():
                 self.hass.listen_state(self.on_occupancy_change, entity)
 
-        # Listen for changes in occupancy of area
-        self.adbase.listen_state(
-            self.on_occupancy_change, self.area_entity, attribute="occupancy"
-        )
-
         # Listen for changes in persons of area
         self.adbase.listen_state(
             self.on_occupancy_change, self.area_entity, attribute="persons"
+        )
+        # Listen for changes in motion of area
+        self.adbase.listen_state(
+            self.on_occupancy_change, self.area_entity, attribute="motion"
         )
 
     def on_state_change(

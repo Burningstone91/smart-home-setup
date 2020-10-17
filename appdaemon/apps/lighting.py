@@ -3,7 +3,6 @@ from itertools import chain
 import voluptuous as vol
 
 from appbase import AppBase, APP_SCHEMA
-from color import color_temperature_to_rgb, color_temperature_kelvin_to_mired
 from utils import config_validation as cv
 
 
@@ -19,31 +18,22 @@ class AreaLighting(AppBase):
             vol.Optional("delay_off", default=600): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=3600)
             ),
-            vol.Optional("lights"): cv.entity_ids,
-            vol.Optional("lights_ct"): cv.entity_ids,
-            vol.Optional("lights_rgb"): cv.entity_ids,
+            vol.Optional("lux_sensor"): cv.entity_id,
+            vol.Optional("lux_threshold", default=100): vol.Coerce(int),
+            vol.Required("lights"): cv.entity_ids,
+            vol.Optional("sleep_lights"): cv.entity_ids,
+            vol.Optional("circadian_sensor"): cv.entity_id,
             vol.Optional("default_brightness", default=80): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=100)
             ),
-            vol.Optional("lux_sensor"): cv.entity_id,
-            vol.Optional("lux_threshold", default=100): vol.Coerce(int),
-            vol.Optional("sleep_lights"): cv.entity_ids,
-            vol.Optional("sleep_lights_ct"): cv.entity_ids,
             vol.Optional("sleep_brightness"): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=100)
             ),
-            vol.Optional("circadian_sensor"): cv.entity_id,
             vol.Optional("min_brightness", default=1): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=100)
             ),
             vol.Optional("max_brightness", default=100): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=100)
-            ),
-            vol.Optional("min_colortemp", default=2500): vol.All(
-                vol.Coerce(int), vol.Range(min=1000, max=12000)
-            ),
-            vol.Optional("max_colortemp", default=5500): vol.All(
-                vol.Coerce(int), vol.Range(min=1000, max=12000)
             ),
             vol.Optional("transition", default=60): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=3600)
@@ -59,20 +49,15 @@ class AreaLighting(AppBase):
         self.area_id = self.args["area"]
         self.motion_sensors = self.args["motion_sensors"]
         self.delay_off = self.args.get("delay_off")
-        self.lights = self.args.get("lights")
-        self.lights_ct = self.args.get("lights_ct")
-        self.lights_rgb = self.args.get("lights_rgb")
-        self.default_brightness = self.args.get("default_brightness")
         self.lux_sensor = self.args.get("lux_sensor")
         self.lux_threshold = self.args.get("lux_threshold")
+        self.lights = self.args["lights"]
         self.sleep_lights = self.args.get("sleep_lights")
-        self.sleep_lights_ct = self.args.get("sleep_lights_ct")
-        self.sleep_brightness = self.args.get("sleep_brightness")
         self.circadian_sensor = self.args.get("circadian_sensor")
+        self.default_brightness = self.args.get("default_brightness")
+        self.sleep_brightness = self.args.get("sleep_brightness")
         self.min_brightness = self.args.get("min_brightness")
         self.max_brightness = self.args.get("max_brightness")
-        self.min_colortemp = self.args.get("min_colortemp")
-        self.max_colortemp = self.args.get("max_colortemp")
         self.transition = self.args.get("transition")
         self.update_interval = self.args.get("update_interval")
 
@@ -83,19 +68,13 @@ class AreaLighting(AppBase):
         )
 
         # Create a list of all lights in the area
-        lights = [
-            self.lights,
-            self.lights_ct,
-            self.lights_rgb,
-            self.sleep_lights,
-            self.sleep_lights_ct,
-        ]
+        lights = [self.lights, self.sleep_lights]
         lights = [light for light in lights if light]
         self.all_lights = set(chain(*lights))
 
         # Listen for motion detected
         for sensor in self.motion_sensors:
-            self.hass.listen_state(self.on_motion, sensor, new="on")
+            self.hass.listen_state(self.on_motion, sensor)
 
         # Listen for changes in light state
         if self.circadian_sensor:
@@ -111,16 +90,29 @@ class AreaLighting(AppBase):
         self, entity: str, attribute: str, old: str, new: str, kwargs: dict
     ) -> None:
         """Respond when motion is detected."""
-        self.adbase.log(f"Motion detected: {self.area_name}")
-        # Turn lights on if not already on
-        if not self.lights_on():
-            self.turn_lights_on()
+        if new == "on":
+            # Cancel existing timers
+            if "motion_timer" in self.handles:
+                self.adbase.cancel_timer(self.handles["motion_timer"])
+                self.handles.pop("motion_timer")
+            # Turn lights on if not already on
+            if not self.lights_on():
+                self.turn_lights_on()
+            # Set area motion to True
+            self.adbase.set_state(self.area_entity, motion=True)
+            self.adbase.log(f"Motion Detected: {self.area_name}")
+        elif new == "off":
+            # Start timer to set area motion to False
+            self.handles["motion_timer"] = self.adbase.run_in(
+                self.disable_area_motion, self.delay_off
+            )
 
-        # Set motion state of room to True
-        self.set_area_motion(True)
-
-        # Start/Restart timer to turn motion state to False
-        self.restart_motion_timer()
+    def on_occupancy_change(
+        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
+    ) -> None:
+        """Respond when occupancy of area changed to False."""
+        for light in self.all_lights:
+            self.hass.turn_off(light)
 
     def on_light_change(
         self, entity: str, attribute: str, old: str, new: str, kwargs: dict
@@ -138,79 +130,66 @@ class AreaLighting(AppBase):
                     transition=self.transition,
                 )
             elif new == "off":
-                # Set motion to False and cancel any existing timers
-                if "motion_timer" in self.handles:
-                    self.set_area_motion(False)
-                    self.adbase.cancel_timer(self.handles["motion_timer"])
-                    self.handles.pop("motion_timer")
                 if "circadian_timer" in self.handles:
                     self.adbase.cancel_timer(self.handles["circadian_timer"])
                     self.handles.pop("circadian_timer")
 
-    def on_occupancy_change(
-        self, entity: str, attribute: str, old: str, new: str, kwargs: dict
-    ) -> None:
-        """Respond when occupancy of area changed to False."""
-        for light in self.all_lights:
-            self.hass.turn_off(light)
+    def lights_on(self) -> list:
+        """Return lights currently on."""
+        return [
+            entity for entity in self.all_lights if self.hass.get_state(entity) == "on"
+        ]
+
+    def disable_area_motion(self, *args: list) -> None:
+        """Set area motion to False."""
+        self.adbase.set_state(self.area_entity, motion=False)
+        self.adbase.log(f"No More Motion: {self.area_name}")
 
     def turn_lights_on(self, *args: list, **kwargs: dict) -> None:
         """Turn on lights."""
         if not self.lux_above_threshold():
             if self.is_sleep() and self.sleep_brightness:
-                lights = self.sleep_lights
-                lights_ct = self.sleep_lights_ct
-                lights_rgb = []
+                lights = self.sleep_lights if self.sleep_lights else self.lights
             else:
                 lights = self.lights
-                lights_ct = self.lights_ct
-                lights_rgb = self.lights_rgb
 
             brightness_pct = int(self.calc_brightness_pct())
-            colortemp = int(self.calc_colortemp(brightness_pct))
-            mired = color_temperature_kelvin_to_mired(colortemp)
-            rgb = tuple(map(int, color_temperature_to_rgb(colortemp)))
-
+            color_temp = int(
+                self.hass.get_state(self.circadian_sensor, attribute="colortemp")
+            )
+            color = self.hass.get_state(self.circadian_sensor, attribute="rgb_color")
             transition = args[0]["transition"] if args else 1
 
-            if lights:
-                for light in lights:
+            for light in lights:
+                if self.supports_color(light):
+                    self.hass.turn_on(
+                        light,
+                        brightness_pct=brightness_pct,
+                        rgb_color=color,
+                        transition=transition,
+                    )
+                elif self.supports_color_temp(light):
+                    self.hass.turn_on(
+                        light,
+                        brightness_pct=brightness_pct,
+                        color_temp=color_temp,
+                        transition=transition,
+                    )
+                elif self.supports_brightness(light):
                     self.hass.turn_on(
                         light, brightness_pct=brightness_pct, transition=transition
                     )
-            if lights_ct:
-                for light in lights_ct:
-                    self.hass.turn_on(
-                        light,
-                        brightness_pct=brightness_pct,
-                        color_temp=mired,
-                        transition=transition,
-                    )
-            if lights_rgb:
-                for light in lights_rgb:
-                    self.hass.turn_on(
-                        light,
-                        brightness_pct=brightness_pct,
-                        rgb_color=rgb,
-                        transition=transition,
-                    )
+                else:
+                    self.hass.turn_on(light)
 
-    def set_area_motion(self, motion: bool) -> None:
-        """Set motion of area."""
-        self.adbase.set_state(self.area_entity, motion=motion)
+    def lux_above_threshold(self) -> bool:
+        """Return true if lux is above threshold."""
+        if self.lux_sensor:
+            value = self.hass.get_state(self.lux_sensor)
+            if value not in ["unavailable", "unknown"]:
+                return float(value) > self.lux_threshold
 
-    def restart_motion_timer(self) -> None:
-        """Set/Reset timer to set occupany of are to False."""
-        if "motion_timer" in self.handles:
-            self.adbase.cancel_timer(self.handles["motion_timer"])
-            self.handles.pop("motion_timer")
-        self.handles["motion_timer"] = self.adbase.run_in(
-            self.disable_area_motion, self.delay_off
-        )
-
-    def disable_area_motion(self, *args: list) -> None:
-        """Set area motion to False."""
-        self.set_area_motion(False)
+        return False
 
     def calc_brightness_pct(self) -> float:
         """Calculate brightness percentage."""
@@ -229,31 +208,22 @@ class AreaLighting(AppBase):
 
         return self.default_brightness
 
-    def calc_colortemp(self, brightness_pct: float) -> float:
-        """Calculate color temperature based on brightness."""
-        if brightness_pct > 0:
-            return (
-                (self.max_colortemp - self.min_colortemp) * (brightness_pct / 100)
-            ) + self.min_colortemp
+    def supports_color(self, entity: str) -> bool:
+        """Return True if light supports color."""
+        supported_features = self.hass.get_state(entity, "supported_features")
+        return supported_features & 16 == 16
 
-        return self.min_colortemp
+    def supports_color_temp(self, entity: str) -> bool:
+        """Return True if light supports color temperature."""
+        supported_features = self.hass.get_state(entity, "supported_features")
+        return supported_features & 2 == 2
 
-    def lux_above_threshold(self) -> bool:
-        """Return true if lux is above threshold."""
-        if self.lux_sensor:
-            value = self.hass.get_state(self.lux_sensor)
-            if value not in ["unavailable", "unknown"]:
-                return float(value) > self.lux_threshold
-
-        return False
-
-    def lights_on(self) -> list:
-        """Return lights currently on."""
-        return [
-            entity for entity in self.all_lights if self.hass.get_state(entity) == "on"
-        ]
+    def supports_brightness(self, entity: str) -> bool:
+        """Return True if light supports brightness."""
+        supported_features = self.hass.get_state(entity, "supported_features")
+        return supported_features & 1 == 1
 
     def is_sleep(self) -> bool:
-        """Return true if someone is asleep."""
+        """Return True if someone is asleep."""
         sleep_state = self.adbase.get_state(self.area_entity, attribute="sleep_state")
         return sleep_state != "nobody_in_bed"

@@ -12,11 +12,9 @@ dressroom_lights:
   area: dressroom
   motion_sensors: binary_sensor.motion_dressroom
   delay_off: 300
-  lights_rgb: light.dressroom
+  lights: light.dressroom
   circadian_sensor: sensor.circadian_values
   min_brightness: 70
-  min_colortemp: 2000
-  max_colortemp: 6500
   update_interval: 900
 
 dressroom_light_switch:
