@@ -10,6 +10,7 @@ dressroom_lights:
   module: lighting
   class: AreaLighting
   area: dressroom
+  house_id: home
   motion_sensors: binary_sensor.motion_dressroom
   delay_off: 300
   lights: light.dressroom

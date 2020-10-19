@@ -15,6 +15,7 @@ office_lights:
   module: lighting
   class: AreaLighting
   area: office
+  house_id: home
   motion_sensors: binary_sensor.motion_office
   delay_off: 600
   lights: light.office

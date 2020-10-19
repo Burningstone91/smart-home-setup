@@ -14,6 +14,7 @@ class AreaLighting(AppBase):
     APP_SCHEMA = APP_SCHEMA.extend(
         {
             vol.Required("area"): str,
+            vol.Optional("house_id"): str,
             vol.Required("motion_sensors"): cv.entity_ids,
             vol.Optional("delay_off", default=600): vol.All(
                 vol.Coerce(int), vol.Range(min=1, max=3600)
@@ -47,6 +48,7 @@ class AreaLighting(AppBase):
     def configure(self) -> None:
         """Configure."""
         self.area_id = self.args["area"]
+        self.house_id = self.args.get("house_id")
         self.motion_sensors = self.args["motion_sensors"]
         self.delay_off = self.args.get("delay_off")
         self.lux_sensor = self.args.get("lux_sensor")
@@ -120,9 +122,11 @@ class AreaLighting(AppBase):
         """Respond when light changes state."""
         if new != old:
             if new == "on":
+                # Cancel existing timers
                 if "circadian_timer" in self.handles:
                     self.adbase.cancel_timer(self.handles["circadian_timer"])
                     self.handles.pop("circadian_timer")
+                # Update light state on specified interval
                 self.handles["circadian_timer"] = self.adbase.run_every(
                     self.turn_lights_on,
                     f"now+{self.update_interval}",
@@ -148,17 +152,28 @@ class AreaLighting(AppBase):
     def turn_lights_on(self, *args: list, **kwargs: dict) -> None:
         """Turn on lights."""
         if not self.lux_above_threshold():
+            # Determine lights to turn on/off based on sleep state and config
             if self.is_sleep() and self.sleep_brightness:
                 lights = self.sleep_lights if self.sleep_lights else self.lights
             else:
                 lights = self.lights
 
-            brightness_pct = int(self.calc_brightness_pct())
-            color_temp = int(
-                self.hass.get_state(self.circadian_sensor, attribute="colortemp")
-            )
-            color = self.hass.get_state(self.circadian_sensor, attribute="rgb_color")
+            # If function is called by "on_light_change", transition argument
+            # will be handed over as an argument
             transition = args[0]["transition"] if args else 1
+
+            # Get brightness, colortemp and color
+            brightness_pct = int(self.calc_brightness_pct())
+            if self.circadian_sensor:
+                color_temp = int(
+                    self.hass.get_state(self.circadian_sensor, attribute="colortemp")
+                )
+                color = self.hass.get_state(
+                    self.circadian_sensor, attribute="rgb_color"
+                )
+            else:
+                color_temp = 300
+                color = [255, 254, 254]
 
             for light in lights:
                 if self.supports_color(light):
@@ -225,5 +240,7 @@ class AreaLighting(AppBase):
 
     def is_sleep(self) -> bool:
         """Return True if someone is asleep."""
-        sleep_state = self.adbase.get_state(self.area_entity, attribute="sleep_state")
+        sleep_state = self.adbase.get_state(
+            f"house.{self.house_id}", attribute="sleep_state"
+        )
         return sleep_state != "nobody_in_bed"

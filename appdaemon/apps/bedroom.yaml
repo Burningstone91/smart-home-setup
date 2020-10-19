@@ -10,6 +10,7 @@ bedroom_lights:
   module: lighting
   class: AreaLighting
   area: bedroom
+  house_id: home
   motion_sensors: binary_sensor.motion_bedroom
   delay_off: 600
   lights: light.bedroom_ceiling
