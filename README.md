@@ -1681,22 +1681,18 @@ key | optional | type | default | description
 `module` | False | string | lighting | The module name of the app.
 `class` | False | string | AreaLighting | The name of the Class.
 `area` | False | string | | The identifier for the area.
+`house_id` | True | string | | The identifier of the house. Needed for sleep state.
 `motion_sensors` | False | str, list | | List of motion sensor entity_ids.
 `delay_off` | True | int | 600 | Time in seconds until motion is turned off.
-`lights` | True | string, list | | List of light entity_ids for which only brightness should be set.
-`lights_ct` | True | string, list | | List of light entity_ids for which brightness and color temperature should be set.
-`lights_rgb` | True | string, list | | List of light entity_ids for which brightness, color temperature and RGB color should be set.
-`default_brightness` | True | int | 80 | Brightness in % to set light to. Needed if circadian sensor is not used.
 `lux_sensor` | True | string | | Entity_id of the light level sensor.
 `lux_threshold` | True | int | 100 | Lux level below which light will not be turned on.
-`sleep_lights` | True | string, list | | List of light entity_ids to be used in sleep mode for which only brightness should be adjusted.
-`sleep_lights_ct` | True | string, list | | List of light entity_ids to be used in sleep mode for which brightness and color temperature should be adjusted.
-`sleep_brightness` | True | int | | Brightness in % to be used in sleep mode. If not configured sleep mode will be ignored.
+`lights` | False | string, list | | List of light entity_ids which should be controlled.
+`sleep_lights` | True | string, list | | List of light entity_ids to be used in sleep mode.
 `circadian_sensor` | True | string | | Entity_id of the circadian lighting sensor. If not configured lights will be turned on to default brightness and no periodical adjustment will take place.
+`default_brightness` | True | int | 80 | Brightness in % to set light to. Needed if circadian sensor is not used.
+`sleep_brightness` | True | int | | Brightness in % to be used in sleep mode. If not configured sleep mode will be ignored.
 `max_brightness` | True | int | 100 | Maximum brightness in %. Used in conjunction with circadian sensor.
 `min_brightness` | True | int | 1 | Minimum brightness in %. Used in conjunction with circadian sensor.
-`max_colortemp` | True | int | 12000 | Maximum color temperature. Used in conjunction with circadian sensor.
-`min_colortemp` | True | int | 1000 | Minimum color temperature. Used in conjunction with circadian sensor.
 `transition` | True | int | 60 | Time in seconds for transition of light to new state. Used in conjunction with circadian sensor.
 `update_interval` | True | int | 300 | Time in seconds between adjustments of brightness according to circadian lighting sensor.
 
@@ -1708,16 +1704,15 @@ bedroom_lights:
   module: lighting
   class: AreaLighting
   area: bedroom
+  house_id: home
   motion_sensors: binary_sensor.motion_bedroom
   delay_off: 600
-  lights_rgb: light.bedroom_ceiling
-  sleep_lights_ct: light.bedroom_bed
+  lights: light.bedroom_ceiling
+  sleep_lights: light.bedroom_bed
   sleep_brightness: 10
   circadian_sensor: sensor.circadian_values
   min_brightness: 10
   max_brightness: 80
-  min_colortemp: 2000
-  max_colortemp: 6500
   transition: 120
   update_interval: 900
 ```
