@@ -12,6 +12,7 @@ livingroom_lights:
   module: lighting
   class: AreaLighting
   area: livingroom
+  house_id: home
   motion_sensors: binary_sensor.motion_livingroom
   delay_off: 600
   lights: light.livingroom

@@ -2,8 +2,8 @@ room_presence_app:
   module: presence
   class: RoomPresence
   sensors:
-    dimitri: sensor.room_presence_dimitri
-    sabrina: sensor.room_presence_sabrina
+    dimitri: sensor.dimitri_room_presence
+    sabrina: sensor.sabrina_room_presence
 
 person_presence_app:
   module: presence
