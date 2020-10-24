@@ -3,5 +3,7 @@ homeassistant:
   internal_url: http://192.168.0.30:3123
   external_url: !secret external_HA_URL
 
-# Enable circadian lighting
-circadian_lighting:
+tts:
+  - platform: google_translate
+    language: 'de'
+    base_url: !secret external_HA_URL
