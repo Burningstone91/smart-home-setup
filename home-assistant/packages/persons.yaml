@@ -3,11 +3,18 @@ person:
 
 # Bluetooth Room Presence Tracker
 device_tracker:
-  platform: mqtt
-  devices:
-    room_presence_dimitri: 'location/dimitri_room_presence'
-    room_presence_sabrina: 'location/sabrina_room_presence'
-  source_type: bluetooth_le
+  - platform: mqtt
+    devices:
+      room_presence_dimitri: 'location/dimitri_room_presence'
+      room_presence_sabrina: 'location/sabrina_room_presence'
+    source_type: bluetooth_le
+
+group:
+  room_presence_sensors:
+    name: Room Presence Sensoren
+    entities:
+      - sensor.sabrina_room_presence
+      - sensor.dimitri_room_presence
 
 # GPS Presence Tracker (Phone App)
 mobile_app:
@@ -46,6 +53,10 @@ homeassistant:
     zone.work_dimitri:
       friendly_name: Arbeit
       icon: mdi:office-building
+    sensor.dimitri_room_presence:
+      friendly_name: Dimitri
+    sensor.sabrina_room_presence:
+      friendly_name: Sabrina
     # Sabrina
     person.sabrina:
       friendly_name: Sabrina
