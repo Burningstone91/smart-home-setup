@@ -452,6 +452,21 @@ sensor:
         value_template:  "{{ ((states('sensor.wan_out_usg_derivative')|float*8)/1000000)|round(2) }}"
         unit_of_measurement: 'Mbps'
         friendly_name: WAN Out USG Mbps
+  #####################
+  # ConBee
+  #####################        
+  # Firmware
+  - platform: rest
+    resource: http://10.10.40.50:8080/api/FF145BC200/config
+    name: current_firmware_conbee
+    value_template: "{{ value_json.fwversion }}"
+    scan_interval: 3600
+  # Software
+  - platform: rest
+    resource: http://10.10.40.50:8080/api/FF145BC200/config
+    name: current_version_deconz
+    value_template: "{{ value_json.swversion }}"
+    scan_interval: 3600
   ######################
   # Last Boot to Uptime
   ######################
@@ -581,6 +596,97 @@ sensor:
             {%- set days = '{}d '.format(days) if days > 0 else '' %}
             {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
           {%- endif %}
+  #####################
+  # Healthcheck.io
+  #####################  
+  # Home Assistant Heartbeat
+  - platform: rest
+    resource: !secret healthcheck_heartbeat
+    name: Home Assistant Heartbeat
+    scan_interval: 300
+  # Healthcheck.io Status
+
+  # Backups
+  ## Home Assistant VM Status
+  - platform: rest
+    resource: !secret healthcheck_daily_backup_ha
+    name: Daily Backup Home Assistant VM
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.status }}"
+  ## Home Assistant VM Last Backup
+  - platform: rest
+    resource: !secret healthcheck_daily_backup_ha
+    name: Last Backup Home Assistant VM
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.last_ping }}"
+  ## Network Pi Status
+  - platform: rest
+    resource: !secret healthcheck_monthly_backup_network_pi
+    name: Monthly Backup Network Pi
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.status }}"
+  ## Network Pi Last Backup
+  - platform: rest
+    resource: !secret healthcheck_monthly_backup_network_pi
+    name: Last Backup Network Pi
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.last_ping }}"
+  ## ZigBee Zwave Pi Status
+  - platform: rest
+    resource: !secret healthcheck_monthly_backup_zigbeezwave_pi
+    name: Monthly Backup ZigBee Zwave Pi
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.status }}"
+  ## ZigBee Zwave Pi Last Backup
+  - platform: rest
+    resource: !secret healthcheck_monthly_backup_zigbeezwave_pi
+    name: Last Backup Home ZigBee Zwave Pi
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.last_ping }}"
+  ## Phone Dimitri Status
+  - platform: rest
+    resource: !secret healthcheck_weekly_backup_phone_dimitri
+    name: Weekly Backup Phone Dimitri
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.status }}"
+  ## Phone Dimitri Last Backup
+  - platform: rest
+    resource: !secret healthcheck_weekly_backup_phone_dimitri
+    name: Last Backup Phone Dimitri
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.last_ping }}"
+  ## Phone Sabrina Status
+  - platform: rest
+    resource: !secret healthcheck_weekly_backup_phone_sabrina
+    name: Weekly Backup Phone Sabrina
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.status }}"
+  ## Phone Dimitri Last Backup
+  - platform: rest
+    resource: !secret healthcheck_weekly_backup_phone_sabrina
+    name: Last Backup Phone Sabrina
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.last_ping }}"
 
 
 #####################
@@ -604,7 +710,6 @@ input_select:
       - info
       - debug
       - notset
-    initial: warning
     icon: mdi:math-log
 
 automation:
