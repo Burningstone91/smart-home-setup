@@ -1,0 +1,125 @@
+input_boolean:
+  sleep_mode:
+    name: Schlafmodus
+    icon: mdi:sleep
+  bed_sabrina:
+    name: Bett Sabrina
+  bed_dimitri:
+    name: Bett Dimitri
+
+input_select:
+  # Sleep state Dimitri
+  sleep_state_dimitri:
+    name: Schlaf Dimitri
+    options:
+      - gerade hingelegt
+      - gerade aufgestanden
+      - wach
+      - schläft
+      - zurück im Bett
+  # Sleep state Sabrina
+  sleep_state_sabrina:
+    name: Schlaf Sabrina
+    options:
+      - gerade hingelegt
+      - gerade aufgestanden
+      - wach
+      - schläft
+      - zurück im Bett
+
+automation:
+  # Sets the sleep state of the persons
+  - id: set_person_sleep_state
+    alias: "Bestimme Schlafstatus Personen"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.bed_dimitri
+        for:
+          seconds: 5
+      - platform: state
+        entity_id: input_boolean.bed_dimitri
+      - platform: state
+        entity_id: input_select.sleep_state_dimitri
+        for:
+          minutes: 5
+      - platform: state
+        entity_id: input_boolean.bed_sabrina
+      - platform: state
+        entity_id: input_select.sleep_state_sabrina
+        for:
+          minutes: 5
+    action:
+      - variables:
+          person: "{{ trigger.to_state.entity_id.split('_')[-1] }}"
+          input_select: "input_select.sleep_state_{{ person }}"
+      - choose:
+          # IF bed occupied -> just laid down/back to bed
+          - conditions: "{{ trigger.to_state.state == 'on' }}" 
+            sequence:
+              service: input_select.select_option
+              data:
+                entity_id: "{{ input_select }}"
+                option: >-
+                  {% if is_state(input_select, 'gerade aufgestanden') %}
+                    zurück im Bett
+                  {% else %}
+                    gerade hingelegt
+                  {% endif %}
+          # IF bed nod occupied -> just got up
+          - conditions: "{{ trigger.to_state.state == 'off' }}"
+            sequence:
+              service: input_select.select_option
+              data:
+                entity_id: "{{ input_select }}"
+                option: "gerade aufgestanden"
+          # IF just got up for 5 minutes -> awake
+          - conditions: "{{ trigger.to_state.state == 'gerade aufgestanden' }}"
+            sequence:
+              - service: input_select.select_option
+                data:
+                  entity_id: "{{ input_select }}"
+                  option: "wach"
+          # IF back to bed or just laid down for 5 minutes -> sleeping
+          - conditions: "{{ trigger.to_state.state in ['zurück im Bett', 'gerade hingelegt'] }}"
+            sequence:
+              service: input_select.select_option
+              data:
+                entity_id: "{{ input_select }}"
+                option: "schläft"
+
+  # Enable sleep mode when everyone is in bed
+  - id: enable_sleep_everyone_in_bed
+    alias: "Schlafmodus einschalten wenn alle im Bett"
+    mode: single
+    variables:
+      in_bed_states: ['gerade hingelegt', 'schläft', 'zurück im Bett']
+    trigger:
+      - platform: state
+        entity_id: input_select.sleep_state_dimitri
+      - platform: state
+        entity_id: input_select.sleep_state_sabrina
+    condition: 
+      - "{{ is_state('input_boolean.sleep_mode', 'off') }}"
+      - "{{ states('input_select.sleep_state_dimitri') in in_bed_states }}"
+      - "{{ states('input_select.sleep_state_sabrina') in in_bed_states }}"
+    action:
+      service: input_boolean.turn_on
+      entity_id: input_boolean.sleep_mode
+
+  # Disable sleep mode when everyone is awake
+  - id: disable_sleep_everyone_awake
+    alias: "Schlafmodus ausschalten wenn alle wach sind"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_select.sleep_state_dimitri
+      - platform: state
+        entity_id: input_select.sleep_state_sabrina
+    condition: 
+      - "{{ is_state('input_boolean.sleep_mode', 'off') }}"
+      - "{{ is_state('input_select.sleep_state_dimitri', 'wach') }}"
+      - "{{ is_state('input_select.sleep_state_sabrina', 'wach') }}"
+    action:
+      service: input_boolean.turn_off
+      entity_id: input_boolean.sleep_mode
