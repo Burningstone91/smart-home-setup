@@ -1,7 +1,0 @@
-hallway:
-  module: area
-  class: Area
-  area: hallway
-  attributes:
-    friendly_name: Gang
-  priority: 1

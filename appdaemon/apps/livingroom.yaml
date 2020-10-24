@@ -1,22 +1,12 @@
-livingroom:
-  module: area
-  class: Area
-  area: livingroom
-  attributes:
-    friendly_name: Wohnzimmer
-  occupancy_entities:
-    media_player.receiver_livingroom: "on"
-  priority: 1
-
-livingroom_lights:
-  module: lighting
-  class: AreaLighting
-  area: livingroom
-  house_id: home
-  motion_sensors: binary_sensor.motion_livingroom
-  delay_off: 600
-  lights: light.livingroom
-  default_brightness: 60
+# livingroom:
+#   module: area
+#   class: Area
+#   area: livingroom
+#   attributes:
+#     friendly_name: Wohnzimmer
+#   occupancy_entities:
+#     media_player.receiver_livingroom: "on"
+#   priority: 1
 
 livingroom_light_switch:
   module: switches

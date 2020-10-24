@@ -1,3 +1,44 @@
+binary_sensor:
+  - platform: template
+    sensors:
+      # Room Occupancy
+      occupancy_livingroom:
+        friendly_name: Wohnzimmer besetzt
+        device_class: occupancy
+        value_template: >-
+          {% set motion = is_state('binary_sensor.motion_livingroom', 'on') %}
+          {% set tv = is_state('media_player.receiver_livingroom', 'on') %}
+          {{ motion or tv }}
+        delay_off:
+          minutes: 10
+
+automation:
+  # Turn lights on (if not already on) when motion is detected
+  - id: motion_light_on_livingroom
+    alias: "Licht an bei Bewegung - Wohnzimmer"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_livingroom
+      to: "on"
+    condition: "{{ is_state('light.livingroom', 'off') }}"
+    action:
+      service: light.turn_on
+      entity_id: light.livingroom
+      
+  # Turn lights off when room is not occupied anymore
+  - id: no_occupancy_light_off_livingroom
+    alias: "Licht aus Wohnzimmer nicht besetzt"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.occupancy_livingroom
+      to: "off"
+    condition: "{{ is_state('light.livingroom', 'on') }}"
+    action:
+      service: light.turn_off
+      entity_id: light.livingroom
+
 # Entity Customization
 homeassistant:
   customize:

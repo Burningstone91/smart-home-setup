@@ -1,3 +1,43 @@
+binary_sensor:
+  - platform: template
+    sensors:
+      # Room Occupancy
+      occupancy_dressroom:
+        friendly_name: Ankleidezimmer besetzt
+        device_class: occupancy
+        value_template: >-
+          {% set motion = is_state('binary_sensor.motion_dressroom', 'on') %}
+          {{ motion }}
+        delay_off:
+          minutes: 10
+
+automation:
+  # Turn lights on (if not already on) when motion is detected
+  - id: motion_light_on_dressroom
+    alias: "Licht an bei Bewegung - Ankleidezimmer"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_dressroom
+      to: "on"
+    condition: "{{ is_state('light.dressroom', 'off') }}"
+    action:
+      service: light.turn_on
+      entity_id: light.dressroom
+      
+  # Turn lights off when room is not occupied anymore
+  - id: no_occupancy_light_off_dressroom
+    alias: "Licht aus Ankleidezimmer nicht besetzt"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.occupancy_dressroom
+      to: "off"
+    condition: "{{ is_state('light.dressroom', 'on') }}"
+    action:
+      service: light.turn_off
+      entity_id: light.dressroom
+
 # Entity Customization
 homeassistant:
   customize:

@@ -1,29 +1,15 @@
-office:
-  module: area
-  class: Area
-  area: office
-  attributes:
-    friendly_name: Büro
-  occupancy_entities:
-    device_tracker.desktop_dimitri: "home"
-    device_tracker.desktop_sabrina: "home"
-    device_tracker.laptop_work: "home"
-    media_player.receiver_office: "on"
-  priority: 1
-
-office_lights:
-  module: lighting
-  class: AreaLighting
-  area: office
-  house_id: home
-  motion_sensors: binary_sensor.motion_office
-  delay_off: 600
-  lights: light.office
-  lux_sensor: sensor.lux_office
-  lux_threshold: 250
-  circadian_sensor: sensor.circadian_values
-  min_brightness: 80
-  transition: 5
+# office:
+#   module: area
+#   class: Area
+#   area: office
+#   attributes:
+#     friendly_name: Büro
+#   occupancy_entities:
+#     device_tracker.desktop_dimitri: "home"
+#     device_tracker.desktop_sabrina: "home"
+#     device_tracker.laptop_work: "home"
+#     media_player.receiver_office: "on"
+#   priority: 1
 
 office_light_switch:
   module: switches
@@ -34,5 +20,4 @@ office_light_switch:
     long_press_turn_off:
       service: homeassistant.turn_off
       entity_id: 
-        - media_player.buero_musik_main
         - light.office

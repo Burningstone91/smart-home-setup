@@ -1,3 +1,66 @@
+binary_sensor:
+  - platform: template
+    sensors:
+      # Room Occupancy
+      occupancy_bedroom:
+        friendly_name: Schlafzimmer besetzt
+        device_class: occupancy
+        value_template: >-
+          {% set motion = is_state('binary_sensor.motion_bedroom', 'on') %}
+          {% set sleep = is_state('input_boolean.sleep_mode', 'on') %}
+          {{ motion or sleep }}
+        delay_off:
+          minutes: 10
+
+automation:
+  # Turn lights on (if not already on) when motion is detected
+  # Sleep Mode Enabled -> Turn on light strip under the bed
+  # Sleep Mode Disabled -> Turn on ceiling light
+  - id: motion_light_on_bedroom
+    alias: "Licht an bei Bewegung - Schlafzimmer"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_bedroom
+      to: "on"
+    condition: "{{ is_state('light.bedroom', 'off') }}"
+    action:
+      - choose:
+          # IF sleep mode-> turn on underbed light
+          - conditions:
+              - "{{ is_state('input_boolean.sleep_mode', 'on') }}"
+            sequence:
+              - service: light.turn_on
+                entity_id: light.bedroom_bed
+        # ELSE turn on ceiling light
+        default:
+          - service: light.turn_on
+            entity_id: light.bedroom_ceiling
+
+  # Turn lights off when room is not occupied anymore
+  - id: no_occupancy_light_off_bedroom
+    alias: "Licht aus Schlafzimmer nicht besetzt"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.occupancy_bedroom
+      to: "off"
+    condition: "{{ is_state('light.bedroom', 'off') }}"
+    action:
+      service: light.turn_off
+      entity_id: light.bedroom
+
+  # Turn adaptive sleep lighting on/off when sleep mode is enabled/disabled
+  - id: sleep_mode_turn_on_adaptive_sleep_bedroom
+    alias: "Schlafmodus für adaptive Beleuchtung Schlafzimmer"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: input_boolean.sleep_mode
+    action:
+      service: "switch.turn_{{ trigger.to_state.state }}"
+      entity_id: switch.adaptive_lighting_sleep_mode_bedroom_bed
+
 # Entity Customization
 homeassistant:
   customize:
@@ -51,3 +114,4 @@ homeassistant:
     switch.dehumidifier_bedroom:
       friendly_name: Entfeuchter
       icon: mdi:power-plug
+

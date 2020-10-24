@@ -1,22 +1,10 @@
-dressroom:
-  module: area
-  class: Area
-  area: dressroom
-  attributes:
-    friendly_name: Ankleidezimmer
-  priority: 1
-
-dressroom_lights:
-  module: lighting
-  class: AreaLighting
-  area: dressroom
-  house_id: home
-  motion_sensors: binary_sensor.motion_dressroom
-  delay_off: 300
-  lights: light.dressroom
-  circadian_sensor: sensor.circadian_values
-  min_brightness: 70
-  update_interval: 900
+# dressroom:
+#   module: area
+#   class: Area
+#   area: dressroom
+#   attributes:
+#     friendly_name: Ankleidezimmer
+#   priority: 1
 
 dressroom_light_switch:
   module: switches

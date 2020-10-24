@@ -1,7 +1,0 @@
-kitchen:
-  module: area
-  class: Area
-  area: kitchen
-  attributes:
-    friendly_name: Küche
-  priority: 1

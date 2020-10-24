@@ -15,6 +15,7 @@ recorder:
       - binary_sensor.window*
       - binary_sensor.motion*
       - binary_sensor.tamper*
+      - binary_sensor.occupancy*
       - sensor.wifistrength*
     entities:
       - binary_sensor.bed_dimitri

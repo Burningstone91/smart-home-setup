@@ -1,23 +1,10 @@
-bedroom:
-  module: area
-  class: Area
-  area: bedroom
-  attributes:
-    friendly_name: Schlafzimmer
-  priority: 1
-
-bedroom_lights:
-  module: lighting
-  class: AreaLighting
-  area: bedroom
-  house_id: home
-  motion_sensors: binary_sensor.motion_bedroom
-  delay_off: 600
-  lights: light.bedroom_ceiling
-  sleep_lights: light.bedroom_bed
-  sleep_brightness: 10
-  circadian_sensor: sensor.circadian_values
-  update_interval: 900
+# bedroom:
+#   module: area
+#   class: Area
+#   area: bedroom
+#   attributes:
+#     friendly_name: Schlafzimmer
+#   priority: 1
 
 bedroom_light_switch:
   module: switches
@@ -28,11 +15,6 @@ bedroom_light_switch:
     long_press_on:
       service: switch.turn_on
       entity_id: switch.dehumidifier_bedroom
-    long_press_turn_off:
-      service: homeassistant.turn_off
-      entity_id: 
-        - switch.dehumidifier_bedroom
-        - light.bedroom
 
 bedroom_sabrina_switch:
   module: switches
@@ -50,7 +32,7 @@ bedroom_sabrina_switch:
     short_press_turn_off:
       service: homeassistant.turn_off
       entity_id: 
-        - switch.dehumidifier_bedroom
+        - switch.dehumidifier_dressroom
         - light.bedroom
         - light.livingroom
         - light.dressroom
@@ -72,7 +54,7 @@ bedroom_dimitri_switch:
     short_press_turn_off:
       service: homeassistant.turn_off
       entity_id: 
-        - switch.dehumidifier_bedroom
+        - switch.dehumidifier_dressroom
         - light.bedroom
         - light.livingroom
         - light.dressroom

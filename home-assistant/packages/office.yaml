@@ -1,7 +1,57 @@
-# Yamaha MusicCast Receiver
-media_player:
-  platform: yamaha_musiccast
-  host: 10.10.80.7
+# # Yamaha MusicCast Receiver
+# media_player:
+#   platform: yamaha_musiccast
+#   host: 10.10.80.7
+
+binary_sensor:
+  - platform: template
+    sensors:
+      # Room Occupancy
+      # add persons once Fitbits are integrated by adding the following line:
+      # {% set persons = expand('group.room_presence_sensors') | selectattr('state', 'eq', 'office') | list | length > 0 %}
+      # and adding "or persons" to the last line of the template
+      occupancy_office:
+        friendly_name: Büro besetzt
+        device_class: occupancy
+        value_template: >-
+          {% set motion = is_state('binary_sensor.motion_office', 'on') %}
+          {% set deskhim = is_state('device_tracker.desktop_dimitri', 'home') %}
+          {% set deskher = is_state('device_tracker.desktop_sabrina', 'home') %}
+          {% set laptopwork = is_state('device_tracker.laptop_work', 'home') %}
+          {{ motion or deskhim or deskher or laptopwork }}
+        delay_off:
+          minutes: 15
+
+automation:
+  # Turn lights on (if not already on) when motion is detected and lux below threshold
+  - id: motion_light_on_office
+    alias: "Licht an bei Bewegung - Büro"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_office
+      to: "on"
+    condition:
+      - "{{ is_state('light.office', 'off') }}"
+      - condition: numeric_state
+        entity_id: sensor.lux_office
+        below: 200
+    action:
+      service: light.turn_on
+      entity_id: light.office
+
+  # Turn lights off when room is not occupied anymore
+  - id: no_occupancy_light_off_office
+    alias: "Licht aus Büro nicht besetzt"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.occupancy_office
+      to: "off"
+    condition: "{{ is_state('light.office', 'on') }}"
+    action:
+      service: light.turn_off
+      entity_id: light.office
 
 # Entity Customization
 homeassistant:
@@ -47,3 +97,4 @@ homeassistant:
       friendly_name: Fenster Sensor Büro
     sensor.battery_level_remote_light_office:
       friendly_name: Remote Licht Büro
+
