@@ -1,6 +1,6 @@
 ((LitElement) => {
     console.info(
-        '%c MULTIPLE-ENTITY-ROW %c 3.4.0 ',
+        '%c MULTIPLE-ENTITY-ROW %c 3.5.1 ',
         'color: cyan; background: black; font-weight: bold;',
         'color: darkblue; background: white; font-weight: bold;',
     );
@@ -108,12 +108,12 @@
             <div class="flex">
                 <div class="info" @click="${this.onRowClick}">
                     ${this.state.name}
-                    <div class="secondary">${this.renderSecondaryInfo()}</div>
+                    <div class="secondary" style="${this.state.info && this.state.info.style}">${this.renderSecondaryInfo()}</div>
                 </div>
                 <div class="${this._config.column ? 'entities-column' : 'entities-row'}">
                     ${this.state.entities.map(entity => this.renderEntity(entity))}
                     ${this.state.value ? html`
-                    <div class="state entity" @click="${this.onRowClick}">
+                    <div class="state entity" style="${this.state.style}" @click="${this.onRowClick}">
                         ${this.stateHeader && html`<span>${this.stateHeader}</span>`}
                         <div>${this.renderMainState()}</div>
                     </div>` : null}
@@ -126,28 +126,32 @@
 
         renderMainState() {
             if (this.state.toggle) return this.renderToggle(this.state.stateObj);
-            else if (this._config.format) return this.renderFormat(this.state.value, this._config.format);
-            else return html`${this.state.value}`;
+            const unit = this.state.unit && !this.state.unavailable ? ` ${this.state.unit}` : null;
+            return html`${this.renderValue(this.state)}${unit}`;
         }
 
         renderSecondaryInfo() {
-            return this.lastChanged
-                ? html`<ha-relative-time datetime="${this.state.stateObj.last_changed}" .hass="${this._hass}"></ha-relative-time>`
-                : this.state.info && this.state.info.format
-                    ? this.renderFormat(this.state.info.value, this.state.info.format)
-                    : (this.state.info && `${this.state.info.name ? `${this.state.info.name} ` : ''}${this.state.info.value}`)
+            if (this.lastChanged)
+                return html`<ha-relative-time datetime="${this.state.stateObj.last_changed}" .hass="${this._hass}"></ha-relative-time>`;
+            if (this.state.info) {
+                const name = this.state.info.name ? `${this.state.info.name} ` : null;
+                const unit = this.state.info.unit && !this.state.info.unavailable ? ` ${this.state.info.unit}` : null;
+                return html`${name}${this.renderValue(this.state.info)}${unit}`;
+            }
         }
 
         renderToggle(stateObj) {
             return html`<ha-entity-toggle .stateObj="${stateObj}" .hass="${this._hass}"></ha-entity-toggle>`;
         }
 
-        renderFormat(value, format) {
-            return [UNKNOWN, UNAVAILABLE].includes(value.toLowerCase())
-                ? html`${value}`
-                : format === 'duration'
-                    ? html`${this.secondsToDuration(value)}`
-                    : html`<hui-timestamp-display .ts=${new Date(value)} .format=${format} .hass=${this._hass}></hui-timestamp-display>`;
+        renderValue(entity) {
+            if (entity.unavailable || !entity.format) return entity.value;
+            if (entity.format === 'duration') return html`${this.secondsToDuration(entity.value)}`;
+            if (entity.format.startsWith('precision')) {
+                const precision = parseInt(entity.format.slice(-1), 10);
+                return html`${parseFloat(entity.value).toFixed(precision)}`;
+            }
+            return html`<hui-timestamp-display .ts=${new Date(entity.value)} .format=${entity.format} .hass=${this._hass}></hui-timestamp-display>`;
         }
 
         renderIcon(entity) {
@@ -156,14 +160,14 @@
 
         renderEntityValue(entity) {
             if (entity.toggle) return this.renderToggle(entity.stateObj);
-            else if (entity.icon !== undefined) return this.renderIcon(entity);
-            else if (entity.format) return this.renderFormat(entity.value, entity.format);
-            else return html`${entity.value}`;
+            if (entity.icon !== undefined) return this.renderIcon(entity);
+            const unit = entity.unit && !entity.unavailable ? ` ${entity.unit}` : null;
+            return html`${this.renderValue(entity)}${unit}`;
         }
 
         renderEntity(entity) {
             return entity ? html`
-            <div class="entity" @click="${entity.onClick}">
+            <div class="entity" style="${entity.style}" @click="${entity.onClick}">
                 <span>${entity.name}</span>
                 <div>${this.renderEntityValue(entity)}</div>
             </div>` : null;
@@ -194,8 +198,12 @@
 
                     stateObj: mainStateObj,
                     name: this.entityName(this._config.name, mainStateObj),
-                    value: this._config.show_state !== false ? this.entityStateValue(mainStateObj, this._config.unit) : null,
+                    value: this._config.show_state !== false ? this.entityStateValue(mainStateObj) : null,
+                    unit: this._config.unit === false ? null : (this._config.unit || mainStateObj.attributes.unit_of_measurement),
+                    unavailable: [UNKNOWN, UNAVAILABLE].includes(mainStateObj.state),
                     toggle: this.checkToggle(this._config, mainStateObj),
+                    format: this._config.format || false,
+                    style: this.entityStyles(this._config),
 
                     entities: this._config.entities ? this._config.entities.map(entity => this.initEntity(entity, mainStateObj)) : [],
                     info: this.lastChanged ? null :
@@ -217,7 +225,7 @@
         }
 
         checkToggle(config, stateObj) {
-            return config.toggle === true && stateObj.state && !['unknown', 'unavailable'].includes(stateObj.state)
+            return config.toggle === true && stateObj.state && ![UNKNOWN, UNAVAILABLE].includes(stateObj.state)
         }
 
         initEntity(config, mainStateObj) {
@@ -226,18 +234,23 @@
             const entity = typeof config === 'string' ? config : config.entity;
             const stateObj = entity ? (this._hass && this._hass.states[entity]) : mainStateObj;
 
-            if (!stateObj) return {value: this._hass.localize('state.default.unavailable')};
+            if (config.hide_unavailable && (!stateObj || [UNKNOWN, UNAVAILABLE].includes(stateObj.state))) return null;
+
+            if (!stateObj) return {value: this._hass.localize('state.default.unavailable'), unavailable: true};
 
             return {
                 stateObj: stateObj,
                 name: entity ? this.entityName(config.name, stateObj) : (config.name || null),
                 value: config.attribute !== undefined
-                    ? this.entityAttribute(stateObj, config.attribute, config.unit)
-                    : this.entityStateValue(stateObj, config.unit),
+                    ? this.entityAttribute(stateObj, config.attribute)
+                    : this.entityStateValue(stateObj),
+                unit: config.unit === false ? null : config.attribute !== undefined ? config.unit : (config.unit || stateObj.attributes.unit_of_measurement),
+                unavailable: [UNKNOWN, UNAVAILABLE].includes(config.attribute !== undefined ? stateObj.attributes[config.attribute] : stateObj.state),
                 toggle: this.checkToggle(config, stateObj),
                 icon: config.icon === true ? (stateObj.attributes.icon || null) : config.icon,
                 format: config.format || false,
                 state_color: config.state_color || false,
+                style: this.entityStyles(config),
                 onClick: this.getAction(config.tap_action, stateObj.entity_id),
             };
         }
@@ -250,19 +263,15 @@
                 : stateObj.attributes.friendly_name || '';
         }
 
-        entityAttribute(stateObj, attribute, unit) {
+        entityAttribute(stateObj, attribute) {
             return (attribute in stateObj.attributes)
-                ? `${stateObj.attributes[attribute]}${unit ? ` ${unit}` : ''}`
+                ? stateObj.attributes[attribute]
                 : this._hass.localize('state.default.unavailable');
         }
 
-        entityStateValue(stateObj, unit) {
+        entityStateValue(stateObj) {
             if (stateObj.state === UNKNOWN || stateObj.state === UNAVAILABLE) {
                 return this._hass.localize(`state.default.${stateObj.state}`);
-            }
-
-            if (unit !== false && (unit || stateObj.attributes.unit_of_measurement)) {
-                return `${stateObj.state} ${unit || stateObj.attributes.unit_of_measurement}`;
             }
 
             const domain = stateObj.entity_id.substr(0, stateObj.entity_id.indexOf('.'));
@@ -272,6 +281,11 @@
                 || this._hass.localize(`component.${domain}.state._.${stateObj.state}`)
                 || stateObj.state
             );
+        }
+
+        entityStyles(config) {
+            return config.styles && typeof config.styles === 'object'
+                ? Object.keys(config.styles).map(key => `${key}: ${config.styles[key]};`).join('') : '';
         }
 
         getAction(config, entityId) {
@@ -303,7 +317,7 @@
                         break;
                     }
                     case 'toggle': {
-                        this._hass.callService('homeassistant', 'toggle', {entity_id: entityId});
+                        this.toggleEntity(entityId);
                         this.forwardHaptic('light');
                         break;
                     }
@@ -322,6 +336,25 @@
                     }
                 }
             }
+        }
+
+        toggleEntity(entityId) {
+            const turnOn = ["closed", "locked", "off"].includes(this._hass.states[entityId].state);
+            const stateDomain = entityId.split('.')[0];
+            const serviceDomain = stateDomain === "group" ? "homeassistant" : stateDomain;
+
+            let service;
+            switch (stateDomain) {
+                case "lock":
+                    service = turnOn ? "unlock" : "lock";
+                    break;
+                case "cover":
+                    service = turnOn ? "open_cover" : "close_cover";
+                    break;
+                default:
+                    service = turnOn ? "turn_on" : "turn_off";
+            }
+            this._hass.callService(serviceDomain, service, {entity_id: entityId});
         }
 
         fireEvent(node, type, detail = {}, options = {}) {
