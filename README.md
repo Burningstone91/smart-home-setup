@@ -1329,25 +1329,144 @@ binary_sensor:
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "ESPHome" and click on it.
 Enter the IP or hostname of the ESP32 Sensor in the field "host", "port" can be left as it is at 6053. Click "SUBMIT". Enter the password set in the section "api" of the ESPHome config file. Click "SUBMIT" again. You should now see the binary sensors configured on the ESP.
 
-### Make Bed Occupancy not so binary (AppDaemon)
-Same as the [not so binary presence detection](#make-presence-detection-not-so-binary-appdaemon) (just left, just arrived, home, etc.), we're going to create a not so binary bed occupancy state. The app sets the following states for the person entities' sleep state: "just laid down", "sleeping", "just got up", "awake", and "back to bed" for the "I quickly need to go to the toilet" situations. The app also sets the sleep state of the house entity to "somone in bed", "nobody in bed" and "everyone in bed".
+### Make Bed Occupancy not so binary
+Same as the [not so binary presence detection](#make-presence-detection-not-so-binary) (just left, just arrived, home, etc.), we're going to create a not so binary bed occupancy state. The app sets the following states for the person entities' sleep state: "just laid down", "sleeping", "just got up", "awake", and "back to bed" for the "I quickly need to go to the toilet" situations. The app also sets the sleep state of the house entity to "somone in bed", "nobody in bed" and "everyone in bed".
 
-Create a file called "sleep.py" -> [sleep.py](appdaemon/apps/sleep.py)
+Everything related to the sleeping can be found in [sleep.yaml](home-assistant/packages/sleep.yaml).
 
-Create a corresponding configuration file called "sleep.yaml" and add the following:
+One `input_boolean` for the the global sleep mode.
 
 ```yaml
-room_presence_app:
-  module: sleep
-  class: Sleep
-  sensors:
-    dimitri: binary_sensor.bed_dimitri
-    sabrina: binary_sensor.bed_sabrina
+input_boolean:
+  sleep_mode:
+    name: Schlafmodus
+    icon: mdi:sleep
 ```
 
-In the sensors section put the person_id (configured in the person app) and the corresponding bed occupancy sensor from the previous step.
+One `input_select` per person for the non binary sleep states.
+
+```yaml
+input_select:
+  sleep_state_him:
+    name: Sleep State Him
+    options:
+      - just laid down
+      - just got up
+      - awake
+      - sleeping
+      - back to bed
+  sleep_state_her:
+    name: Sleep State Her
+    options:
+      - just laid down
+      - just got up
+      - awake
+      - sleeping
+      - back to bed
+```
+
+An automation to set the non-binary input_select, which works as follows:
+* Someone entered the bed AND previous state was NOT "just got up" -> select "just laid down"
+* Someone entered the bed AND previous state was "just got up" -> select "back to bed"
+* Someone left the bed -> select "just got up"
+* Someone was "just got up" for 5 minutes -> select "awake"
+* Someone was "just laid down" or "back to bed" for 5 minutes -> select "sleeping"
+
+```yaml
+automation:
+  - id: set_person_sleep_state
+    alias: "Set person sleep state"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.bed_him
+        for:
+          seconds: 5
+      - platform: state
+        entity_id: input_select.sleep_state_him
+        for:
+          minutes: 5
+      - platform: state
+        entity_id: input_boolean.bed_her
+      - platform: state
+        entity_id: input_select.sleep_state_her
+        for:
+          minutes: 5
+    action:
+      - variables:
+          person: "{{ trigger.to_state.entity_id.split('_')[-1] }}"
+          input_select: "input_select.sleep_state_{{ person }}"
+      - choose:
+          # IF bed occupied -> just laid down/back to bed
+          - conditions: "{{ trigger.to_state.state == 'on' }}" 
+            sequence:
+              service: input_select.select_option
+              data:
+                entity_id: "{{ input_select }}"
+                option: >-
+                  {% if is_state(input_select, 'just got up') %}
+                    back to bed
+                  {% else %}
+                    just laid down
+                  {% endif %}
+          # IF bed nod occupied -> just got up
+          - conditions: "{{ trigger.to_state.state == 'off' }}"
+            sequence:
+              service: input_select.select_option
+              data:
+                entity_id: "{{ input_select }}"
+                option: "just got up"
+          # IF just got up for 5 minutes -> awake
+          - conditions: "{{ trigger.to_state.state == 'just got up' }}"
+            sequence:
+              - service: input_select.select_option
+                data:
+                  entity_id: "{{ input_select }}"
+                  option: "awake"
+          # IF back to bed or just laid down for 5 minutes -> sleeping
+          - conditions: "{{ trigger.to_state.state in ['back to bed', 'just laid down'] }}"
+            sequence:
+              service: input_select.select_option
+              data:
+                entity_id: "{{ input_select }}"
+                option: "sleeping"
+```
 
 These sleep states are going to be used later in other automations, e.g. lighting control, sleep/wakeup scenes etc.
+
+A second automation to set the global sleep state based on the persons' sleep states.
+
+```yaml
+automation:
+  - id: set_sleep_mode_based_on_bed_occupancy
+    alias: "Turn on sleep mode when everyone is in bed and turn off when everyone awake."
+    mode: single
+    variables:
+      in_bed_states: ['just laid down', 'sleeping', 'back to bed']
+    trigger:
+      - platform: state
+        entity_id: input_select.sleep_state_dimitri
+      - platform: state
+        entity_id: input_select.sleep_state_sabrina
+    action:
+      - choose:
+          # IF everyone just laid down/sleeping/back to bed -> turn on sleep mode
+          - conditions:
+              - "{{ is_state('input_boolean.sleep_mode', 'off') }}"
+              - "{{ states('input_select.sleep_state_him') in in_bed_states }}"
+              - "{{ states('input_select.sleep_state_her') in in_bed_states }}"
+            sequence:
+              service: input_boolean.turn_on
+              entity_id: input_boolean.sleep_mode
+          # IF everyone awake -> turn off sleep mode
+          - conditions:
+              - "{{ is_state('input_boolean.sleep_mode', 'on') }}"
+              - "{{ is_state('input_select.sleep_state_him', 'awake') }}"
+              - "{{ is_state('input_select.sleep_state_her', 'awake') }}"
+            sequence:
+              service: input_boolean.turn_off
+              entity_id: input_boolean.sleep_mode
+```
 
 </p>
 </details>
@@ -1566,7 +1685,7 @@ The web interface can also be used to change device specific configuration such 
 ## Lighting <a name="lighting" href="https://github.com/Burningstone91/smart-home-setup#lighting"></a>
 ### Basic Explanation of Setup
 
-The lighting behaviour is determined by motion, occupancy and light level in the area, sleep state of the house and circadian rhythm. The details are explained in the section [Area Lighting (AppDaemon)](#area-lighting-appdaemon).
+The lighting behaviour is determined by motion, occupancy and light level in the area, sleep state of the house and circadian rhythm.
 
 ### Hardware used
 <table align="center" border="0">
@@ -1650,71 +1769,76 @@ Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute
 * Press and hold the button at the top of the sensor until the blue LED starts to blink.
 * The sensor should now show up in Phoscon.
 
-### Setup Circadian Lighting
-I use the custom component [Circadian Ligting](https://github.com/claytonjn/hass-circadian_lighting) to calculate the brightness value for some lights. I mainly use it in the office when I'm working from home. The repo contains some explanations and articles about the benefits of Circadian Lighting. 
+### Setup Adaptive Lighting
+I use the the [Adaptive Ligting integration](......) to calculate the brightness and color temperature for the lights. I mainly use the periodical adjustment in the office, when I'm working from home. Otherwise I "only" use the integration to turn on the lights at the correct brightness and color temperature. 
 
-### Area Lighting (AppDaemon)
-The area lighting app controls the lighting in the different areas based on conditions such as light levels, occupancy, etc.
+### Area Lighting
 The lights are turned on through motion and turned off through room occupancy. I didn't want to turn on lights on occupancy, as sometimes someone may be standing close to a room for a few seconds and make the room occupied, even though the person has no intention to enter the room.
 
-The app consists of 3 parts, one for turning on the light on motion, one for adjusting the brightness of the lights to create a circadian rhythm and one for turning off the lights when everyone left the room.
+There's two automations and one binary sensor for each room.
 
-**Motion Detection:**
-Below is the flow for the motion detection part:
-
-![Alt text](/git-pictures/flowcharts/motion_light_flow.jpg?raw=true "Motion Light Flow")
-
-**Adjust Brightness:**
-Brightness is adjusted to match circadian values at the specified interval. The automation is started whenever lights have turned on and stopped whenever lights have been turned off.
-
-**Room Occupancy:**
-When the occupancy of the area changes to "False", all the lights in the area are turned off. The Room Occupancy is determined by the [Room Occupancy App](#room-occupancy-appdaemon) from a previous step.
-
-Now to the app. Add a file called "lighting.py" -> [lighting.py](appdaemon/apps/lighting.py)
-
-Now add the configuration for the app to the individual area yaml files. 
-
-The configuration parameters are as follows:
-
-key | optional | type | default | description
--- | -- | -- | -- | --
-`module` | False | string | lighting | The module name of the app.
-`class` | False | string | AreaLighting | The name of the Class.
-`area` | False | string | | The identifier for the area.
-`house_id` | True | string | | The identifier of the house. Needed for sleep state.
-`motion_sensors` | False | str, list | | List of motion sensor entity_ids.
-`delay_off` | True | int | 600 | Time in seconds until motion is turned off.
-`lux_sensor` | True | string | | Entity_id of the light level sensor.
-`lux_threshold` | True | int | 100 | Lux level below which light will not be turned on.
-`lights` | False | string, list | | List of light entity_ids which should be controlled.
-`sleep_lights` | True | string, list | | List of light entity_ids to be used in sleep mode.
-`circadian_sensor` | True | string | | Entity_id of the circadian lighting sensor. If not configured lights will be turned on to default brightness and no periodical adjustment will take place.
-`default_brightness` | True | int | 80 | Brightness in % to set light to. Needed if circadian sensor is not used.
-`sleep_brightness` | True | int | | Brightness in % to be used in sleep mode. If not configured sleep mode will be ignored.
-`max_brightness` | True | int | 100 | Maximum brightness in %. Used in conjunction with circadian sensor.
-`min_brightness` | True | int | 1 | Minimum brightness in %. Used in conjunction with circadian sensor.
-`transition` | True | int | 60 | Time in seconds for transition of light to new state. Used in conjunction with circadian sensor.
-`update_interval` | True | int | 300 | Time in seconds between adjustments of brightness according to circadian lighting sensor.
-
-
-Full example:
+The binary sensor is used to determine room occupancy. Here's an example from the office:
 
 ```yaml
-bedroom_lights:
-  module: lighting
-  class: AreaLighting
-  area: bedroom
-  house_id: home
-  motion_sensors: binary_sensor.motion_bedroom
-  delay_off: 600
-  lights: light.bedroom_ceiling
-  sleep_lights: light.bedroom_bed
-  sleep_brightness: 10
-  circadian_sensor: sensor.circadian_values
-  min_brightness: 10
-  max_brightness: 80
-  transition: 120
-  update_interval: 900
+binary_sensor:
+  - platform: template
+    sensors:
+      occupancy_office:
+        friendly_name: Büro besetzt
+        device_class: occupancy
+        value_template: >-
+          {% set motion = is_state('binary_sensor.motion_office', 'on') %}
+          {% set deskhim = is_state('device_tracker.desktop_dimitri', 'home') %}
+          {% set deskher = is_state('device_tracker.desktop_sabrina', 'home') %}
+          {% set laptopwork = is_state('device_tracker.laptop_work', 'home') %}
+          {{ motion or deskhim or deskher or laptopwork }}
+        delay_off:
+          minutes: 15
+```
+
+This will make the room occupied when at least one of the following conditons is met:
+* Motion detected
+* Desktop of my wife is on (Unifi device tracker)
+* My Desktop is on (Unifi device tracker)
+* My Work Laptop is on (Unifi device tracker)
+When none of the above conditions is met for 15 minutes, the room will be marked as not occupied.
+
+The first automation will turn the light on when motion (binary_sensor.motion_office) is detected. The lights will only be turned on when the lights are not already on and the lux level (sensor.lux_office) is below 200.
+
+```yaml
+automation:
+  - id: motion_light_on_office
+    alias: "Licht an bei Bewegung - Büro"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_office
+      to: "on"
+    condition:
+      - "{{ is_state('light.office', 'off') }}"
+      - condition: numeric_state
+        entity_id: sensor.lux_office
+        below: 200
+    action:
+      service: light.turn_on
+      entity_id: light.office
+```
+
+The second automation turns the lights off when the room is not occupied (binary_sensor.occupancy_office) anymore. The lights will only be turned off, if they are already on.
+
+```yaml
+automation:
+- id: no_occupancy_light_off_office
+    alias: "Licht aus Büro nicht besetzt"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: binary_sensor.occupancy_office
+      to: "off"
+    condition: "{{ is_state('light.office', 'on') }}"
+    action:
+      service: light.turn_off
+      entity_id: light.office
 ```
 
 </p>

@@ -88,9 +88,9 @@ automation:
                 entity_id: "{{ input_select }}"
                 option: "schläft"
 
-  # Enable sleep mode when everyone is in bed
-  - id: enable_sleep_everyone_in_bed
-    alias: "Schlafmodus einschalten wenn alle im Bett"
+  # Enable sleep mode when everyone is in bed, disable when everyone is awake
+  - id: set_sleep_mode_based_on_bed_occupancy
+    alias: "Schlafmodus einschalten wenn alle im Bett und ausschalten wenn alle wach sind."
     mode: single
     variables:
       in_bed_states: ['gerade hingelegt', 'schläft', 'zurück im Bett']
@@ -99,27 +99,21 @@ automation:
         entity_id: input_select.sleep_state_dimitri
       - platform: state
         entity_id: input_select.sleep_state_sabrina
-    condition: 
-      - "{{ is_state('input_boolean.sleep_mode', 'off') }}"
-      - "{{ states('input_select.sleep_state_dimitri') in in_bed_states }}"
-      - "{{ states('input_select.sleep_state_sabrina') in in_bed_states }}"
     action:
-      service: input_boolean.turn_on
-      entity_id: input_boolean.sleep_mode
-
-  # Disable sleep mode when everyone is awake
-  - id: disable_sleep_everyone_awake
-    alias: "Schlafmodus ausschalten wenn alle wach sind"
-    mode: single
-    trigger:
-      - platform: state
-        entity_id: input_select.sleep_state_dimitri
-      - platform: state
-        entity_id: input_select.sleep_state_sabrina
-    condition: 
-      - "{{ is_state('input_boolean.sleep_mode', 'off') }}"
-      - "{{ is_state('input_select.sleep_state_dimitri', 'wach') }}"
-      - "{{ is_state('input_select.sleep_state_sabrina', 'wach') }}"
-    action:
-      service: input_boolean.turn_off
-      entity_id: input_boolean.sleep_mode
+      - choose:
+          # IF everyone just laid down/sleeping/back to bed -> turn on sleep mode
+          - conditions:
+              - "{{ is_state('input_boolean.sleep_mode', 'off') }}"
+              - "{{ states('input_select.sleep_state_dimitri') in in_bed_states }}"
+              - "{{ states('input_select.sleep_state_sabrina') in in_bed_states }}"
+            sequence:
+              service: input_boolean.turn_on
+              entity_id: input_boolean.sleep_mode
+          # IF everyone awake -> turn off sleep mode
+          - conditions:
+              - "{{ is_state('input_boolean.sleep_mode', 'on') }}"
+              - "{{ is_state('input_select.sleep_state_dimitri', 'wach') }}"
+              - "{{ is_state('input_select.sleep_state_sabrina', 'wach') }}"
+            sequence:
+              service: input_boolean.turn_off
+              entity_id: input_boolean.sleep_mode
