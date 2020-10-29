@@ -2019,19 +2019,19 @@ This is still a work in progress, but here are some screenshots.
 
 The Server View:
 
-![Alt text](/git-pictures/server_lovelace.png?raw=true "Server View")
+![Alt text](/git-pictures/lovelace_views/server_lovelace.png?raw=true "Server View")
 
 The Network View:
 
-![Alt text](/git-pictures/network_lovelace.png?raw=true "Network View")
+![Alt text](/git-pictures/lovelace_views/network_lovelace.png?raw=true "Network View")
 
 The Unifi Device Tracker View:
 
-![Alt text](/git-pictures/device_tracker_lovelace.png?raw=true "Device Tracker")
+![Alt text](/git-pictures/lovelace_views/device_tracker_lovelace.png?raw=true "Device Tracker")
 
 The System Monitoring View:
 
-![Alt text](/git-pictures/system_monitoring_lovelace.png?raw=true "System Monitoring")
+![Alt text](/git-pictures/lovelace_views/system_monitoring_lovelace.png?raw=true "System Monitoring")
 
 Create a file called system_monitoring.yaml inside the packages directory of Home Assistant.
 
@@ -2968,30 +2968,30 @@ At our home we have floor heating, which is controlled by an outside temperature
 ### Hardware used
 <table align="center" border="0">
 <tr>
-<td align="center" style="width:20%;">
+<td align="center" style="width:33%;">
 3x Xiaomi Temp/Humidity Sensor
 </td>
-<td align="center" style="width:20%;">
+<td align="center" style="width:34%;">
 1x IKEA Tradfri Plug (Dehumidifier)
 </td>
-<td align="center" style="width:20%;">
+<td align="center" style="width:33%;">
 15x Xiaomi Door/Window Sensor
 </td>
 </tr>
 
 <tr>
-<td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/xiaomi_temp.jpg" raw=true height="150" alt="Philips Hue" />
+<td align="center" style="width:33%;">
+<img src="git-pictures/device_pictures/xiaomi_temp.png" raw=true height="150" alt="Philips Hue" />
 </td>
-<td align="center" style="width:20%;">
+<td align="center" style="width:34%;">
 <img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="150" alt="IKEA Plug" />
 </td>
-<td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/xiaomi_door.jpg" raw=true height="150" alt="Hue Motion" />
+<td align="center" style="width:33%;">
+<img src="git-pictures/device_pictures/xiaomi_door.png" raw=true height="150" alt="Hue Motion" />
 </td>
 </tr>
 
-<tr><td colspan="5">
+<tr><td colspan="3">
 There's a Xiaomi Door/Window sensor on each door and window in the house. Temperature and Humidity are measured by the Aeotec Multisensor, which are used for motion detection as well. In addition there are 3x Xiaomi Temp/Humidity sensors placed in rooms without one of the Aeotec Multisensors. The dehumidifier is "smart" by itself, I can set a target humidity and it will automatically start/stop to dehumidify accordingly. The only thing I added is an IKEA smart plug in order to turn it on/off when someone opens/closes the window in the room. 
 </td></tr>
 </table>
