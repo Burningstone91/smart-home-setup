@@ -1,0 +1,11 @@
+{
+    "domain": "meteo-swiss",
+    "name": "Meteo Swiss",
+    "documentation": "https://github.com/websylv/homeassistant-meteoswiss",
+    "dependencies": [],
+    "codeowners": ["websylv"],
+    "config_flow": true,
+    "requirements": [
+        "hamsclient==0.2"
+      ]
+  }

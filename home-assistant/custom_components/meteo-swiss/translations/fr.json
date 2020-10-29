@@ -1,0 +1,25 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "City already configured",
+            "unknown": "Unknown error: please retry later"
+        },
+        "error": {
+            "invalid_station_name": "Nom de la station invalide",
+            "invalid_postcode": "Code postale incorrecte. Cette intégration ne fonctionne que pour de codes postaux suisse",
+            "invalid_station_id": "Code de station introuvable merci de vérifier sur : https://bit.ly/2zzE36d"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "name": "Display name",
+                    "postcode": "Postcode",
+                    "station": "Realtime weather station",
+                    "enablesensors": "Enable Sensors"
+                },
+                "description": "Enter the postal code and the station name",
+                "title": "Meteo Swiss"
+            }
+        }
+    }
+}

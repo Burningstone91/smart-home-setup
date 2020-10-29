@@ -1,0 +1,26 @@
+  
+{
+    "config": {
+        "abort": {
+            "already_configured": "Byen er allerede konfigurert",
+            "unknown": "Ukjent feil: prøv på nytt senere"
+        },
+        "error": {
+            "invalid_station_name": "Stasjonsnavnet er ugyldig, vennligst sjekk stasjonslisten",
+            "invalid_postcode": "Postnummer er ugyldig. Denne integrasjonen fungerer bare med Sveits postnummer",
+            "invalid_station_id": "Stasjonsnavnet ble ikke funnet. Vennligst sjekk https://bit.ly/2zzE36d for stasjonsliste"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "name": "Visningsnavn",
+                    "postcode": "Postnummer",
+                    "station": "Sanntids værstasjon",
+                    "enablesensors": "Aktiver sensorer"
+                },
+                "description": "Skriv inn postnummeret og stasjonsnavnet",
+                "title": "Meteo Swiss"
+            }
+        }
+    }
+}

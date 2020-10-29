@@ -1,0 +1,25 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "City already configured",
+            "unknown": "Unknown error: please retry later"
+        },
+        "error": {
+            "invalid_station_name": "Station name is Invalid please check station list",
+            "invalid_postcode": "Post code is invalid this integration work only with Switzerland post code",
+            "invalid_station_id": "Station name not found. Please check https://bit.ly/2zzE36d for station list"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "name": "Display name",
+                    "postcode": "Postcode",
+                    "station": "Realtime weather station",
+                    "enablesensors": "Enable Sensors"
+                },
+                "description": "Enter the postal code and the station name",
+                "title": "Meteo Swiss"
+            }
+        }
+    }
+}
