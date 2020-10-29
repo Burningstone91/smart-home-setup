@@ -1748,8 +1748,8 @@ I create light groups in Phoscon. Each group defined in Phoscon will later show 
 ### Adding motion sensors to the ZigBee network (Philips Hue)
 Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute the following steps to integrate a Philips Hue motion sensor:
 
-* Reset the device by pressing and holding the setup button (small holle at the back) for 10 seconds, the LED should blink orange
 * In Phoscon go to Devices -> Sensors and press "Add new sensor" at the bottom of the page.
+* Reset the device by pressing and holding the setup button (small holle at the back) for 10 seconds, the LED should blink orange
 * The sensor should now show up in Phoscon.
 
 ### Adding motion sensors to the Z-Wave network (Aeotec Multisensor 6)
@@ -2015,7 +2015,23 @@ When I need more complex actions on a button press, like calling multiple servic
 ### Basic Explanation of Setup
 I use various integrations, custom components and scripts to montior most of the devices in my home. All this configuration is in one package called system_monitoring.yaml.
 
-(To Do) Add System Monitoring Screenshots
+This is still a work in progress, but here are some screenshots.
+
+The Server View:
+
+![Alt text](/git-pictures/server_lovelace.png?raw=true "Server View")
+
+The Network View:
+
+![Alt text](/git-pictures/network_lovelace.png?raw=true "Network View")
+
+The Unifi Device Tracker View:
+
+![Alt text](/git-pictures/device_tracker_lovelace.png?raw=true "Device Tracker")
+
+The System Monitoring View:
+
+![Alt text](/git-pictures/system_monitoring_lovelace.png?raw=true "System Monitoring")
 
 Create a file called system_monitoring.yaml inside the packages directory of Home Assistant.
 
@@ -2939,6 +2955,92 @@ Enter the username and password of the InfluxDB. The URL for the InfluxDB databa
 
 </p>
 </details>
+
+
+
+
+
+
+## Climate <a name="climate" href="https://github.com/Burningstone91/smart-home-setup#climate"></a>
+### Basic Explanation of Setup
+At our home we have floor heating, which is controlled by an outside temperature sensor from the landlord. So there's no automations for setting a thermostat or turning off heating when we leave (it's anyway not efficient to turn off floor heating for only a few hours). I do however have some automations to notify me about mold conditions, good opportunity to open the windows and ventilate the house, a window left open for too long and an automation to turn on/off the dehumidifier when someone opens/closes a window in the same room. And also some automations related to weather conditons, like close windows when rain is coming.
+
+### Hardware used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:20%;">
+3x Xiaomi Temp/Humidity Sensor
+</td>
+<td align="center" style="width:20%;">
+1x IKEA Tradfri Plug (Dehumidifier)
+</td>
+<td align="center" style="width:20%;">
+15x Xiaomi Door/Window Sensor
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:20%;">
+<img src="git-pictures/device_pictures/xiaomi_temp.jpg" raw=true height="150" alt="Philips Hue" />
+</td>
+<td align="center" style="width:20%;">
+<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="150" alt="IKEA Plug" />
+</td>
+<td align="center" style="width:20%;">
+<img src="git-pictures/device_pictures/xiaomi_door.jpg" raw=true height="150" alt="Hue Motion" />
+</td>
+</tr>
+
+<tr><td colspan="5">
+There's a Xiaomi Door/Window sensor on each door and window in the house. Temperature and Humidity are measured by the Aeotec Multisensor, which are used for motion detection as well. In addition there are 3x Xiaomi Temp/Humidity sensors placed in rooms without one of the Aeotec Multisensors. The dehumidifier is "smart" by itself, I can set a target humidity and it will automatically start/stop to dehumidify accordingly. The only thing I added is an IKEA smart plug in order to turn it on/off when someone opens/closes the window in the room. 
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Adding Temperature/Humidity sensors to the ZigBee network (Xiaomi)
+Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute the following steps to integrate a Xiaomi Temperature/Humidity sensor:
+
+* In Phoscon go to Devices -> Sensors and press "Add new sensor" at the bottom of the page.
+* Choose "Other".
+* Press and hold the button at the top of the sensor until the blue LED starts to blink.
+* The sensor should now show up in Phoscon.
+
+There will be one sensor for temperature, one for humdity and one for the battery level in Home Assistant.
+
+### Adding Door/Window sensors to the ZigBee network (Xiaomi)
+Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute the following steps to integrate a Xiaomi Door/Window sensor:
+
+* In Phoscon go to Devices -> Sensors and press "Add new sensor" at the bottom of the page.
+* Choose "Other".
+* Reset the device by pressing and holding the setup button (small holle at one side of the larger part of the sensor) until the LED starts to blink.
+* The sensor should now show up in Phoscon.
+
+The Xiaomi Door/Window sensors are a bit tricky to pair. What helped me was to continuously trigger the sensor after holding the setup button by rapidly opening/closing the door/window.
+
+There will be a binary sensor for the status of the sensor and one for the battery level in Home Assistant.
+
+### Adding IKEA Tradfri smart plug to the ZigBee network (Xiaomi)
+Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute the following steps to integrate a IKEA Tradfri smart plug:
+
+* In Phoscon go to Devices -> Lights and press "Add new lights" at the bottom of the page.
+* Reset the device by pressing and holding the setup button (small holle at one side of plug) until the LED starts to blink.
+* The plug should now show up in Phoscon.
+
+There will be a switch in Home Assistant.
+
+### Configure Weather in Home Assistant (Meteo Swiss)
+I use the the [Meteo Swiss custom component](https://github.com/websylv/homeassistant-meteoswiss). This is a weather integration for Switzerland and it delivers pretty good results. It can be installed through the [Home Assistant Community Store (HACS)](https://github.com/hacs/integration). The configuration is explained in the github repo of the component and it's pretty straightforward anyway.
+
+</p>
+</details>
+
+
+
+
+
+
 
 
 
