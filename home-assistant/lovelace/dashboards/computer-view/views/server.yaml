@@ -214,7 +214,7 @@ cards:
                       **SSD:** 64GB<br>
                       **Ubuntu:** 18.04.3 LTS<br>
                       **Uptime:**
-                      {{ states('sensor.uptime_home_assistant') }}
+                      {{ states('sensor.uptime_home_assistant_vm') }}
                     style: |
                       ha-card {
                         color: teal;

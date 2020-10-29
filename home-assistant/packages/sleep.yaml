@@ -36,7 +36,7 @@ automation:
       - platform: state
         entity_id: binary_sensor.bed_dimitri
         for:
-          seconds: 5
+          seconds: 10
       - platform: state
         entity_id: input_boolean.bed_dimitri
       - platform: state

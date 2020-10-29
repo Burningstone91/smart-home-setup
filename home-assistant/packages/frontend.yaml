@@ -2,6 +2,8 @@ frontend:
 
 lovelace_gen:
 
+#browser_mod:
+
 lovelace:
   mode: storage
   dashboards:

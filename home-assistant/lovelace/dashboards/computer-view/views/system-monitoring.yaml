@@ -1859,40 +1859,6 @@ cards:
                         bar-card-currentbar	 {
                           border-radius: 5px;
                         }
-                  # Dressroom
-                  - type: custom:bar-card
-                    positions:
-                      name: inside
-                      value: inside
-                      icon: 'off'
-                      indicator: 'off'
-                    height: 20px
-                    width: 80%
-                    icon: mdi:battery
-                    entities:
-                      - entity: sensor.battery_level_lux_dressroom
-                        name: Reduit
-                        severity:
-                          - color: rgb(163,0,0,0.60)
-                            from: 0
-                            to: 24.9
-                          - color: rgb(206,133,0,0.60)
-                            from: 25
-                            to: 59.9
-                          - color: rgb(26,204,147,0.33)
-                            from: 60
-                            to: 100
-                    style: |
-                      ha-card {
-                        border-radius: 5px;
-                        margin-top: -22.5px;
-                      }
-                        bar-card-backgroundbar	 {
-                          border-radius: 5px;
-                        }
-                        bar-card-currentbar	 {
-                          border-radius: 5px;
-                        }
 
               - type: vertical-stack
                 cards:
