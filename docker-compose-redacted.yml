@@ -36,7 +36,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:0.117.0b3
+    image: homeassistant/home-assistant:0.117.0
     network_mode: host
     restart: unless-stopped
     volumes:

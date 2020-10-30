@@ -1374,20 +1374,23 @@ An automation to set the non-binary input_select, which works as follows:
 
 ```yaml
 automation:
+  # Sets the sleep state of the persons
   - id: set_person_sleep_state
-    alias: "Set person sleep state"
+    alias: "Bestimme Schlafstatus Personen"
     mode: single
     trigger:
       - platform: state
         entity_id: binary_sensor.bed_him
         for:
-          seconds: 5
+          seconds: 10
       - platform: state
         entity_id: input_select.sleep_state_him
         for:
           minutes: 5
       - platform: state
-        entity_id: input_boolean.bed_her
+        entity_id: binary_sensor.bed_her
+        for:
+          seconds: 10
       - platform: state
         entity_id: input_select.sleep_state_her
         for:
@@ -1396,40 +1399,22 @@ automation:
       - variables:
           person: "{{ trigger.to_state.entity_id.split('_')[-1] }}"
           input_select: "input_select.sleep_state_{{ person }}"
-      - choose:
-          # IF bed occupied -> just laid down/back to bed
-          - conditions: "{{ trigger.to_state.state == 'on' }}" 
-            sequence:
-              service: input_select.select_option
-              data:
-                entity_id: "{{ input_select }}"
-                option: >-
-                  {% if is_state(input_select, 'just got up') %}
-                    back to bed
-                  {% else %}
-                    just laid down
-                  {% endif %}
-          # IF bed nod occupied -> just got up
-          - conditions: "{{ trigger.to_state.state == 'off' }}"
-            sequence:
-              service: input_select.select_option
-              data:
-                entity_id: "{{ input_select }}"
-                option: "just got up"
-          # IF just got up for 5 minutes -> awake
-          - conditions: "{{ trigger.to_state.state == 'just got up' }}"
-            sequence:
-              - service: input_select.select_option
-                data:
-                  entity_id: "{{ input_select }}"
-                  option: "awake"
-          # IF back to bed or just laid down for 5 minutes -> sleeping
-          - conditions: "{{ trigger.to_state.state in ['back to bed', 'just laid down'] }}"
-            sequence:
-              service: input_select.select_option
-              data:
-                entity_id: "{{ input_select }}"
-                option: "sleeping"
+          new: "{{ trigger.to_state.state }}"
+      - service: input_select.select_option
+        data:
+          entity_id: "{{ input_select }}"
+          option: >
+            {% if new == 'on' and is_state(input_select, 'just got up') %}
+              back to bed
+            {% elif new == 'on' %}
+              just laid down
+            {% elif new == 'off' %}
+              just got up
+            {% elif new == 'just got up' %}
+              awake
+            {% elif new in ['back to bed', 'just laid down'] %}
+              sleeping
+            {% endif %}
 ```
 
 These sleep states are going to be used later in other automations, e.g. lighting control, sleep/wakeup scenes etc.
@@ -1445,9 +1430,9 @@ automation:
       in_bed_states: ['just laid down', 'sleeping', 'back to bed']
     trigger:
       - platform: state
-        entity_id: input_select.sleep_state_dimitri
+        entity_id: input_select.sleep_state_him
       - platform: state
-        entity_id: input_select.sleep_state_sabrina
+        entity_id: input_select.sleep_state_her
     action:
       - choose:
           # IF everyone just laid down/sleeping/back to bed -> turn on sleep mode

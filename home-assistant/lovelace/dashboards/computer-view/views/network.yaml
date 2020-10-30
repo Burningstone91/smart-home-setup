@@ -263,14 +263,14 @@ cards:
                   **NETWORK PI**<br>
                   **Model:**
                   Raspberry Pi 3 Model B Rev 1.2<br>
-                  **IP:**
-                  10.10.0.8<br>
                   **OS:**
                   Raspbian 10 Buster<br>
                   **Updates:**
                   {{ states('sensor.updates_pi_network') }}<br>
                   **Uptime:**
-                  {{ states('sensor.uptime_pi_network') }}
+                  {{ states('sensor.uptime_pi_network') }}<br>
+                  **Letztes Backup:**
+                  {{ states('sensor.last_backup_network_pi') }}<br>
                 style: |
                   ha-card {
                     color: teal;

@@ -214,11 +214,13 @@ cards:
                       **SSD:** 64GB<br>
                       **Ubuntu:** 18.04.3 LTS<br>
                       **Uptime:**
-                      {{ states('sensor.uptime_home_assistant_vm') }}
+                      {{ states('sensor.uptime_home_assistant_vm') }}<br>
+                      **Letztes Backup:**
+                      {{ states('sensor.last_backup_home_assistant_vm') }}
                     style: |
                       ha-card {
                         color: teal;
-                        padding-top: 20px;
+                        padding-top: 10px;
                       }
               ####################################################
               #                  VM Resources                    #
