@@ -507,7 +507,7 @@ This file is going to be extended later on with more functionality.
 ## Presence Detection <a name="presence-detection" href="https://github.com/Burningstone91/smart-home-setup#presence-detection"></a>
 
 ### Basic Explanation of Setup
-I use the [person integration](https://www.home-assistant.io/integrations/person/) from Home Assistant to combine a bluetooth device tracker (device attached to my keys) and a gps device tracker (my phone). The docs give a detailed explanation on how the location is determined when multiple device trackers are used. Long story short, when I'm at home, my position is determined first by keys and then by phone. When I'm not home, my position is determined first by phone then by keys.
+I use the [person integration](https://www.home-assistant.io/integrations/person/) from Home Assistant to combine a bluetooth device tracker (FitBit), a magnet attached to the keys in combination with a Xiaomi Door sensor (awesome idea I got from James Callaghan [Smart key hook](https://github.com/jcallaghan/home-assistant-config/issues/141) and a GPS device tracker (my phone). The docs give a detailed explanation on how the location is determined when multiple device trackers are used. Long story short, when I'm at home, my position is determined first by keys and the bluetooth device trackers and then by the GPS location of the phone. When I'm not home, my position is determined first by the GPS location of the phone, then by keys and the bluetooth device trackers.
 
 I use the phone device tracker together with the [zone integration](https://www.home-assistant.io/integrations/zone/) from Home Assistant to show in which place (work, grocery store, etc.) we are, when we are not home. This is reflected in the state of the person.
 
@@ -515,7 +515,7 @@ And I use the bluetooth device tracker together with [Room Assistant](https://ww
 
 I'm using the bluetooth device trackers now for around 2 years and I did not have a single false trigger in this time. Home Assistant marks us as home before we open the front door and marks us as left 3 min after we left the house.
 
-I adapted the method from Phil Hawthorne for [making presence detection not so binary](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/) in an AppDaemon app. This is used for example when we leave the house and come back a few minutes later, that it will not trigger any arrival automations.
+I adapted the method from Phil Hawthorne for [making presence detection not so binary](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). This is used for example when we leave the house and come back a few minutes later, that it will not trigger any arrival automations.
 
 I also have a presence state for the house which can be "someone home", "everyone home", "no one home" or "vacation". 
 
@@ -545,7 +545,7 @@ I'm going to explain each part of the presence detection system in detail includ
 
 <tr><td colspan="2">
 The Nut Mini's are attatched to our keys and I'm soon going to buy some Fitness Bands to replace them. They send a Bluetooth Low Energy (BLE) signal every 3 seconds. There's one Raspberry Pi's as central as possible in every room that I want to automate and one close to the entrance door. The Pi's run <a href="https://companion.home-assistant.io/">Room Assistant</a>, which catches these signals and determines the location of the Nut Mini based on the strength of the signal. It talks to Home Assistant through MQTT and if discovery is enabled it will be detected automatically.
-Due to the fact that only device tracker entities can be linked to a person, I use an AppDaemon app that updates the status of an MQTT device tracker whenever the state of the keys changes.
+Due to the fact that only device tracker entities can be linked to a person, I use an automation that updates the status of an MQTT device tracker whenever the state of the keys changes.
 </td></tr>
 </table>
 
@@ -764,171 +764,8 @@ Now run the Ansible playbook again to update the configuration with:
 ansible-playbook -i hosts.yml -u pi room-assistant.yml
 ```
 
-#### Base Apps for Presence Detection (AppDaemon)
-Now that we have sensors in place, which show in which room a person is in. We are going to use this to create a room presence detection app. I use AppDaemon a lot to create entities that only exist in AppDaemon, not in Home Assistant as I only use them for automations. If I still need access to this information in Home Assistant, I create a sensor in AppDaemon and feed it with the missing information. Thanks @Odianosen25 for showing me this feature approach.
-For the room presence detection, we are going to create one app for areas, one app for persons, one app for the house and multiple apps to set different attributes of the persons, areas and the house based on the changes of the room presence sensors.
-
-In the AppDaemon directory should be a folder called "apps". All the following apps need to be created inside this directory. 
-
-##### Area
-We are going to start with the area app. The are app creates area entities that will have attributes for the persons (list of persons in area), the occupied state(True | False), the friendly name and the identifier.
-
-Create a new file called "area.py" -> [area.py](appdaemon/apps/area.py)
-
-Now we are going to create a configuration file to set up the areas in the house. Create a file for each area e.g. "office.yaml".
-
-The configuration parameters are as follows:
-
-key | optional | type | default | description
--- | -- | -- | -- | --
-`module` | False | string | area | The module name of the app.
-`class` | False | string | Area | The name of the Class.
-`area` | False | string | | The identifier for the area.
-`attributes` | True | dict | | The attributes for the area.
-`occupancy_entities` | True | dict | | Dict of entity and "on" state for occupancy.
-
-Attributes configuration:
-key | optional | type | default | description
--- | -- | -- | -- | --
-`friendly_name` | True | string | | The friendly name of the area.
-
-Occupancy Entities configuration:
-You can add entities and their corresponding "on" state in the config for an area. These will then be included when determining the occupancy of the room.
-
-E.g. I want the area to be occupied when the TV (switch.tv_office) in the office is on.
-So I add the following to the area config for the office:
-
-```yaml
-  occupancy_entities:
-    switch.tv_office: "on"
-```
-
-The complete office area config then looks like this:
-
-```yaml
-office:
-  module: area
-  class: Area
-  area: office
-  attributes:
-    friendly_name: Büro
-  occupancy_entities:
-    switch.tv_office: "on"
-```
-
-Now we have an entity for each area configured this way, which exist only in AppDaemon and which we are going to use later in other apps and automations.
-
-##### Person
-Next the "person" app. The person app creates person entities that will have attributes for the home state (True | False), the non-binary-presence state (just_left | away | just_arrived | home | extended_away), the full name, the identifier and notifiers belonging to this person. 
-
-Create a new file called "person.py" -> [person.py](appdaemon/apps/person.py)
-
-This app combines different factors to determine the occupancy of the room. I use this to turn off lights/devices once a room is not occupied anymore. A motion sensor alone is not sufficient, as it fails to detect motion when sitting/lying still. The app checks the persons in the room, whether motion has been detected (this is set by the motion light app later on) and whether any of the specified "occupancy" entities is "on". I still use the motion detector to turn the lights on because if I stay in the hallway close to a room, sometimes the room sensor shows me inside the room, even though I might just be standing there playing with the dog or whatever and then I don't want the lights to turn on. 
-
-Now we are going to create a configuration file to set up the persons in the household. Create a file called "persons.yaml".
-
-The configuration parameters are as follows:
-
-key | optional | type | default | description
--- | -- | -- | -- | --
-`module` | False | string | person | The module name of the app.
-`class` | False | string | Person | The name of the Class.
-`person` | False | string | | The short name of the person.
-`attributes` | False | dict | | The attributes for the person.
-
-Attributes configuration:
-key | optional | type | default | description
--- | -- | -- | -- | --
-`full_name` | False | string | | The full name of the person.
-`notifiers` | True | list | | List of notifier entities belonging to this person.
-
-
-Example:
-
-```yaml
-dimitri:
-  module: person
-  class: Person
-  person: Dimitri
-  attributes:
-    full_name: Dimitri Li
-```
-
-Now you have one entity for each person configured this way, which exists only in AppDaemon and which we are going to use later in other apps and automations.
-
-##### House
-Next the "house" app. The house app creates house entities that will have attributes for the persons (list of persons in house), presence state (someone_home | nobody_home | vacation | everyone_home), the occupied state(True | False), the friendly name and the identifier.
-
-Create a new file called "house.py"  -> [house.py](appdaemon/apps/house.py)
-
-Now we are going to create a configuration file to set up the persons in the household. Create a file called "house.yaml".
-
-The configuration parameters are as follows:
-
-key | optional | type | default | description
--- | -- | -- | -- | --
-`module` | False | string | house | The module name of the app.
-`class` | False | string | House | The name of the Class.
-`id` | False | string | | The identifier for the house.
-`attributes` | True | dict | | The attributes for the house.
-
-Attributes configuration:
-key | optional | type | default | description
--- | -- | -- | -- | --
-`friendly_name` | True | string | | The friendly name of the house.
-
-
-Example:
-
-```yaml
-house:
-  module: house
-  class: House
-  id: home
-  attributes:
-    friendly_name: Wohnung
-  
-```
-Now we have an entity for the house, which exists only in AppDaemon and which we are going to use later in other apps and automations.
-
-##### Presence
-Next the presence apps, which set the different attributes of the areas, persons and the house.
-
-###### Room Presence
-The room presence app sets the area for each person entity and sets the person in the corresponding area entity whenever the room presence sensor changes state to a new state for 5 seconds. 
-
-Create a file called "presence.py" [Class RoomPresence - presence.py](appdaemon/apps/presence.py):
-
-Create a corresponding configuration file called "presence.yaml" and add the following:
-
-```yaml
-room_presence_app:
-  module: presence
-  class: RoomPresence
-  sensors:
-    dimitri: sensor.room_presence_dimitri
-    sabrina: sensor.room_presence_sabrina
-```
-
-In the sensor section put the person_id (configured in the person app) and the corresponding room presence sensor. 
-
-###### Person Presence
-The person presence app sets the home state of the person to True or False based on the area the person is currently in. If the area is "not_home" for 3 minutes, the home state is set to False.
-
-Add another class in the "presence.py"  -> [Class PersonPresence - presence.py](appdaemon/apps/presence.py)
-
-In the corresponding configuration file called "presence.yaml" and add the following:
-
-```yaml
-person_presence_app:
-  module: presence
-  class: PersonPresence
-```
-
-The non binary presence state and the presence state of the house are coverd in a later topic.
-
 #### MQTT Device Tracker
-Because the sensor can not be used with the person integration, we use the [MQTT device tracker integration](https://www.home-assistant.io/integrations/device_tracker.mqtt/) and bind the resulting device tracker to the person integration. 
+Because the only device trackers can be used with the person integration, we use the [MQTT device tracker integration](https://www.home-assistant.io/integrations/device_tracker.mqtt/) and bind the resulting device tracker to the person integration. 
 
 To add an MQTT device tracker, create a file called "persons.yaml" in the folder "packages". This file will be used for all configuration related to persons.
 
@@ -936,110 +773,84 @@ Add the following to the file:
 
 ```yaml
 device_tracker:
-  platform: mqtt
-  devices:
-    room_presence_dimitri: 'location/dimitri_room_presence'
-    room_presence_sabrina: 'location/sabrina_room_presence'
-  source_type: bluetooth_le
+  - platform: mqtt
+    devices:
+      room_presence_dimitri: 'room_presence_device_tracker/him'
+      room_presence_sabrina: 'room_presence_device_tracker/her'
+      keys_dimitri: 'keys_device_tracker/him'
+      keys_sabrina: 'keys_device_tracker/her'
+    source_type: bluetooth_le
 ```
 
-This will create two device trackers. By publishing "home" or "not_home" to the MQTT topic 'location/dimitri_room_presence', the state of "device_tracker.room_presence_dimitri" will be updated accordingly.
+This will create four device trackers. The device tracker can be updated by publishing "home" or "not_home" to the respective MQTT topic
 
-Restart Home Assistant. There should be two new device_trackers under "Developer Tools" -> "States".
+Restart Home Assistant. There should be four new device_trackers under "Developer Tools" -> "States".
 
-#### Device Tracker Update App (AppDaemon)
-Create a python dictionary that contains the base configuration of the home. Such as the presence state of the house, the notifiers of the phones etc. This dictionary will be appended later on when more apps are added.
+#### Device Tracker Update Automation
+We need one automation to update the device tracker for the keys and one automation to update the device tracker for the FitBits (Room Presence Tracker).
 
-In the AppDaemon directory should be a folder called "apps". Create a new file called "globals.py" inside this folder. Add the following to this file:
-
-```python
-PERSONS = {
-    "Dimitri": {
-        "sensor_room_presence": "sensor.dimitri_room_presence",
-        "topic_room_device_tracker": "location/dimitri_room_presence",
-    },
-    "Sabrina": {
-        "sensor_room_presence": "sensor.sabrina_room_presence",
-        "topic_room_device_tracker": "location/sabrina_room_presence",
-    },
-}
-```
-where keys_presence is the sensor that shows the location of the keys (sensor created by room-assistant) and keys_topic is the MQTT topic that controls the MQTT device tracker that has been created in the previous step.
-
-Now add a file called "presence.py" to the same directory and add the following:
-
-```python
-from appbase import AppBase, APP_SCHEMA
-from globals import PERSONS
-
-class BleDeviceTrackerUpdater(AppBase):
-    """Define a base class for the BLE updater."""
-
-    def configure(self):
-        """Configure."""
-        for person, attribute in PERSONS.items():
-            presence_sensor = attribute['sensor_room_presence']
-            topic = attribute['topic_room_device_tracker']
-
-            # set initial state of device tracker
-            if self.hass.get_state(presence_sensor) =="not_home":
-                self.update_device_tracker(topic, "not_home")
-            else:
-                self.update_device_tracker(topic, "home")
-
-            # set device tracker to not_home after 5 minutes of no activity
-            self.hass.listen_state(
-                self.on_presence_change, 
-                presence_sensor,
-                new="not_home",
-                duration=5*60,
-                target_state="not_home",
-                topic=topic,
-            )
-
-            # update state of device tracker whenever presence sensor changes
-            self.hass.listen_state(
-                self.on_presence_change, 
-                presence_sensor,
-                topic=topic,
-            )
-
-    def on_presence_change(self, entity, attribute, old, new, kwargs):
-        """Take action on presence change."""
-        if kwargs.get("target_state") == "not_home":
-            self.update_device_tracker(kwargs["topic"], "not_home")
-        elif new != "not_home":
-            self.update_device_tracker(kwargs["topic"], "home")
-
-    def update_device_tracker(self, topic, target_state):
-        """Update the location of the MQTT device tracker."""
-        self.mqtt.mqtt_publish(
-            topic,
-            target_state,
-            namespace="mqtt",
-        )
-```
-This looks complicated for such a simple task, however the app is prepared to be extended later on.
-
-At the top we import the person information we created in the globals.py file with:
-
-```python
-from globals import PERSONS
-```
-
-In the configure section it loops through the dictionary of each person and checks the presence sensor and the topic. Then it initially sets the state of the MQTT device tracker by checking the state of the presence sensor. Afterwards there's one listener that triggers the "on_presence_change" method when the presence sensor is "not_home" for 5 minutes (duration=5*60) and there's another listener that triggers the "on_presence_change" method whenever the presence sensor changes state.
-The "on_presence_change" method checks if the target_state "not_home" has been provided. In this case it updates the MQTT device tracker to "not_home", otherwise it checks the value of the presence sensor and if it is something else than "not_home" it updates the MQTT device tracker to "home"
-
-Finally create a file called "presence.yaml" in the apps directory and add the following:
+The automaiton to update the MQTT device tracker when the keys are attached/detached to/from the hook.
 
 ```yaml
-ble_tracker_app:
-  module: presence
-  class: BleDeviceTrackerUpdater
+automation:
+  # Update device tracker when keys input boolean changes
+  - id: update_keys_device_tracker
+    alias: "Device Tracker für Schlüssel aktualisieren"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.keys_him
+      - platform: state
+        entity_id: binary_sensor.keys_her
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "keys_device_tracker/{{ trigger.to_state.entity_id.split('_')[-1] }}"
+          payload_template: >-
+            {{ 'home' if trigger.to_state.state == 'on' else 'not_home'}}
 ```
-This will create an app called "ble_tracker_app" using the presence module we just created.
 
-At the end of all this we should now have for each person a device tracker that shows whether the person is home or not and a sensor that shows in which room the person is in case the person is home.
+The second automation to update the device tracker for the room presence trackers.
+
+```yaml
+  # Update device tracker when room presence sensors changes
+  - id: update_room_presence_device_tracker
+    alias: "Device Tracker für Fitbit aktualisieren"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: sensor.dimitri_room_presence
+        to: 'not_home'
+        for:
+          minutes: 3
+      - platform: state
+        entity_id: sensor.dimitri_room_presence
+        for:
+          seconds: 5
+      - platform: state
+        entity_id: sensor.sabrina_room_presence
+        to: 'not_home'
+        for:
+          minutes: 3
+      - platform: state
+        entity_id: sensor.sabrina_room_presence
+        for:
+          seconds: 5
+    condition: 
+      - "{{ trigger.from_state.state != trigger.to_state.state }}"
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "room_presence_device_tracker/{{ trigger.to_state.entity_id.split('.')[1].split('_')[0] }}"
+          payload_template: >-
+            {% if trigger.to_state.state == 'not_home' and trigger.for.seconds == 3 * 60 %}
+              not home
+            {% else %}
+              home
+            {% endif %}
+```
+
+This automaiton will mark the device as not home when the sensor shows "not_home" for 3 minutes and home otherwise. I added a condition that the previous state should not be the same as the new state, in order to avoid continuously send the home message when the distance attribute of the room presence sensor changes state.
 
 </p>
 </details>
@@ -1070,10 +881,7 @@ I have one user per device that access Home Assistant in order to serve differen
 #### Remote Access Setup (Nabu Casa)
 Setup Nabu Casa by following the official instructions [here](https://www.nabucasa.com/config/) and [here](https://www.nabucasa.com/config/remote/). Home Assistant should now be accessible outside the network through the address that has been generated in the setup of Nabu Casa, e.g. https://abcdefghijklmnopqrstuvwxyz.ui.nabu.casa
 
-
 #### Configure separate internal and external URL
-UPDATE: Since version 0.110.x an internal and extenal url can be configured separately. This allows for easier configuration for certain more complex integrations.
-##### Configure via UI
 First enable "advanced mode" by clicking on your username in the sidebar. Toggle the setting "Advanced Mode".
 Now go to "Configuration" then to "General". Enter the internal and external url respectively e.g.
 
@@ -1117,7 +925,7 @@ I structure the name of my entities like this, domain.what_where or domain.what_
 
 You can [customize](https://www.home-assistant.io/docs/configuration/customizing-devices/) entities through the UI or through YAML. For lots of entites, especially similar entities, it's way easier and faster to do this through customization  in YAML. I use this for setting a friendly_name, icon, device_class and entity_picture where applicable. 
 
-Here's my customization section for all entities that are part of the presence detection setup. I put this in the package persons.yaml:
+Here's an example from the customization section for some entities that are part of the presence detection setup. I put this in the package persons.yaml:
 
 ```yaml
 homeassistant:
@@ -1127,7 +935,6 @@ homeassistant:
       icon: mdi:home
     person.dimitri:
       friendly_name: Dimitri
-      entity_picture: /local/person_pictures/dimitri_home.jpg
       icon: mdi:account
     sensor.battery_level_phone_dimitri:
       friendly_name: Handy Dimitri
@@ -1145,7 +952,6 @@ homeassistant:
       icon: mdi:office-building
     person.sabrina:
       friendly_name: Sabrina
-      entity_picture: /local/person_pictures/sabrina_home.jpg
       icon: mdi:account
     device_tracker.room_presence_sabrina:
       friendly_name: Schlüssel Sabrina
@@ -1161,38 +967,153 @@ To create an additional person, click on "Configuration" in the sidebar of Home 
 #### Binding Device Trackers to Persons
 To bind a device tracker to a person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Click on the person you want to assign the device trackers to. In the field below "Select the devices that belong to this person" pick one of the device trackers, a second field to choose a device will appear, choose the second device tracker and then press "Update" in the bottom right.
 
-### Make Presence Detection not so binary (AppDaemon)
+### Make Presence Detection not so binary
 This is based on a method of Phil Hawthorne, more details can be found in his tutorial [Making Home Assistant's Presence Detection not so Binary](https://philhawthorne.com/making-home-assistants-presence-detection-not-so-binary/). At the end of this part the state of the person entities is going to have the states "just left", "away" "extended away", "just arrived" and "home", instead of just "home" and "not_home". Like this we can avoid an arriving home automation getting triggered, when a person just left quickly for getting some bread at the bakery.
 
 <details><summary>Step-by-step Guide</summary>
 <p>
 
-The non binary presence app sets the state of the person to "just_left", "just_arrived", "home", "away" or "extended away" based on the room persons home state. 
+The non binary presence automation sets the state of the person to "just_left", "just_arrived", "at home", "away" or "extended away" based on the room persons home state. 
 
-Add another class in the "presence.py" -> [Class NonBinaryPresence - presence.py](appdaemon/apps/presence.py)
-
-In the corresponding configuration file called "presence.yaml" and add the following:
+First create an input_select for each person for the non binary states.
 
 ```yaml
-non_binary_presence_app:
-  module: presence
-  class: NonBinaryPresence
+input_select:
+  presence_state_him:
+    name: Presence Him
+    options:
+      - just arrived
+      - just left
+      - at home
+      - away
+      - extended away
+  presence_state_her:
+    name: Presence Her
+    options:
+      - just arrived
+      - just left
+      - at home
+      - away
+      - extended away
 ```
 
-The house presence app sets the state of the house to "someone_home", "nobody_home", "everyone_home" or "vacation" based on the persons peresence state.
-
-Add another class in the "presence.py" -> [Class HousePresence - presence.py](appdaemon/apps/presence.py):
-
-In the corresponding configuration file called "presence.yaml" and add the following:
+And the automation:
 
 ```yaml
-house_presence_app:
-  module: presence
-  class: HousePresence
-  house_id: home
+# Sets the non-binary presence state of the persons
+  - id: set_person_non_binary_presence_state
+    alias: "Detaillierten Präsenzstatus bestimmen"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: person.him
+      - platform: state
+        entity_id: person.her
+      - platform: state
+        entity_id: input_select.presence_state_him
+        to: "away"
+        for:
+          hours: 24
+      - platform: state
+        entity_id: input_select.presence_state_him
+        for:
+          minutes: 5
+      - platform: state
+        entity_id: input_select.presence_state_her
+        to: "away"
+        for:
+          hours: 24
+      - platform: state
+        entity_id: input_select.presence_state_her
+        for:
+          minutes: 5
+    action:
+      - variables:
+          person: "{{ trigger.to_state.entity_id.split('.')[1].split('_')[-1] }}"
+          input_select: "input_select.presence_state_{{ person }}"
+          new: "{{ trigger.to_state.state }}"
+      - service: input_select.select_option
+        data:
+          entity_id: "{{ input_select }}"
+          option: >
+            {% if (new == 'home' and is_state(input_select, 'just left')) or (new == 'just arrived' and trigger.for.seconds == 5 * 60) %}
+              at home
+            {% elif new == 'home' %}
+              just arrived
+            {% elif trigger.from_state.state == 'home' and new != 'home' %}
+              just left
+            {% elif new == 'just left' and trigger.for.seconds == 5 * 60 %}
+              away
+            {% elif trigger.for.seconds == 24 * 60 * 60 %}
+              extended away
+            {% endif %}
 ```
 
-Where "house_id" is the id you configured in the house app previously.
+The house presence automation sets the state of the house to "someone_home", "nobody_home", "everyone_home" or "vacation" based on the persons peresence state.
+
+Create an input_select for the house.
+
+```yaml
+  presence_state_house:
+    name: Präsenz zu Hause
+    options:
+      - someone home
+      - nobody home
+      - everyone home
+      - vacation
+```
+And groups for all persons and all non-binary presence input selects.
+
+```yaml
+group:
+  family:
+    name: Familie
+    entities:
+      - person.him
+      - person.her
+  presence_input_selects:
+    name: Präsenz Input Selektoren
+    entities:
+      - input_select.presence_state_him
+      - input_select.presence_state_her
+
+```
+
+And the automation to set it.
+
+```yaml
+- id: set_house_non_binary_presence_state
+    alias: "Haus Präsenzstatus bestimmen"
+    mode: queued
+    trigger:
+      - platform: state
+        entity_id: input_select.presence_state_him
+      - platform: state
+        entity_id: person.him
+      - platform: state
+        entity_id: input_select.presence_state_her
+      - platform: state
+        entity_id: person.her
+      - platform: homeassistant
+        event: start
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.presence_state_house
+          option: >
+            {% set persons_count = expand('group.family') | length %}
+            {% set pers_home_cnt = expand('group.family') | selectattr('state','eq','home') | list | length %}
+            {% set pers_vacation_cnt = expand('group.presence_input_selects') | selectattr('state','eq','extended away') | list | length %}
+            {% if pers_home_cnt == persons_count %}
+              everyone home
+            {% elif pers_vacation_cnt == persons_count %}
+              vacation
+            {% elif pers_home_cnt == 0 %}
+              nobody home
+            {% else %}
+              someone home
+            {% endif %}
+```
 
 Now the the state of the persons non-binary presence and the presence state of the house will behave as follows:
 

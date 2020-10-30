@@ -5,16 +5,197 @@ person:
 device_tracker:
   - platform: mqtt
     devices:
-      room_presence_dimitri: 'location/dimitri_room_presence'
-      room_presence_sabrina: 'location/sabrina_room_presence'
+      room_presence_dimitri: 'room_presence_device_tracker/dimitri'
+      room_presence_sabrina: 'room_presence_device_tracker/sabrina'
+      keys_dimitri: 'keys_device_tracker/dimitri'
+      keys_sabrina: 'keys_device_tracker/sabrina'
     source_type: bluetooth_le
 
+# Person input booleans -> will be replaced with key magnet sensor
+input_boolean:
+  keys_dimitri:
+    name: Schlüssel Dimitri
+  keys_sabrina:
+    name: Schlüssel Sabrina
+
+input_select:
+  # Non Binary Presence state Dimitri
+  presence_state_dimitri:
+    name: Präsenz Dimitri
+    options:
+      - gerade angekommen
+      - gerade gegangen
+      - zu Hause
+      - weg
+      - lange weg
+  # Non Binary Presence state Sabrina
+  presence_state_sabrina:
+    name: Präsenz Sabrina
+    options:
+      - gerade angekommen
+      - gerade gegangen
+      - zu Hause
+      - weg
+      - lange weg
+  # Home Presence state
+  presence_state_house:
+    name: Präsenz zu Hause
+    options:
+      - Jemand zu Hause
+      - Niemand zu Hause
+      - Alle zu Hause
+      - Ferien
+
+automation:
+  # Update device tracker when keys input boolean changes
+  - id: update_keys_device_tracker
+    alias: "Device Tracker für Schlüssel aktualisieren"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: input_boolean.keys_dimitri
+      - platform: state
+        entity_id: input_boolean.keys_sabrina
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "keys_device_tracker/{{ trigger.to_state.entity_id.split('_')[-1] }}"
+          payload_template: >-
+            {{ 'home' if trigger.to_state.state == 'on' else 'not_home'}}
+  
+  # Update device tracker when room presence sensors changes
+  - id: update_room_presence_device_tracker
+    alias: "Device Tracker für Fitbit aktualisieren"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: sensor.dimitri_room_presence
+        to: 'not_home'
+        for:
+          minutes: 3
+      - platform: state
+        entity_id: sensor.dimitri_room_presence
+        for:
+          seconds: 5
+      - platform: state
+        entity_id: sensor.sabrina_room_presence
+        to: 'not_home'
+        for:
+          minutes: 3
+      - platform: state
+        entity_id: sensor.sabrina_room_presence
+        for:
+          seconds: 5
+    condition: 
+      - "{{ trigger.from_state.state != trigger.to_state.state }}"
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "room_presence_device_tracker/{{ trigger.to_state.entity_id.split('.')[1].split('_')[0] }}"
+          payload_template: >-
+            {% if trigger.to_state.state == 'not_home' and trigger.for.seconds == 3 * 60 %}
+              not home
+            {% else %}
+              home
+            {% endif %}
+  
+  # Sets the non-binary presence state of the persons
+  - id: set_person_non_binary_presence_state
+    alias: "Detaillierten Präsenzstatus bestimmen"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: person.dimitri
+      - platform: state
+        entity_id: person.sabrina
+      - platform: state
+        entity_id: input_select.presence_state_dimitri
+        to: "weg"
+        for:
+          hours: 24
+      - platform: state
+        entity_id: input_select.presence_state_dimitri
+        for:
+          minutes: 5
+      - platform: state
+        entity_id: input_select.presence_state_sabrina
+        to: "weg"
+        for:
+          hours: 24
+      - platform: state
+        entity_id: input_select.presence_state_sabrina
+        for:
+          minutes: 5
+    action:
+      - variables:
+          person: "{{ trigger.to_state.entity_id.split('.')[1].split('_')[-1] }}"
+          input_select: "input_select.presence_state_{{ person }}"
+          new: "{{ trigger.to_state.state }}"
+      - service: input_select.select_option
+        data:
+          entity_id: "{{ input_select }}"
+          option: >
+            {% if (new == 'home' and is_state(input_select, 'gerade gegangen')) or (new == 'gerade angekommen' and trigger.for.seconds == 5 * 60) %}
+              zu Hause
+            {% elif new == 'home' %}
+              gerade angekommen
+            {% elif trigger.from_state.state == 'home' and new != 'home' %}
+              gerade gegangen
+            {% elif new == 'gerade gegangen' and trigger.for.seconds == 5 * 60 %}
+              weg
+            {% elif trigger.for.seconds == 24 * 60 * 60 %}
+              lange weg
+            {% endif %}
+
+  # Sets the non-binary presence state of the house
+  - id: set_house_non_binary_presence_state
+    alias: "Haus Präsenzstatus bestimmen"
+    mode: queued
+    trigger:
+      - platform: state
+        entity_id: input_select.presence_state_dimitri
+      - platform: state
+        entity_id: person.dimitri
+      - platform: state
+        entity_id: input_select.presence_state_sabrina
+      - platform: state
+        entity_id: person.sabrina
+      - platform: homeassistant
+        event: start
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.presence_state_house
+          option: >
+            {% set persons_count = expand('group.family') | length %}
+            {% set pers_home_cnt = expand('group.family') | selectattr('state','eq','home') | list | length %}
+            {% set pers_vacation_cnt = expand('group.presence_input_selects') | selectattr('state','eq','lange weg') | list | length %}
+            {% if pers_home_cnt == persons_count %}
+              Alle zu Hause
+            {% elif pers_vacation_cnt == persons_count %}
+              Ferien
+            {% elif pers_home_cnt == 0 %}
+              Niemand zu Hause
+            {% else %}
+              Jemand zu Hause
+            {% endif %}
+            
 group:
   room_presence_sensors:
     name: Room Presence Sensoren
     entities:
       - sensor.sabrina_room_presence
       - sensor.dimitri_room_presence
+  family:
+    name: Familie
+    entities:
+      - person.dimitri
+      - person.sabrina
+  presence_input_selects:
+    name: Präsenz Input Selektoren
+    entities:
+      - input_select.presence_state_dimitri
+      - input_select.presence_state_sabrina
 
 # GPS Presence Tracker (Phone App)
 mobile_app:
@@ -48,19 +229,39 @@ homeassistant:
       friendly_name: Standort Dimitri
       icon: mdi:map-marker
     device_tracker.room_presence_dimitri:
+      friendly_name: Raum Tracker Dimitri
+      icon: mdi:bluetooth
+    device_tracker.phone_dimitri_unifi:
+      friendly_name: Handy Dimitri
+      icon: mdi:phone
+    device_tracker.keys_dimitri:
       friendly_name: Schlüssel Dimitri
       icon: mdi:key
+    sensor.dimitri_room_presence:
+      friendly_name: Raum Dimitri
     zone.work_dimitri:
       friendly_name: Arbeit
       icon: mdi:office-building
-    sensor.dimitri_room_presence:
-      friendly_name: Dimitri
-    sensor.sabrina_room_presence:
-      friendly_name: Sabrina
     # Sabrina
     person.sabrina:
       friendly_name: Sabrina
       icon: mdi:account
+    ## Presence
+    # device_tracker.gps_presence_sabrina:
+    #   friendly_name: Standort Sabrina
+    #   icon: mdi:map-marker
     device_tracker.room_presence_sabrina:
+      friendly_name: Raum Tracker Sabrina
+      icon: mdi:bluetooth
+    device_tracker.phone_sabrina_unifi:
+      friendly_name: Handy Sabrina
+      icon: mdi:phone
+    device_tracker.keys_sabrina:
       friendly_name: Schlüssel Sabrina
       icon: mdi:key
+    sensor.sabrina_room_presence:
+      friendly_name: Raum Sabrina
+    
+
+
+
