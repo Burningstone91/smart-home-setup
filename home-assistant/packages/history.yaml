@@ -4,6 +4,7 @@ recorder:
   include:
     domains:
       - person
+      - automation
     entity_globs:
       - sensor.temperature*
       - sensor.humidity*

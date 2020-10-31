@@ -212,7 +212,7 @@ cards:
                       **HOME ASSISTANT VM**<br>
                       **RAM:** 4GB<br>
                       **SSD:** 64GB<br>
-                      **Ubuntu:** 18.04.3 LTS<br>
+                      **OS:** Ubuntu 18.04.3 LTS<br>
                       **Uptime:**
                       {{ states('sensor.uptime_home_assistant_vm') }}<br>
                       **Letztes Backup:**

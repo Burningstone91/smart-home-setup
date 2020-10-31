@@ -1,0 +1,17 @@
+notify:
+  - platform: group
+    name: phones
+    services:
+      - service: mobile_app_phone_dimitri
+
+  - platform: smtp
+    name: evernote
+    server: smtp.gmail.com
+    port: 587
+    encryption: starttls
+    timeout: 15
+    username: !secret mail_address
+    password: !secret mail_password
+    sender: !secret mail_address
+    sender_name: Home Assistant
+    recipient: !secret evernote_mail

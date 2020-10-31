@@ -94,7 +94,7 @@ automation:
           topic: "room_presence_device_tracker/{{ trigger.to_state.entity_id.split('.')[1].split('_')[0] }}"
           payload_template: >-
             {% if trigger.to_state.state == 'not_home' and trigger.for.seconds == 3 * 60 %}
-              not home
+              not_home
             {% else %}
               home
             {% endif %}
@@ -145,6 +145,8 @@ automation:
               weg
             {% elif trigger.for.seconds == 24 * 60 * 60 %}
               lange weg
+            {% else %}
+              {{ states(input_select) }}
             {% endif %}
 
   # Sets the non-binary presence state of the house

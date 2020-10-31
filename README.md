@@ -2163,9 +2163,48 @@ Add the following in the `sensor:` section of the system_monitoring.yaml file:
     scan_interval: 3600
 ```
 To get the installed version:
-(To Do)
+TODO
 
 Restart Home Assistant.
+
+#### DeCONZ
+To get the installed and latest available version of DeCONZ we can use the [rest sensor integration](https://www.home-assistant.io/integrations/rest/). To get the current version of deCONZ you need to generate an API key. Detailed instructions on how to get an API key can be found in the [deCONZ REST API docs](https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/).
+
+Add the following in the `sensor:` section of the system_monitoring.yaml file:\
+Installed:
+```yaml  
+  - platform: rest
+    resource: http://ip-of-phoscon:8080/api/YOURAPIKEY/config
+    name: current_version_deconz
+    value_template: "{{ value_json.swversion }}"
+    scan_interval: 3600
+```
+Latest:
+```yaml  
+  - platform: rest
+    resource: https://api.github.com/repos/dresden-elektronik/deconz-rest-plugin/releases/latest
+    name: latest_version_deconz
+    value_template: >
+      {{ value_json.tag_name.strip('_stable').lstrip('V').replace('_','.').replace('0','') }}
+    scan_interval: 3600
+```
+
+#### ConBee II Firmware
+To get the current firmware of the ConBee II we can use the [rest sensor integration](https://www.home-assistant.io/integrations/rest/). This also needs an API key as described in the previous section.
+
+Add the following in the `sensor:` section of the system_monitoring.yaml file:\
+Installed:
+```yaml  
+  - platform: rest
+    resource: http://ip-of-phoscon:8080/api/YOURAPIKEY/config
+    name: current_firmware_conbee
+    value_template: "{{ value_json.fwversion }}"
+    scan_interval: 3600
+```
+
+To get the latest version of the ConBee II firmware I use a small AppDaemon app.
+
+TODO (add instructions for AppDaemon app)
 
 #### PiHole
 To get the installed and latest available version of Pi Hole we can use the [rest sensor integration](https://www.home-assistant.io/integrations/rest/).
@@ -2655,6 +2694,92 @@ docker-compose up -d
 ```
 
 Now you can manage your docker containers through the GUI at http://ip-of-home-assistant-server:9000.
+
+### Notify on Update available
+I use an automation that notifies me when an update is available. When my Desktop is running it will send a notification to my phone, otherwise it will send an E-Mail to Evernote./
+Sidenote: Evernote is an app to manage your notes and I use it heavily to organize all my projects in my personal life and in my work life as well. The E-Mail that is sent to Evernote contains instructions on where the note should be placed, this way it will show up when I do a daily review of my notes and I can plan the tasks that were sent by Home Assistant accordingly. I use this for non-critical notifications, like "the oven hasn't been cleaned for a long time" or "an update for Grafana is available". These are things that I want to have a note in my organization system and can plan to do when time allows it, instead of having a Home Assistant notification hanging around on my phone constantly reminding me about the task. This will trick your mind and make the task more important than it actually is, it occupies your mind until you finished the task and takes away space for other thoughts and ideas.
+
+I have a package for the configuration of the different notifiers and notifier groups called [notifiers.yaml](/home-assistant/packages/notifiers.yaml).
+
+Here's an example configuration for the mail notifier (which I use to send an Mail to Evernote) using the [SNMP integration](https://www.home-assistant.io/integrations/smtp/).
+
+```yaml
+notify:
+  - platform: smtp
+    name: evernote
+    server: smtp.gmail.com
+    port: 587
+    encryption: starttls
+    timeout: 15
+    username: !secret mail_address
+    password: !secret mail_password
+    sender: !secret mail_address
+    sender_name: Home Assistant
+    recipient: !secret evernote_mail
+```
+The notifier for the phone will automatically be created once you connected the Home Assistant Companion App on your phone with your Home Assistant instance. 
+
+The below automation triggers on all the different sensors that show that an update is available in different ways. The docker sensors show "Update Available", the Pi sensors have a number of updates available and the version sensors each have a latest and a current version sensor. If my Desktop is running, then the notification will be sent to my phone because then I may have time to do the update right now as I'm already using my computer. Otherwise it will be sent to my organization tool via Mail that I can plan it for later.
+
+```yaml
+  # Notify on update available
+  - id: notify_on_update_available
+    alias: "Benachrichtigung wenn ein Update verfügbar ist"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: 
+          - sensor.update_esphome
+          - sensor.update_mosquitto
+          - sensor.update_influxdb
+          - sensor.update_grafana
+          - sensor.update_portainer
+          - sensor.update_unifi_poller
+        to: "Update available"
+      - platform: state
+        entity_id: sensor.firmware_upgrade_nas
+        to: "Upgrade available"
+      - platform: numeric_state
+        entity_id: 
+          - sensor.updates_pi_bathroomsmall
+          - sensor.updates_pi_livingroom
+          - sensor.updates_pi_dressroom
+          - sensor.updates_pi_zigbee_zwave
+          - sensor.updates_pi_network
+          - sensor.updates_pi_office
+          - sensor.hacs
+        above: 1
+      - platform: template
+        value_template: >
+          {{ states('sensor.latest_version_deconz') > states('sensor.current_version_deconz') or
+              states('sensor.latest_firmware_conbee').lstrip('0x') > states('sensor.current_firmware_conbee').lstrip('0x') or 
+              states('sensor.latest_version_homeassistant') > states('sensor.current_version_homeassistant') or
+              states('sensor.latest_version_pihole_core') > states('sensor.current_version_pihole_core') or
+              states('sensor.latest_version_pihole_ftl') > states('sensor.current_version_pihole_ftl') or
+              states('sensor.latest_version_pihole_web') > states('sensor.current_version_pihole_web') }}
+    condition:
+      - "{{ trigger.from_state.state != trigger.to_state.state }}"
+      - "{{ trigger.from_state.state not in ['unavailable', 'unknown', 'None'] }}"
+      - "{{ trigger.to_state.state not in ['unavailable', 'unknown', 'None'] }}"
+    action:
+      - variables:
+          name: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }}"
+      - choose:
+          # IF desktop is running notify phone
+          - conditions: "{{ is_state('device_tracker.desktop_dimitri', 'home') }}"
+            sequence:
+              - service: notify.mobile_app_phone_dimitri
+                data:
+                  title: "{{ name }}"
+                  message: "Update available"
+        # ELSE create a task in Evernote
+        default:
+          - service: notify.evernote
+            data:
+              title: "{{ name }}  @1 Next #!Heute #@computer"
+              message: "Plan update"
+```
+
 
 </p>
 </details>

@@ -31,7 +31,7 @@ automation:
   # Sets the sleep state of the persons
   - id: set_person_sleep_state
     alias: "Bestimme Schlafstatus Personen"
-    mode: single
+    mode: parallel
     trigger:
       - platform: state
         entity_id: binary_sensor.bed_dimitri
@@ -53,61 +53,29 @@ automation:
       - variables:
           person: "{{ trigger.to_state.entity_id.split('_')[-1] }}"
           input_select: "input_select.sleep_state_{{ person }}"
+          new: "{{ trigger.to_state.state }}"
       - service: input_select.select_option
         data:
           entity_id: "{{ input_select }}"
           option: >
-            {% if trigger.to_state.state == 'on' and is_state(input_select, 'gerade aufgestanden') %}
+            {% if new == 'on' and is_state(input_select, 'gerade aufgestanden') %}
               zurück im Bett
-            {% elif trigger.to_state.state == 'on' %}
+            {% elif new == 'on' %}
               gerade hingelegt
-            {% elif trigger.to_state.state == 'off' %}
+            {% elif new == 'off' %}
               gerade aufgestanden
-            {% elif trigger.to_state.state == 'gerade aufgestanden' %}
+            {% elif new == 'gerade aufgestanden' %}
               wach
-            {% elif trigger.to_state.state in ['zurück im Bett', 'gerade hingelegt'] %}
+            {% elif new in ['zurück im Bett', 'gerade hingelegt'] %}
               schläft
+            {% else %}
+              {{ states(input_select) }}
             {% endif %}
-
-      # - choose:
-      #     # IF bed occupied -> just laid down/back to bed
-      #     - conditions: "{{ trigger.to_state.state == 'on' }}" 
-      #       sequence:
-      #         service: input_select.select_option
-      #         data:
-      #           entity_id: "{{ input_select }}"
-      #           option: >-
-      #             {% if is_state(input_select, 'gerade aufgestanden') %}
-      #               zurück im Bett
-      #             {% else %}
-      #               gerade hingelegt
-      #             {% endif %}
-          # # IF bed nod occupied -> just got up
-          # - conditions: "{{ trigger.to_state.state == 'off' }}"
-          #   sequence:
-          #     service: input_select.select_option
-          #     data:
-          #       entity_id: "{{ input_select }}"
-          #       option: "gerade aufgestanden"
-          # IF just got up for 5 minutes -> awake
-          # - conditions: "{{ trigger.to_state.state == 'gerade aufgestanden' }}"
-          #   sequence:
-          #     - service: input_select.select_option
-          #       data:
-          #         entity_id: "{{ input_select }}"
-          #         option: "wach"
-          # # IF back to bed or just laid down for 5 minutes -> sleeping
-          # - conditions: "{{ trigger.to_state.state in ['zurück im Bett', 'gerade hingelegt'] }}"
-          #   sequence:
-          #     service: input_select.select_option
-          #     data:
-          #       entity_id: "{{ input_select }}"
-          #       option: "schläft"
 
   # Enable sleep mode when everyone is in bed, disable when everyone is awake
   - id: set_sleep_mode_based_on_bed_occupancy
     alias: "Schlafmodus einschalten wenn alle im Bett und ausschalten wenn alle wach sind."
-    mode: single
+    mode: parallel
     variables:
       in_bed_states: ['gerade hingelegt', 'schläft', 'zurück im Bett']
     trigger:

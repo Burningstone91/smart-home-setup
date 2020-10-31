@@ -453,32 +453,59 @@ sensor:
         unit_of_measurement: 'Mbps'
         friendly_name: WAN Out USG Mbps
   #####################
-  # ConBee
+  # ConBee/DeCONZ
   #####################        
-  # Firmware
+  # ConBee Firmware
   - platform: rest
-    resource: http://10.10.40.50:8080/api/FF145BC200/config
+    resource: http://10.10.40.50:8080/api/7E79D96650/config
     name: current_firmware_conbee
     value_template: "{{ value_json.fwversion }}"
     scan_interval: 3600
-  # Software
+  # DeCONZ current
   - platform: rest
-    resource: http://10.10.40.50:8080/api/FF145BC200/config
+    resource: http://10.10.40.50:8080/api/7E79D96650/config
     name: current_version_deconz
     value_template: "{{ value_json.swversion }}"
     scan_interval: 3600
+  # DeCONZ latest
+  - platform: rest
+    resource: https://api.github.com/repos/dresden-elektronik/deconz-rest-plugin/releases/latest
+    name: latest_version_deconz
+    value_template: >
+      {{ value_json.tag_name.strip('_stable').lstrip('V').replace('_','.').replace('0','') }}
+    scan_interval: 3600
+  
   ######################
   # Last Boot to Uptime
   ######################
+  # Home Assistant VM
+  - platform: template
+    sensors:
+      uptime_home_assistant_vm:
+        friendly_name: Uptime Home Assistant VM
+        value_template: >
+          {%- set last_boot = states('sensor.last_boot_ha_vm') %}
+          {%- if last_boot in ['unavailable', 'unknown'] or last_boot is none %}
+            unknown
+          {%- else %}
+            {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+            {%- set time = uptime | int %}
+            {%- set minutes = ((time % 3600) // 60) %}
+            {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+            {%- set hours = ((time % 86400) // 3600) %}
+            {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+            {%- set days = (time // 86400) %}
+            {%- set days = '{}d '.format(days) if days > 0 else '' %}
+            {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+          {%- endif %}
   # Network Pi
   - platform: template
     sensors:
       uptime_pi_network:
         friendly_name: Uptime Pi Netzwerk
         value_template: >
-          {%- set x = states('sensor.time') %}
           {%- set last_boot = states('sensor.last_boot_pi_network') %}
-          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+          {%- if last_boot in ['unavailable', 'unknown'] or last_boot is none %}
             unknown
           {%- else %}
             {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
@@ -497,9 +524,8 @@ sensor:
       uptime_pi_zigbee_zwave:
         friendly_name: Uptime Pi ZigBee/ZWave
         value_template: >
-          {%- set x = states('sensor.time') %}
           {%- set last_boot = states('sensor.last_boot_pi_zigbee_zwave') %}
-          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+          {%- if last_boot in ['unavailable', 'unknown'] or last_boot is none %}
             unknown
           {%- else %}
             {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
@@ -518,9 +544,8 @@ sensor:
       uptime_pi_office:
         friendly_name: Uptime Pi Büro
         value_template: >
-          {%- set x = states('sensor.time') %}
           {%- set last_boot = states('sensor.last_boot_pi_office') %}
-          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+          {%- if last_boot in ['unavailable', 'unknown'] or last_boot is none %}
             unknown
           {%- else %}
             {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
@@ -539,9 +564,8 @@ sensor:
       uptime_pi_livingroom:
         friendly_name: Uptime Pi Wohnzimmer
         value_template: >
-          {%- set x = states('sensor.time') %}
           {%- set last_boot = states('sensor.last_boot_pi_livingroom') %}
-          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+          {%- if last_boot in ['unavailable', 'unknown'] or last_boot is none %}
             unknown
           {%- else %}
             {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
@@ -560,9 +584,8 @@ sensor:
       uptime_pi_dressroom:
         friendly_name: Uptime Pi Ankleidezimmer
         value_template: >
-          {%- set x = states('sensor.time') %}
           {%- set last_boot = states('sensor.last_boot_pi_dressroom') %}
-          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+          {%- if last_boot in ['unavailable', 'unknown'] or last_boot is none %}
             unknown
           {%- else %}
             {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
@@ -581,9 +604,8 @@ sensor:
       uptime_pi_bathroomsmall:
         friendly_name: Uptime Pi Kleines Bad
         value_template: >
-          {%- set x = states('sensor.time') %}
           {%- set last_boot = states('sensor.last_boot_pi_bathroomsmall') %}
-          {%- if last_boot in ['unavailable', 'unknown', 'none'] %}
+          {%- if last_boot in ['unavailable', 'unknown'] or last_boot is none %}
             unknown
           {%- else %}
             {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
@@ -622,7 +644,17 @@ sensor:
     headers:
       X-Api-Key: !secret healthcheck_api_key
     scan_interval: 1800
-    value_template: "{{ value_json.last_ping }}"
+    value_template: >
+      {%- set last_boot = value_json.last_ping %}
+      {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+      {%- set time = uptime | int %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
   ## Network Pi Status
   - platform: rest
     resource: !secret healthcheck_monthly_backup_network_pi
@@ -638,7 +670,17 @@ sensor:
     headers:
       X-Api-Key: !secret healthcheck_api_key
     scan_interval: 1800
-    value_template: "{{ value_json.last_ping }}"
+    value_template: >
+      {%- set last_boot = value_json.last_ping %}
+      {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+      {%- set time = uptime | int %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
   ## ZigBee Zwave Pi Status
   - platform: rest
     resource: !secret healthcheck_monthly_backup_zigbeezwave_pi
@@ -650,11 +692,21 @@ sensor:
   ## ZigBee Zwave Pi Last Backup
   - platform: rest
     resource: !secret healthcheck_monthly_backup_zigbeezwave_pi
-    name: Last Backup Home ZigBee Zwave Pi
+    name: Last Backup  ZigBee Zwave Pi
     headers:
       X-Api-Key: !secret healthcheck_api_key
     scan_interval: 1800
-    value_template: "{{ value_json.last_ping }}"
+    value_template: >
+      {%- set last_boot = value_json.last_ping %}
+      {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+      {%- set time = uptime | int %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
   ## Phone Dimitri Status
   - platform: rest
     resource: !secret healthcheck_weekly_backup_phone_dimitri
@@ -670,7 +722,17 @@ sensor:
     headers:
       X-Api-Key: !secret healthcheck_api_key
     scan_interval: 1800
-    value_template: "{{ value_json.last_ping }}"
+    value_template: >
+      {%- set last_boot = value_json.last_ping %}
+      {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+      {%- set time = uptime | int %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
   ## Phone Sabrina Status
   - platform: rest
     resource: !secret healthcheck_weekly_backup_phone_sabrina
@@ -686,7 +748,17 @@ sensor:
     headers:
       X-Api-Key: !secret healthcheck_api_key
     scan_interval: 1800
-    value_template: "{{ value_json.last_ping }}"
+    value_template: >
+      {%- set last_boot = value_json.last_ping %}
+      {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+      {%- set time = uptime | int %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
 
 
 #####################
@@ -713,9 +785,7 @@ input_select:
     icon: mdi:math-log
 
 automation:
-  ########################
   # Set Default Log Level
-  ########################
   - alias: "Set Default Log Level"
     initial_state: true
     trigger:
@@ -726,6 +796,65 @@ automation:
       data:
         level: "{{ trigger.to_state.state }}"
     mode: single
+  # Notify on update available
+  - id: notify_on_update_available
+    alias: "Benachrichtigung wenn ein Update verfügbar ist"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: 
+          - sensor.update_esphome
+          - sensor.update_mosquitto
+          - sensor.update_influxdb
+          - sensor.update_grafana
+          - sensor.update_portainer
+          - sensor.update_unifi_poller
+        to: "Update available"
+      - platform: state
+        entity_id: sensor.firmware_upgrade_nas
+        to: "Upgrade available"
+      - platform: numeric_state
+        entity_id: 
+          - sensor.updates_pi_bathroomsmall
+          - sensor.updates_pi_livingroom
+          - sensor.updates_pi_dressroom
+          - sensor.updates_pi_zigbee_zwave
+          - sensor.updates_pi_network
+          - sensor.updates_pi_office
+          - sensor.hacs
+        above: 1
+      - platform: template
+        value_template: >
+          {{ states('sensor.latest_version_deconz') > states('sensor.current_version_deconz') or
+              states('sensor.latest_firmware_conbee').lstrip('0x') > states('sensor.current_firmware_conbee').lstrip('0x') or 
+              states('sensor.latest_version_homeassistant') > states('sensor.current_version_homeassistant') or
+              states('sensor.latest_version_pihole_core') > states('sensor.current_version_pihole_core') or
+              states('sensor.latest_version_pihole_ftl') > states('sensor.current_version_pihole_ftl') or
+              states('sensor.latest_version_pihole_web') > states('sensor.current_version_pihole_web') }}
+    condition:
+      - "{{ trigger.from_state.state != trigger.to_state.state }}"
+      - "{{ trigger.from_state.state not in ['unavailable', 'unknown', 'None'] }}"
+      - "{{ trigger.to_state.state not in ['unavailable', 'unknown', 'None'] }}"
+    action:
+      - variables:
+          name: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }}"
+      - choose:
+          # IF desktop is running notify phone
+          - conditions: "{{ is_state('device_tracker.desktop_dimitri', 'home') }}"
+            sequence:
+              - service: notify.mobile_app_phone_dimitri
+                data:
+                  title: "{{ name }}"
+                  message: "Update verfügbar"
+        # ELSE create a task in Evernote
+        default:
+          - service: notify.evernote
+            data:
+              title: "{{ name }}  @1 Next #!Heute #@computer"
+              message: "Update planen"
+
+
+
 
 # Entity Customization
 homeassistant:
