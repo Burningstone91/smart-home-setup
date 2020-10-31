@@ -215,12 +215,14 @@ cards:
                       **OS:** Ubuntu 18.04.3 LTS<br>
                       **Uptime:**
                       {{ states('sensor.uptime_home_assistant_vm') }}<br>
+                      **Heart Beat:**
+                      {{ states('sensor.home_assistant_heartbeat') }}<br>
                       **Letztes Backup:**
                       {{ states('sensor.last_backup_home_assistant_vm') }}
                     style: |
                       ha-card {
                         color: teal;
-                        padding-top: 10px;
+                        padding-top: 2px;
                       }
               ####################################################
               #                  VM Resources                    #

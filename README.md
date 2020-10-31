@@ -2779,6 +2779,21 @@ The below automation triggers on all the different sensors that show that an upd
               title: "{{ name }}  @1 Next #!Heute #@computer"
               message: "Plan update"
 ```
+### Home Assistant Heartbeat (Healthchecks.io)
+I use [Healtchecks.io](https://healthchecks.io/) to create a heartbeat monitor for Home Assistant. This works by sending a ping to a specific URL from healthchecks.io through the [rest sensor integration](https://www.home-assistant.io/integrations/rest/) every x minutes. Healthchecks.io checks at the given interval whether the ping is received or not, and if not it will send a notification through one of the various integrations they have such as WhatsApp, E-Mail, Slack, etc. 
+
+Create a free account at [Healtchecks.io](https://healthchecks.io/). Add a new check, give it a meaninful name such as "Home Assistant Heartbeat" and note down the ping URL, they look like this: https://hc-ping.com/abcdef-gh2345-hgi234234 . Change the schedule to your needs, I use a period of 5 minutes and a grace period of 5 minutes, this means it checks every 5 minutes (period) and if a ping is not received 5 minutes (grace period) after it should it will send an alert.
+
+Now in Home Assistant add a Rest sensor like this:
+
+```yaml
+sensor:
+  - platform: rest
+    resource: healtchecks_ping_url
+    name: Home Assistant Heartbeat
+    scan_interval: 300
+```
+The scan interval must match with the period you set in the healtchecks.io check. Now the sensor will send a GET request to the healtchecks.io ping URL every 5 minutes.
 
 
 </p>
