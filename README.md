@@ -2795,6 +2795,53 @@ sensor:
 ```
 The scan interval must match with the period you set in the healtchecks.io check. Now the sensor will send a GET request to the healtchecks.io ping URL every 5 minutes.
 
+### Notification on Low Battery
+I use a simple automation to notify me when the battery level for any of the ZigBee or Z-Wave devices is below 20%.
+
+```yaml
+  - id: notify_on_low_batter_level
+    alias: "Benachrichtigung wenn Batterien bald leer sind"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.battery_level_door_bathroomlarge
+          - sensor.battery_level_door_bathroomsmall
+          - sensor.battery_level_door_bedroom
+          - sensor.battery_level_door_dressroom
+          - sensor.battery_level_door_kitchen
+          - sensor.battery_level_door_livingroom
+          - sensor.battery_level_door_main
+          - sensor.battery_level_door_office
+          - sensor.battery_level_door_storageroom
+          - sensor.battery_level_lux_office
+          - sensor.battery_level_lux_outside
+          - sensor.battery_level_motion_livingroom
+          - sensor.battery_level_multisensor_bathroomsmall
+          - sensor.battery_level_multisensor_bedroom
+          - sensor.battery_level_multisensor_dressroom
+          - sensor.battery_level_remote_dimitri
+          - sensor.battery_level_remote_light_bedroom
+          - sensor.battery_level_remote_light_dressroom
+          - sensor.battery_level_remote_light_livingroom
+          - sensor.battery_level_remote_light_office
+          - sensor.battery_level_remote_sabrina
+          - sensor.battery_level_temperature_bathroomsmall
+          - sensor.battery_level_temperature_livingroom
+          - sensor.battery_level_temperature_storageroom
+          - sensor.battery_level_window_bathroomlarge
+          - sensor.battery_level_window_bedroom
+          - sensor.battery_level_window_dressroom
+          - sensor.battery_level_window_kitchen
+          - sensor.battery_level_window_livingroom
+          - sensor.battery_level_window_office
+        below: 20
+    action:
+      - service: notify.evernote
+        data:
+          title: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} Batterien wechseln  @1 Next #!Heute #@computer"
+          message: "Batteriestand: {{ trigger.to_state.state }}"
+```
 
 </p>
 </details>
