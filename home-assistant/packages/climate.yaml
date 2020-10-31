@@ -1,0 +1,87 @@
+sensor:
+  # Average inside temperature
+  - platform: min_max
+    type: mean
+    name: temperature_average_inside
+    entity_ids:
+      - sensor.temperature_bathroomsmall
+      - sensor.temperature_bedroom
+      - sensor.temperature_office
+      - sensor.temperature_livingroom
+      - sensor.temperature_storageroom
+      - sensor.temperature_dressroom
+
+automation:
+# Notify on window left open
+- id: notify_on_window_left_open
+  alias: "Benachrichtigung wenn ein Fenster oder eine Türe zu lange offen ist"
+  mode: parallel
+  trigger:
+    - platform: state
+      entity_id: 
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_bedroom
+        - binary_sensor.window_dressroom
+        - binary_sensor.window_kitchen
+        - binary_sensor.window_livingroom
+        - binary_sensor.window_office
+        - binary_sensor.door_livingroom
+        - binary_sensor.door_kitchen
+      to: 'on'
+      for:
+        minutes: 5
+    - platform: state
+      entity_id:
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_bedroom
+        - binary_sensor.window_dressroom
+        - binary_sensor.window_kitchen
+        - binary_sensor.window_livingroom
+        - binary_sensor.window_office
+        - binary_sensor.door_livingroom
+        - binary_sensor.door_kitchen
+      to: 'on'
+      for:
+        minutes: 10
+    - platform: state
+      entity_id:
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_bedroom
+        - binary_sensor.window_dressroom
+        - binary_sensor.window_kitchen
+        - binary_sensor.window_livingroom
+        - binary_sensor.window_office
+        - binary_sensor.door_livingroom
+        - binary_sensor.door_kitchen
+      to: 'on'
+      for:
+        minutes: 15
+    - platform: state
+      entity_id:
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_bedroom
+        - binary_sensor.window_dressroom
+        - binary_sensor.window_kitchen
+        - binary_sensor.window_livingroom
+        - binary_sensor.window_office
+        - binary_sensor.door_livingroom
+        - binary_sensor.door_kitchen
+      to: 'on'
+      for:
+        minutes: 25
+  condition:
+    condition: or
+    conditions:
+      - "{{ trigger.for.seconds == 5 * 60 and now().month in [1, 2, 12] }}"
+      - "{{ trigger.for.seconds == 10 * 60 and now().month in [3, 11] }}"
+      - "{{ trigger.for.seconds == 15 * 60 and now().month in [4, 5, 9, 10] }}"
+      - "{{ trigger.for.seconds == 25 * 60 and now().month in [6, 7, 8] }}"
+  action:
+    - service: notify.mobile_app_phone_dimitri
+      data:
+        title: "Fenster zu lange geöffnet"
+        message: >
+          {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} 
+          ist seit {{ trigger.for.seconds * 60 }} Minuten geöffnet. Bitte schliessen.
+
+                  

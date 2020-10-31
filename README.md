@@ -2839,8 +2839,8 @@ I use a simple automation to notify me when the battery level for any of the Zig
     action:
       - service: notify.evernote
         data:
-          title: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} Batterien wechseln  @1 Next #!Heute #@computer"
-          message: "Batteriestand: {{ trigger.to_state.state }}"
+          title: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} change batteries @1 Next #!Heute #@computer"
+          message: "Batter Level: {{ trigger.to_state.state }}"
 ```
 
 </p>
@@ -3125,6 +3125,84 @@ There will be a switch in Home Assistant.
 
 ### Configure Weather in Home Assistant (Meteo Swiss)
 I use the the [Meteo Swiss custom component](https://github.com/websylv/homeassistant-meteoswiss). This is a weather integration for Switzerland and it delivers pretty good results. It can be installed through the [Home Assistant Community Store (HACS)](https://github.com/hacs/integration). The configuration is explained in the github repo of the component and it's pretty straightforward anyway.
+
+### Notification on Window left open
+I use the following automation, which sends me a notification when a window is left open longer than a specified time. The time is determined by the month. In January, February and December it's 5 minutes, in March and November 10 minutes, in April, May, September and October 15 minutes, and in June, July and August 25 minutes. 
+
+```yaml
+automation:
+# Notify on window left open
+- id: notify_on_window_left_open
+  alias: "Benachrichtigung wenn ein Fenster oder eine Türe zu lange offen ist"
+  mode: parallel
+  trigger:
+    - platform: state
+      entity_id: 
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_bedroom
+        - binary_sensor.window_dressroom
+        - binary_sensor.window_kitchen
+        - binary_sensor.window_livingroom
+        - binary_sensor.window_office
+        - binary_sensor.door_livingroom
+        - binary_sensor.door_kitchen
+      to: 'on'
+      for:
+        minutes: 5
+    - platform: state
+      entity_id:
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_bedroom
+        - binary_sensor.window_dressroom
+        - binary_sensor.window_kitchen
+        - binary_sensor.window_livingroom
+        - binary_sensor.window_office
+        - binary_sensor.door_livingroom
+        - binary_sensor.door_kitchen
+      to: 'on'
+      for:
+        minutes: 10
+    - platform: state
+      entity_id:
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_bedroom
+        - binary_sensor.window_dressroom
+        - binary_sensor.window_kitchen
+        - binary_sensor.window_livingroom
+        - binary_sensor.window_office
+        - binary_sensor.door_livingroom
+        - binary_sensor.door_kitchen
+      to: 'on'
+      for:
+        minutes: 15
+    - platform: state
+      entity_id:
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_bedroom
+        - binary_sensor.window_dressroom
+        - binary_sensor.window_kitchen
+        - binary_sensor.window_livingroom
+        - binary_sensor.window_office
+        - binary_sensor.door_livingroom
+        - binary_sensor.door_kitchen
+      to: 'on'
+      for:
+        minutes: 25
+  condition:
+    condition: or
+    conditions:
+      - "{{ trigger.for.seconds == 5 * 60 and now().month in [1, 2, 12] }}"
+      - "{{ trigger.for.seconds == 10 * 60 and now().month in [3, 11] }}"
+      - "{{ trigger.for.seconds == 15 * 60 and now().month in [4, 5, 9, 10] }}"
+      - "{{ trigger.for.seconds == 25 * 60 and now().month in [6, 7, 8] }}"
+  action:
+    - service: notify.mobile_app_phone_dimitri
+      data:
+        title: "Window open for too long"
+        message: >
+          {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} 
+          is open for {{ trigger.for.seconds * 60 }} minutes. Please close.
+```
 
 </p>
 </details>
