@@ -2812,7 +2812,8 @@ The below automation triggers on all the different sensors that show that an upd
               title: "{{ name }}  @1 Next #!Heute #@computer"
               message: "Plan update"
 ```
-### Home Assistant Heartbeat (Healthchecks.io)
+
+### Home Assistant Heartbeat and Backup Sensors (Healthchecks.io)
 I use [Healtchecks.io](https://healthchecks.io/) to create a heartbeat monitor for Home Assistant. This works by sending a ping to a specific URL from healthchecks.io through the [rest sensor integration](https://www.home-assistant.io/integrations/rest/) every x minutes. Healthchecks.io checks at the given interval whether the ping is received or not, and if not it will send a notification through one of the various integrations they have such as WhatsApp, E-Mail, Slack, etc. 
 
 Create a free account at [Healtchecks.io](https://healthchecks.io/). Add a new check, give it a meaninful name such as "Home Assistant Heartbeat" and note down the ping URL, they look like this: https://hc-ping.com/abcdef-gh2345-hgi234234 . Change the schedule to your needs, I use a period of 5 minutes and a grace period of 5 minutes, this means it checks every 5 minutes (period) and if a ping is not received 5 minutes (grace period) after it should it will send an alert.
@@ -2827,6 +2828,49 @@ sensor:
     scan_interval: 300
 ```
 The scan interval must match with the period you set in the healtchecks.io check. Now the sensor will send a GET request to the healtchecks.io ping URL every 5 minutes.
+
+I also use healthchecks.io to monitor my most important backups, such as the Home Assistant VM.
+
+To monitor the automatic VM backup through Proxmox, I configured Proxmox to send the mail on sucess to the healthchecks.io mail address. I then configured the check in healthchecks.io to look for the word "success" in the mail, set up a schedule to check daily at the time I do the backup. 
+
+To monitor the backups of my phone I sue SMBSync and Tasker. SMBSync makes an automatic weekly backup and issues a notification on sucess. Tasker intercepts this notification and sends a ping to the healthchecks.io URL.
+
+To monitor the backup of the network Pi and the ZigBee/Z-Wave Pi, I simply added a curl command to the healtchecks.io URL to my the cron jobs.
+
+To see the status of your healthchecks.io checks and the last ping, you can use a REST sensor. First you need to log in to your healtchecks.io account and go to the settings of your project. There you'll find a button to "Show API Keys". Each check has an individual URL to get the status and the last ping. They look like this: https://healthchecks.io/api/v1/checks/UNIQUEIDOFYOURCHECK
+
+Status of check:
+```yaml
+sensor:
+  - platform: rest
+    resource: https://healthchecks.io/api/v1/checks/UNIQUEIDOFYOURCHECK
+    name: Daily Backup Home Assistant VM
+    headers:
+      X-Api-Key: YOURAPIKEY
+    scan_interval: 1800
+    value_template: "{{ value_json.status }}"
+```
+Last Ping:
+```yaml
+sensor:
+  - platform: rest
+    resource: https://healthchecks.io/api/v1/checks/UNIQUEIDOFYOURCHECK
+    name: Last Backup Home Assistant VM
+    headers:
+      X-Api-Key: YOURAPIKEY
+    scan_interval: 1800
+    value_template: >
+      {%- set last_boot = value_json.last_ping %}
+      {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+      {%- set time = uptime | int %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+```
 
 ### Notification on Low Battery
 I use a simple automation to notify me when the battery level for any of the ZigBee or Z-Wave devices is below 20%.
