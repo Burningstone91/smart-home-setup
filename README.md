@@ -1133,6 +1133,39 @@ Now the the state of the persons non-binary presence and the presence state of t
 * All persons' non-binary presence state neither "home" nor just arrived -> house presence state = "noone home"
 * All persons' non-binary presence state = "extended away" -> house presence state = "vacation"
 
+### Turn everything off when last person left
+I have an automation that turns all lights and devices off when everyone has left the house.
+For this I use a script that turns everything off and call the script from the automation. I do it like this in order to also be able to call the same script from other automations.
+
+Simple script to turn everything off.
+
+```yaml
+script:
+  # Turn all lights and devices off
+  turn_all_off:
+    sequence:
+      - service: homeassistant.turn_off
+        entity_id: 
+          - light.all_lights
+          - media_player.livingroom
+          - switch.dehumidifers
+```
+
+The automation to run the script when everyone left.
+
+```yaml
+automation:
+  - id: turn_everything_off_everyone_gone
+    alias: "Alles ausschalten wenn alle gegangen sind."
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_select.presence_state_house
+        to: "nobody home"
+    action:
+      - service: script.turn_all_off
+```
+
 </p>
 </details>
 
