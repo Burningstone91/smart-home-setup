@@ -3204,6 +3204,114 @@ automation:
           is open for {{ trigger.for.seconds * 60 }} minutes. Please close.
 ```
 
+### Notification on high usage/temperature of devices
+I use automations to notify me about high CPU load, high CPU temperature, high disk usage and under Voltage detected for the Pis.
+
+High CPU Load:
+```yaml
+automation:
+  - id: notify_on_high_cpu_usage
+    alias: "Benachrichtigung wenn CPU Last hoch ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.cpu_load_ha
+          - sensor.cpu_load_nas
+          - sensor.cpu_load_pi_bathroomsmall
+          - sensor.cpu_load_pi_livingroom
+          - sensor.cpu_load_pi_office
+          - sensor.cpu_load_pi_dressroom
+          - sensor.cpu_load_pi_network
+          - sensor.cpu_load_pi_zigbee_zwave
+        above: 60
+        for:
+          hours: 2
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "High CPU Load!"
+          message: >
+            The CPU Load for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is over 60% for 2 hours!
+          data:
+            channel: emergency
+```
+High CPU Temperature:
+```yaml
+automation:
+  - id: notify_on_high_cpu_temp
+    alias: "Benachrichtigung wenn CPU Temperatur hoch ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.nas_temperature
+          - sensor.temperature_cpu_nuc
+          - sensor.temperature_pi_bathroomsmall
+          - sensor.temperature_pi_livingroom
+          - sensor.temperature_pi_dressroom
+          - sensor.temperature_pi_office
+          - sensor.temperature_pi_zigbee_zwave
+          - sensor.temperature_pi_network
+          - sensor.temperature_switch_livingroom
+        above: 70
+        for:
+          hours: 2
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "High CPU Temperature!"
+          message: >
+            CPU Temperature for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is over 70° for 2 hours!
+          data:
+            channel: emergency
+```
+High Disk Usage:
+```yaml
+automation:
+  - id: notify_on_high_disk_usage
+    alias: "Benachrichtigung wenn Speicher fast voll ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.disk_use_pct_ha
+          - sensor.disk_use_pct_nas
+        above: 95
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Disk almost full!"
+          message: >
+            Disk for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is 95% full!
+          data:
+            channel: emergency
+```
+Undervoltage:
+```yaml
+automation:
+  - id: notify_on_undervoltage
+    alias: "Benachrichtigung bei Unterspannung"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.undervoltage_pi_bathroomsmall
+          - binary_sensor.undervoltage_pi_livingroom
+          - binary_sensor.undervoltage_pi_dressroom
+          - binary_sensor.undervoltage_pi_office
+          - binary_sensor.undervoltage_pi_network
+          - binary_sensor.undervoltage_pi_zigbee_zwave
+        to: 'on'
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Undervoltage!"
+          message: >
+            Undervoltage for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} detected!
+          data:
+            channel: Notfall
+```
 </p>
 </details>
 

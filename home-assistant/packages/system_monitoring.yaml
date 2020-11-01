@@ -854,7 +854,7 @@ automation:
               message: "Update planen"
   
   # Notify on low battery level
-  - id: notify_on_low_batter_level
+  - id: notify_on_low_battery_level
     alias: "Benachrichtigung wenn Batterien bald leer sind"
     mode: parallel
     trigger:
@@ -896,6 +896,104 @@ automation:
         data:
           title: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} Batterien wechseln  @1 Next #!Heute #@computer"
           message: "Batteriestand: {{ trigger.to_state.state }}"
+
+  # Notify on high CPU usage
+  - id: notify_on_high_cpu_usage
+    alias: "Benachrichtigung wenn CPU Last hoch ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.cpu_load_ha
+          - sensor.cpu_load_nas
+          - sensor.cpu_load_pi_bathroomsmall
+          - sensor.cpu_load_pi_livingroom
+          - sensor.cpu_load_pi_office
+          - sensor.cpu_load_pi_dressroom
+          - sensor.cpu_load_pi_network
+          - sensor.cpu_load_pi_zigbee_zwave
+        above: 60
+        for:
+          hours: 2
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Hohe CPU Last!"
+          message: >
+            Die CPU Last für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist seit 2 Stunden über 60%!
+          data:
+            channel: Notfall
+  
+  # Notify on high Disk usage
+  - id: notify_on_high_disk_usage
+    alias: "Benachrichtigung wenn Speicher fast voll ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.disk_use_pct_ha
+          - sensor.disk_use_pct_nas
+        above: 95
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Speicher fast voll!"
+          message: >
+            Der Speicher für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist 95% voll!
+          data:
+            channel: Notfall
+    
+  # Notify on high CPU Temp
+  - id: notify_on_high_cpu_temp
+    alias: "Benachrichtigung wenn CPU Temperatur hoch ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.nas_temperature
+          - sensor.temperature_cpu_nuc
+          - sensor.temperature_pi_bathroomsmall
+          - sensor.temperature_pi_livingroom
+          - sensor.temperature_pi_dressroom
+          - sensor.temperature_pi_office
+          - sensor.temperature_pi_zigbee_zwave
+          - sensor.temperature_pi_network
+          - sensor.temperature_switch_livingroom
+        above: 70
+        for:
+          hours: 2
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Hohe CPU Temperatur!"
+          message: >
+            Die CPU Temperatur für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist seit 2 Stunden über 70°!
+          data:
+            channel: Notfall
+  
+  # Notify on undervoltage
+  - id: notify_on_undervoltage
+    alias: "Benachrichtigung bei Unterspannung"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.undervoltage_pi_bathroomsmall
+          - binary_sensor.undervoltage_pi_livingroom
+          - binary_sensor.undervoltage_pi_dressroom
+          - binary_sensor.undervoltage_pi_office
+          - binary_sensor.undervoltage_pi_network
+          - binary_sensor.undervoltage_pi_zigbee_zwave
+        to: 'on'
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Unterspannung!"
+          message: >
+            Unterspannung für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} entdeckt!
+          data:
+            channel: Notfall
+
 
 # Entity Customization
 homeassistant:
