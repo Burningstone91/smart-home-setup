@@ -796,6 +796,7 @@ automation:
       data:
         level: "{{ trigger.to_state.state }}"
     mode: single
+
   # Notify on update available
   - id: notify_on_update_available
     alias: "Benachrichtigung wenn ein Update verfügbar ist"
@@ -994,6 +995,98 @@ automation:
           data:
             channel: Notfall
 
+  # Notify on Bad login attempt
+  - id: notify_on_bad_login_attempt
+    alias: "Benachrichtigung bei Falschem Loginversuch"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: "persistent_notification.http_login"
+        to: "notifying"
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Falscher Loginversuch!"
+          message: >
+            {{ state_attr('persistent_notification.http_login', 'message') }}
+          data:
+            channel: Notfall
+  
+  # Notify on Device Offline
+  - id: notify_on_device_offline
+    alias: "Benachrichtigung bei Gerät offline"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id:
+          - device_tracker.ap_livingroom
+          - device_tracker.bed_sensor_bedroom
+          - device_tracker.media_player_livingroom
+          - device_tracker.nas
+          - device_tracker.pi_bathroomsmall
+          - device_tracker.pi_dressroom
+          - device_tracker.pi_livingroom
+          - device_tracker.pi_office
+          - device_tracker.pi_zigbee_zwave
+          - device_tracker.pi_network
+          - device_tracker.plug_dishwasher
+          #- device_tracker.receiver_bedroom
+          - device_tracker.receiver_livingroom
+          #- device_tracker.receiver_office
+          - device_tracker.remote_livingroom
+          - device_tracker.server_nuc
+          - device_tracker.switch_livingroom
+          - device_tracker.switch_storageroom
+          - device_tracker.unifi_controller
+          - device_tracker.usg_router
+          - device_tracker.vacuum_livingroom
+        from: "home"
+        to: "not_home"
+        for:
+          minutes: 5
+      - platform: state
+        entity_id:
+          - sensor.battery_level_remote_light_livingroom
+          - sensor.battery_level_remote_light_dressroom
+          - sensor.battery_level_remote_light_bedroom
+          - sensor.battery_level_remote_light_office
+          - sensor.battery_level_remote_sabrina
+          - sensor.battery_level_remote_dimitri
+          - binary_sensor.motion_livingroom
+          - binary_sensor.motion_dressroom
+          - binary_sensor.motion_bedroom
+          - binary_sensor.motion_office
+          - sensor.temperature_bathroomsmall
+          - sensor.temperature_livingroom
+          - sensor.temperature_storageroom
+          - sensor.lux_outside
+          - sensor.lux_office
+          - binary_sensor.door_bathroomlarge
+          - binary_sensor.door_bathroomsmall
+          - binary_sensor.door_office
+          - binary_sensor.door_bedroom
+          - binary_sensor.door_dressroom
+          - binary_sensor.door_storageroom
+          - binary_sensor.door_kitchen
+          - binary_sensor.door_livingroom
+          - binary_sensor.door_main
+          - binary_sensor.window_bathroomlarge
+          # - binary_sensor.window_office
+          - binary_sensor.window_dressroom
+          - binary_sensor.window_bedroom
+          - binary_sensor.window_kitchen
+          - binary_sensor.window_livingroom
+        to: "unavailable"
+        for:
+          minutes: 5
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Gerät offline!"
+          message: >
+            {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist seit 5 Minuten offline!
+          data:
+            channel: Notfall
 
 # Entity Customization
 homeassistant:

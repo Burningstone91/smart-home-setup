@@ -1,3 +1,22 @@
+automation:
+  # Turn all lights and devices off when everyone left
+  - id: turn_everything_off_everyone_gone
+    alias: "Alles ausschalten wenn alle gegangen sind."
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_select.presence_state_house
+        to: "Niemand zu Hause"
+    action:
+      - service: script.turn_all_off
+
+script:
+  # Turn all lights and devices off
+  turn_all_off:
+    sequence:
+      - service: light.turn_off
+        entity_id: light.all_lights
+      
 # Entity Customization
 homeassistant:
   customize:
