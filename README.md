@@ -2873,8 +2873,31 @@ I use a simple automation to notify me when the battery level for any of the Zig
       - service: notify.evernote
         data:
           title: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} change batteries @1 Next #!Heute #@computer"
-          message: "Batter Level: {{ trigger.to_state.state }}"
+          message: "Battery Level: {{ trigger.to_state.state }}"
 ```
+
+### Notification on Bad Login Attempt
+I use an automation to notify me when there was a bad login attempt. I use the emergency channel (only works for Android phones) for this notification. I configured my phone to allow messages from the emergency channel when in Do not Disturb Mode. 
+
+```yaml
+  # Notify on Bad login attempt
+  - id: notify_on_bad_login_attempt
+    alias: "Benachrichtigung bei Falschem Loginversuch"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id: "persistent_notification.http_login"
+        to: "notifying"
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Bad Login Attempt!"
+          message: >
+            {{ state_attr('persistent_notification.http_login', 'message') }}
+          data:
+            channel: Notfall
+```
+
 
 </p>
 </details>
@@ -3234,7 +3257,7 @@ automation:
         title: "Window open for too long"
         message: >
           {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} 
-          is open for {{ trigger.for.seconds * 60 }} minutes. Please close.
+          is open for {{ (trigger.for.seconds / 60) | int }} minutes. Please close.
 ```
 
 ### Notification on high usage/temperature of devices
