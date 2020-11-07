@@ -393,10 +393,6 @@ class DockerAPI:
                                 self._info[DOCKER_STATS_MEMORY] += stats.get(
                                     CONTAINER_STATS_MEMORY
                                 )
-                            if stats.get(CONTAINER_STATS_MEMORY_PERCENTAGE) is not None:
-                                self._info[DOCKER_STATS_MEMORY_PERCENTAGE] += stats.get(
-                                    CONTAINER_STATS_MEMORY_PERCENTAGE
-                                )
                     except Exception as err:
                         _LOGGER.error(
                             "%s: run_docker_info memory/cpu of X (%s)",
@@ -404,6 +400,18 @@ class DockerAPI:
                             str(err),
                             exc_info=True,
                         )
+
+                # Calculate memory percentage
+                if (
+                    self._info[ATTR_MEMORY_LIMIT] is not None
+                    and self._info[ATTR_MEMORY_LIMIT] is not 0
+                ):
+                    self._info[DOCKER_STATS_MEMORY_PERCENTAGE] = round(
+                        self._info[DOCKER_STATS_MEMORY]
+                        / toMB(self._info[ATTR_MEMORY_LIMIT])
+                        * 100,
+                        PRECISION,
+                    )
 
                 # Try to fix possible 0 values in history at start-up
                 self._info[DOCKER_STATS_CPU_PERCENTAGE] = (

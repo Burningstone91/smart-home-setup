@@ -2,7 +2,6 @@
 from custom_components.hacs.enums import HacsStage
 from aiogithubapi import AIOGitHubAPIException, GitHub
 from homeassistant import config_entries
-from homeassistant.components.lovelace import system_health_info
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.const import __version__ as HAVERSION
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -32,6 +31,11 @@ from custom_components.hacs.operational.setup_actions.websocket_api import (
     async_setup_hacs_websockt_api,
 )
 from custom_components.hacs.share import get_hacs
+
+try:
+    from homeassistant.components.lovelace import system_health_info
+except ImportError:
+    from homeassistant.components.lovelace.system_health import system_health_info
 
 
 async def _async_common_setup(hass):
@@ -109,7 +113,10 @@ async def async_startup_wrapper_for_yaml():
             .replace("-", "_")
         )
         hacs.log.info("Could not setup HACS, trying again in 15 min")
-        async_call_later(hacs.hass, 900, async_startup_wrapper_for_yaml())
+        if int(hacs.system.ha_version.split(".")[1]) >= 117:
+            async_call_later(hacs.hass, 900, async_startup_wrapper_for_yaml)
+        else:
+            async_call_later(hacs.hass, 900, async_startup_wrapper_for_yaml())
         return
     hacs.system.disabled = False
 
@@ -178,7 +185,13 @@ async def async_hacs_startup():
         return False
 
     # Setup startup tasks
-    hacs.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, hacs.startup_tasks)
+    if hacs.status.new:
+        if int(hacs.system.ha_version.split(".")[1]) >= 117:
+            async_call_later(hacs.hass, 5, hacs.startup_tasks)
+        else:
+            async_call_later(hacs.hass, 5, hacs.startup_tasks())
+    else:
+        hacs.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, hacs.startup_tasks)
 
     # Set up sensor
     await async_add_sensor()
