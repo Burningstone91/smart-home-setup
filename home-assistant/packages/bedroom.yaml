@@ -72,7 +72,7 @@ homeassistant:
       friendly_name: Deckenlampe
       icon: mdi:ceiling-light
     light.bedroom_bed:
-      friendly_name: Bett
+      friendly_name: LED Bett
       icon: mdi:led-strip-variant
     # Door/Window Sensor
     binary_sensor.window_bedroom:

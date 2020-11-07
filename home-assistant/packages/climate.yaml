@@ -12,7 +12,7 @@ sensor:
       - sensor.temperature_dressroom
 
 automation:
-# Notify on window left open
+# Notify on door/window left open
 - id: notify_on_window_left_open
   alias: "Benachrichtigung wenn ein Fenster oder eine Türe zu lange offen ist"
   mode: parallel
@@ -82,6 +82,6 @@ automation:
         title: "Fenster zu lange geöffnet"
         message: >
           {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} 
-          ist seit {{ trigger.for.seconds * 60 }} Minuten geöffnet. Bitte schliessen.
+          ist seit {{ (trigger.for.seconds / 60) | int }} Minuten geöffnet. Bitte schliessen.
 
                   

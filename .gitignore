@@ -10,6 +10,7 @@ home-assistant/.storage
 home-assistant/.cloud
 home-assistant_v2.db
 home-assistant.log
+.shopping_list.json
 options.xml
 secrets.yaml
 zwcfg_*
@@ -18,7 +19,6 @@ mosquitto/data
 mosquitto/log
 appdaemon/logs
 appdaemon/dashboards
-scratch
 home-assistant/www/person_pictures/
 known_devices.yaml
 appdaemon/namespaces/
@@ -30,5 +30,6 @@ unifi-poller/
 portainer/
 home-assistant-db/
 esphome/
+swag/
 check_docker_latest.sh
 check_docker_list.txt

@@ -9,7 +9,6 @@ recorder:
       - sensor.temperature*
       - sensor.humidity*
       - sensor.lux*
-      - sensor.speedtest*
       - sensor.ram_use_pct*
       - sensor.cpu_load*
       - binary_sensor.door*
@@ -76,7 +75,6 @@ influxdb:
       - sensor.temperature*
       - sensor.humidity*
       - sensor.lux*
-      - sensor.speedtest*
       - sensor.ram_use_pct*
       - sensor.cpu_load*
     entities:

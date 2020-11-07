@@ -52,6 +52,11 @@ homeassistant:
     binary_sensor.door_dressroom:
       friendly_name: Tür Ankleide
       device_class: door
+    # Dehumidifier
+    switch.dehumidifier_dressrom:
+      friendly_name: Entfeuchter
+      icon: mdi:fan
+      room: dressroom
     # Motion/Tamper Sensors
     binary_sensor.motion_dressroom:
       friendly_name: Ankleide
