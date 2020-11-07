@@ -881,6 +881,111 @@ I have one user per device that access Home Assistant in order to serve differen
 #### Remote Access Setup (Nabu Casa)
 Setup Nabu Casa by following the official instructions [here](https://www.nabucasa.com/config/) and [here](https://www.nabucasa.com/config/remote/). Home Assistant should now be accessible outside the network through the address that has been generated in the setup of Nabu Casa, e.g. https://abcdefghijklmnopqrstuvwxyz.ui.nabu.casa
 
+#### Remote Access Setup (NGINX Reverse Proxy)
+I use a reverse proxy for Home Assistant, mainly because I also want to expose other services to the outside world without exposing any additional ports on my router. 
+
+First you need to forward ports 80 (HTTP) and Port 443 (HTTPS) from your router to the machine running NGINX (we're going to install NGINX as a docker container on the same host as Home Assistant). How you do this depends on your router.
+
+Next install the [SWAG](https://hub.docker.com/r/linuxserver/swag) docker container, it includes NGINX (Reverse Proxy), Let's Encrypt (for SSL) and Fail2Ban (to ban IP-addresses). 
+
+Create a folder called "swag", which later holds the configuration data for the container.
+Get your GID and UID by issuing the following command on the host:
+
+```bash
+id yourusername
+```
+Add the follwoing to docker-compose.yaml:
+
+  swag:
+    cap_add:
+      - NET_ADMIN
+    container_name: swag
+    environment:
+      - PUID=1000
+      - PGID=1004
+      - TZ=Europe/Zurich
+      - URL=yourdomain.com
+      - VALIDATION=http
+      - EMAIL=yourmailaddress@blabla.com
+    image: ghcr.io/linuxserver/swag
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./swag:/config  
+
+Replace the PUID and PGID values with the ones you got in the previous step. Replace `yourdomain.com` with your domain (I registered my own domain in combination with a DynamicDNS service from my ISP, but you can use DuckDNS or any other DynamicDNS provider) and replace `yourmailaddress@blabla.com` with your E-mail address.
+
+Start the docker container:
+
+```bash
+docker-compose up -d
+```
+
+Some files should show up in the `swag` directory created before. Go to nginx -> site-confs and edit the file `default` to look like this:
+
+```
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+# redirect all traffic to https
+server {
+	listen 80;
+	server_name *.yourdomain.com;
+	return 301 https://$host$request_uri;
+}
+
+############### Home Assistant ####################
+server {
+	listen 443 ssl default_server;
+
+	server_name ha.yourdomain.com;
+
+	# enable subfolder method reverse proxy confs
+	include /config/nginx/proxy-confs/*.subfolder.conf;
+
+	# all ssl related config moved to ssl.conf
+	include /config/nginx/ssl.conf;
+
+	proxy_buffering off;
+
+	location / {
+		proxy_set_header Host $host;
+		proxy_redirect http:// https://;
+		proxy_http_version 1.1;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+		proxy_pass http://ip-of-ha-instance:8123;
+	}
+
+}
+
+
+# enable subdomain method reverse proxy confs
+include /config/nginx/proxy-confs/*.subdomain.conf;
+# enable proxy cache for auth
+proxy_cache_path cache/ keys_zone=auth_cache:10m;
+```
+
+Replace `ha.yourdomain.com` with the subdomain that HA should be accessible from and `ip-of-ha-instance` with the IP of your Home Assistant instance. 
+
+In Home Assistant add the following to configuration.yaml:
+
+```yaml
+http:
+  use_x_forwarded_for: true
+  trusted_proxies: 
+    - 172.19.0.7
+```
+This is needed in order to show the correct IP-address when you get a notification about a failed login attempt. Without setting the reverse proxy as a trusted proxy, you'll always see the IP of the NGINX reverse proxy instead of the real IP address. 
+
+You should now be able to access your Home Assistant instance remotely by going to https://ha.youromain.com. Later we're going to add more services like Grafana to be accessible from outside.
+
 #### Configure separate internal and external URL
 First enable "advanced mode" by clicking on your username in the sidebar. Toggle the setting "Advanced Mode".
 Now go to "Configuration" then to "General". Enter the internal and external url respectively e.g.
@@ -3022,7 +3127,114 @@ automation:
           data:
             channel: emergency
 ```
+### Notification on high usage/temperature of devices
+I use automations to notify me about high CPU load, high CPU temperature, high disk usage and under Voltage detected for the Pis.
 
+High CPU Load:
+```yaml
+automation:
+  - id: notify_on_high_cpu_usage
+    alias: "Benachrichtigung wenn CPU Last hoch ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.cpu_load_ha
+          - sensor.cpu_load_nas
+          - sensor.cpu_load_pi_bathroomsmall
+          - sensor.cpu_load_pi_livingroom
+          - sensor.cpu_load_pi_office
+          - sensor.cpu_load_pi_dressroom
+          - sensor.cpu_load_pi_network
+          - sensor.cpu_load_pi_zigbee_zwave
+        above: 60
+        for:
+          hours: 2
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "High CPU Load!"
+          message: >
+            The CPU Load for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is over 60% for 2 hours!
+          data:
+            channel: emergency
+```
+High CPU Temperature:
+```yaml
+automation:
+  - id: notify_on_high_cpu_temp
+    alias: "Benachrichtigung wenn CPU Temperatur hoch ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.nas_temperature
+          - sensor.temperature_cpu_nuc
+          - sensor.temperature_pi_bathroomsmall
+          - sensor.temperature_pi_livingroom
+          - sensor.temperature_pi_dressroom
+          - sensor.temperature_pi_office
+          - sensor.temperature_pi_zigbee_zwave
+          - sensor.temperature_pi_network
+          - sensor.temperature_switch_livingroom
+        above: 70
+        for:
+          hours: 2
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "High CPU Temperature!"
+          message: >
+            CPU Temperature for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is over 70° for 2 hours!
+          data:
+            channel: emergency
+```
+High Disk Usage:
+```yaml
+automation:
+  - id: notify_on_high_disk_usage
+    alias: "Benachrichtigung wenn Speicher fast voll ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.disk_use_pct_ha
+          - sensor.disk_use_pct_nas
+        above: 95
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Disk almost full!"
+          message: >
+            Disk for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is 95% full!
+          data:
+            channel: emergency
+```
+Undervoltage:
+```yaml
+automation:
+  - id: notify_on_undervoltage
+    alias: "Benachrichtigung bei Unterspannung"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.undervoltage_pi_bathroomsmall
+          - binary_sensor.undervoltage_pi_livingroom
+          - binary_sensor.undervoltage_pi_dressroom
+          - binary_sensor.undervoltage_pi_office
+          - binary_sensor.undervoltage_pi_network
+          - binary_sensor.undervoltage_pi_zigbee_zwave
+        to: 'on'
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Undervoltage!"
+          message: >
+            Undervoltage for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} detected!
+          data:
+            channel: emergency
+```
 
 </p>
 </details>
@@ -3385,114 +3597,6 @@ automation:
           is open for {{ (trigger.for.seconds / 60) | int }} minutes. Please close.
 ```
 
-### Notification on high usage/temperature of devices
-I use automations to notify me about high CPU load, high CPU temperature, high disk usage and under Voltage detected for the Pis.
-
-High CPU Load:
-```yaml
-automation:
-  - id: notify_on_high_cpu_usage
-    alias: "Benachrichtigung wenn CPU Last hoch ist"
-    mode: parallel
-    trigger:
-      - platform: numeric_state
-        entity_id:
-          - sensor.cpu_load_ha
-          - sensor.cpu_load_nas
-          - sensor.cpu_load_pi_bathroomsmall
-          - sensor.cpu_load_pi_livingroom
-          - sensor.cpu_load_pi_office
-          - sensor.cpu_load_pi_dressroom
-          - sensor.cpu_load_pi_network
-          - sensor.cpu_load_pi_zigbee_zwave
-        above: 60
-        for:
-          hours: 2
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "High CPU Load!"
-          message: >
-            The CPU Load for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is over 60% for 2 hours!
-          data:
-            channel: emergency
-```
-High CPU Temperature:
-```yaml
-automation:
-  - id: notify_on_high_cpu_temp
-    alias: "Benachrichtigung wenn CPU Temperatur hoch ist"
-    mode: parallel
-    trigger:
-      - platform: numeric_state
-        entity_id:
-          - sensor.nas_temperature
-          - sensor.temperature_cpu_nuc
-          - sensor.temperature_pi_bathroomsmall
-          - sensor.temperature_pi_livingroom
-          - sensor.temperature_pi_dressroom
-          - sensor.temperature_pi_office
-          - sensor.temperature_pi_zigbee_zwave
-          - sensor.temperature_pi_network
-          - sensor.temperature_switch_livingroom
-        above: 70
-        for:
-          hours: 2
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "High CPU Temperature!"
-          message: >
-            CPU Temperature for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is over 70° for 2 hours!
-          data:
-            channel: emergency
-```
-High Disk Usage:
-```yaml
-automation:
-  - id: notify_on_high_disk_usage
-    alias: "Benachrichtigung wenn Speicher fast voll ist"
-    mode: parallel
-    trigger:
-      - platform: numeric_state
-        entity_id:
-          - sensor.disk_use_pct_ha
-          - sensor.disk_use_pct_nas
-        above: 95
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "Disk almost full!"
-          message: >
-            Disk for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is 95% full!
-          data:
-            channel: emergency
-```
-Undervoltage:
-```yaml
-automation:
-  - id: notify_on_undervoltage
-    alias: "Benachrichtigung bei Unterspannung"
-    mode: parallel
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.undervoltage_pi_bathroomsmall
-          - binary_sensor.undervoltage_pi_livingroom
-          - binary_sensor.undervoltage_pi_dressroom
-          - binary_sensor.undervoltage_pi_office
-          - binary_sensor.undervoltage_pi_network
-          - binary_sensor.undervoltage_pi_zigbee_zwave
-        to: 'on'
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "Undervoltage!"
-          message: >
-            Undervoltage for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} detected!
-          data:
-            channel: Notfall
-```
 </p>
 </details>
 

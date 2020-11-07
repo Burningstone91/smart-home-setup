@@ -11,6 +11,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./appdaemon:/conf
+
   esphome-dashboard:
     container_name: esphome-dashboard
     image: esphome/esphome:latest
@@ -19,6 +20,7 @@ services:
     volumes: 
       - ./esphome:/config
       - /etc/localtime:/etc/localtime:ro
+
   grafana:
     container_name: grafana
     depends_on:
@@ -34,9 +36,10 @@ services:
     volumes:
       - ./grafana:/var/lib/grafana
       - /etc/localtime:/etc/localtime:ro
+
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:0.117.0
+    image: homeassistant/home-assistant:0.117.4
     network_mode: host
     restart: unless-stopped
     volumes:
@@ -44,6 +47,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./home-assistant:/config
       - /home/burningstone/.ssh:/root/.ssh
+
   hass-db:
     container_name: hass-db
     environment:
@@ -57,6 +61,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./home-assistant-db:/var/lib/postgresql/data
+
   influxdb:
     container_name: influxdb
     environment:
@@ -70,6 +75,7 @@ services:
     volumes:
       - ./influxdb:/var/lib/influxdb
       - /etc/localtime:/etc/localtime:ro
+
   mqtt:
     container_name: mqtt
     image: eclipse-mosquitto
@@ -92,3 +98,23 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - ./portainer:/data
+
+  swag:
+    cap_add:
+      - NET_ADMIN
+    container_name: swag
+    environment:
+      - PUID=1000
+      - PGID=1004
+      - TZ=Europe/Zurich
+      - URL=yourdomain.com
+      - VALIDATION=http
+      - EMAIL=yourmail@address.com
+    image: ghcr.io/linuxserver/swag
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./swag:/config

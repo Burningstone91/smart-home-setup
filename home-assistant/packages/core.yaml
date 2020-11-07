@@ -2,6 +2,11 @@
 homeassistant:
   internal_url: http://192.168.0.30:3123
   external_url: !secret external_HA_URL
+  
+http:
+  use_x_forwarded_for: true
+  trusted_proxies: 
+    - 172.19.0.7
 
 tts:
   - platform: google_translate
