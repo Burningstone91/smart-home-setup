@@ -1,0 +1,90 @@
+- type: vertical-stack
+  cards:
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Temperatur
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.temperature_livingroom
+            name: Wohnzimmer
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.temperature_bedroom
+            name: Schlafzimmer
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.temperature_dressroom
+            name: Ankleidezimmer
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.temperature_office
+            name: Büro
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.temperature_bathroomsmall
+            name: Kleines Bad
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.temperature_storageroom
+            name: Reduit
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Luftfeuchtigkeit
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.humidity_livingroom
+            name: Wohnzimmer
+            line_color: blue
+            decimals: 0
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.humidity_bedroom
+            name: Schlafzimmer
+            line_color: blue
+            decimals: 0
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.humidity_dressroom
+            name: Ankleidezimmer
+            line_color: blue
+            decimals: 0
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.humidity_office
+            name: Büro
+            line_color: blue
+            decimals: 0
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.humidity_bathroomsmall
+            name: Kleines Bad
+            line_color: blue
+            decimals: 0
+        - !include
+          - '../../../base/templates/other/mini-graph.yaml'
+          - entity: sensor.humidity_storageroom
+            name: Reduit
+            line_color: blue
+            decimals: 0
+        - !include ../../../base/includes/gap.yaml

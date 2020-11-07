@@ -1,0 +1,101 @@
+- type: custom:mod-card
+  style: |
+    ha-card {
+      margin-left: 7px;
+      margin-right: 7px;
+    }
+  card:
+    type: custom:layout-card
+    min_columns: 3
+    max_columns: 3
+    justify_content: start
+    layout: horizontal
+    cards:
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Automations
+          label: Overview
+          icon: mdi:alpha-a-box
+          navigation_path: /phone-view/automations
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"   
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Batterien
+          label: Übersicht
+          icon: mdi:battery-50
+          navigation_path: /phone-view/battery
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"  
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Kalender
+          label: Übersicht
+          icon: mdi:calendar-account
+          navigation_path: /phone-view/calendar
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"     
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Haushalt
+          label: Aufgaben
+          icon: mdi:washing-machine
+          navigation_path: /phone-view/cleaning
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"     
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Klima
+          label: Übersicht
+          icon: mdi:thermometer
+          navigation_path: /phone-view/climate
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"    
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Geräte
+          label: Übersicht
+          icon: mdi:power-plug
+          navigation_path: /phone-view/devices
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"                       
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Grundriss
+          label: Übersicht
+          icon: mdi:floor-plan
+          navigation_path: /phone-view/floorplan
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"   
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Licht
+          label: Übersicht
+          icon: mdi:floor-lamp
+          navigation_path: /phone-view/lights
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"                       
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Medien
+          label: Center
+          icon: mdi:plex
+          navigation_path: /phone-view/media
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"      
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Security
+          label: Panel
+          icon: mdi:cctv
+          navigation_path: /phone-view/security
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"     
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Wetter
+          label: Information
+          icon: mdi:weather-partly-cloudy
+          navigation_path: /phone-view/weather
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"  

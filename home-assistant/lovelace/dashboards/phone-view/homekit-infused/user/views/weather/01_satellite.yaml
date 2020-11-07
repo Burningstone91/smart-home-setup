@@ -1,0 +1,25 @@
+- type: vertical-stack
+  cards:
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: iframe
+          style: |
+            ha-card {
+              position: relative !important;
+              overflow: hidden !important;
+              border-radius: var(--border-radius) !important;
+              box-shadow: var(--box-shadow);
+              -webkit-border-radius: var(--border-radius) !important;
+              border-radius-x: var(--border-radius) !important;
+            }
+            iframe {
+              border-radius: var(--border-radius) !important;
+              -webkit-border-radius: var(--border-radius);
+              border-radius-x: var(--border-radius) !important;
+              overflow: hidden !important;
+            }
+          aspect_ratio: 177%
+          url: "https://embed.windy.com/embed2.html?lat=47.059&lon=9.072&detailLat=47.100&detailLon=9.060&width=650&height=800&zoom=11&level=surface&overlay=rain&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=true&metricWind=default&metricTemp=default&radarRange=-1"
+        - !include ../../../base/includes/gap.yaml
+    - !include ../../../base/includes/gap.yaml

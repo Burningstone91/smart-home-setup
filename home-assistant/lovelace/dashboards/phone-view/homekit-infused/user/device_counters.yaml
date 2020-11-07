@@ -1,0 +1,70 @@
+# Homekit Infused Device Counters
+
+# All Binary Sensors (put all your binary sensors here e.g. smoke/gas/fire/door/window/motion etc. You can use this as a counter on the security button)
+all_binary_sensor_entities:
+  entities:
+    - binary_sensor.door_main
+    - binary_sensor.door_livingroom
+    - binary_sensor.door_kitchen
+    - binary_sensor.door_storageroom
+    - binary_sensor.door_dressroom
+    - binary_sensor.door_bathroomsmall
+    - binary_sensor.door_bedroom
+    - binary_sensor.door_bathroomlarge
+    - binary_sensor.door_office
+    - binary_sensor.window_livingroom
+    - binary_sensor.window_dressroom
+    - binary_sensor.window_office
+    - binary_sensor.window_kitchen
+    - binary_sensor.window_bathroomlarge
+    - binary_sensor.window_bedroom
+    - binary_sensor.motion_livingroom
+    - binary_sensor.motion_dressroom
+    - binary_sensor.motion_office
+    - binary_sensor.motion_bedroom
+    - binary_sensor.motion_bathroomsmall
+
+all_door_sensor_entities:
+  entities:
+    - binary_sensor.door_main
+    - binary_sensor.door_livingroom
+    - binary_sensor.door_kitchen
+    - binary_sensor.door_storageroom
+    - binary_sensor.door_dressroom
+    - binary_sensor.door_bathroomsmall
+    - binary_sensor.door_bedroom
+    - binary_sensor.door_bathroomlarge
+    - binary_sensor.door_office
+
+all_window_sensor_entities:
+  entities:
+    - binary_sensor.window_livingroom
+    - binary_sensor.window_dressroom
+    - binary_sensor.window_office
+    - binary_sensor.window_kitchen
+    - binary_sensor.window_bathroomlarge
+    - binary_sensor.window_bedroom
+
+all_motion_sensor_entities:
+  entities:
+    - binary_sensor.motion_livingroom
+    - binary_sensor.motion_dressroom
+    - binary_sensor.motion_office
+    - binary_sensor.motion_bedroom
+    - binary_sensor.motion_bathroomsmall
+
+# All Lights
+all_light_entities:
+  entities:
+    - light.office
+    - light.bedroom_bed
+    - light.bedroom_ceiling
+    - light.livingroom_floor_back
+    - light.livingroom_floor_front
+    - light.dressroom
+    - light.balcony_ceiling
+
+# All Devices
+all_device_switch_entities:
+  entities:
+    - switch.dehumidifier_dressroom

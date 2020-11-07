@@ -1,0 +1,130 @@
+- type: vertical-stack
+  cards:
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Bewegung
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.motion_livingroom
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.motion_office
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.motion_bedroom
+            tap_action: more-info
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.motion_dressroom
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.motion_bathroomsmall
+            tap_action: more-info
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Fenster/Türen Aussen
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.door_main
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.door_livingroom
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.door_kitchen
+            tap_action: more-info
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.window_office
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.window_bathroomlarge
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.window_bedroom
+            tap_action: more-info
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.window_dressroom
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.window_livingroom
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.window_kitchen
+            tap_action: more-info
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Türen Innen
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.door_office
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.door_bathroomlarge
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.door_bathroomsmall
+            tap_action: more-info
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.door_bedroom
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.door_dressroom
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.door_storageroom
+            tap_action: more-info
+        - !include ../../../base/includes/gap.yaml
+    - !include ../../../base/includes/gap.yaml

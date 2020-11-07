@@ -1,0 +1,90 @@
+- type: vertical-stack
+  cards:
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Wohnzimmer
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: light.livingroom_floor_front
+            label: !include ../../../base/includes/brightness-label.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: light.livingroom_floor_back
+            label: !include ../../../base/includes/brightness-label.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Büro
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: light.office
+            label: !include ../../../base/includes/brightness-label.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Schlafzimmer
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: light.bedroom_ceiling
+            label: !include ../../../base/includes/brightness-label.yaml
+            lock: true
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: light.bedroom_bed
+            label: !include ../../../base/includes/brightness-label.yaml
+            lock: true
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Ankleidezimmer
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: light.dressroom
+            label: !include ../../../base/includes/brightness-label.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Balkon
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: light.balcony_ceiling
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    - !include ../../../base/includes/gap.yaml

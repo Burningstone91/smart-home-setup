@@ -1,0 +1,70 @@
+- type: custom:layout-card
+  column_num: 4
+  justify_content: start
+  layout: horizontal
+  cards:  
+    - !include
+      - '../../../base/templates/button/button-badge.yaml'
+      - name: Klima
+        label: Übersicht
+        icon: mdi:thermometer
+        navigation_path: /phone-view/climate
+        notification: "[[[ if (states['sensor.temperature_average_inside'].state == 0) return '&nbsp'; else return `${states['sensor.temperature_average_inside'].state}`; ]]]"
+        background_color: "[[[ if (states['sensor.temperature_average_inside'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"   
+    - !include
+      - '../../../base/templates/button/button-badge.yaml'
+      - name: Geräte
+        label: Steuerung
+        icon: mdi:power-plug
+        navigation_path: /phone-view/devices
+        notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+        background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"                                             
+    - !include
+      - '../../../base/templates/button/button-badge.yaml'
+      - name: Licht
+        label: Steuerung
+        icon: mdi:floor-lamp
+        navigation_path: /phone-view/lights
+        notification: "[[[ if (states['sensor.current_lights_on'].state == 0) return '&nbsp'; else return `${states['sensor.current_lights_on'].state}`; ]]]"
+        background_color: "[[[ if (states['sensor.current_lights_on'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"   
+    - !include
+      - '../../../base/templates/button/button-badge.yaml'
+      - name: Security
+        label: Panel
+        icon: mdi:cctv
+        navigation_path: /phone-view/security
+        notification: "[[[ if (states['sensor.current_binary_sensors_on'].state == 0) return '&nbsp'; else return `${states['sensor.current_binary_sensors_on'].state}`; ]]]"
+        background_color: "[[[ if (states['sensor.current_binary_sensors_on'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]" 
+    - !include
+      - '../../../base/templates/button/button-badge.yaml'
+      - name: Grundriss
+        label: Übersicht
+        icon: mdi:floor-plan
+        navigation_path: /phone-view/floorplan
+        notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+        background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]" 
+    - !include
+      - '../../../base/templates/button/button-badge.yaml'
+      - name: Haushalt
+        label: Aufgaben
+        icon: mdi:broom
+        navigation_path: /phone-view/cleaning
+        notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+        background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"  
+    - !include
+      - '../../../base/templates/button/button-badge.yaml'
+      - name: Einkauf
+        label: Liste
+        icon: mdi:cart
+        navigation_path: /phone-view/custom_1
+        notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+        background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"  
+    - !include
+      - '../../../base/templates/button/button-badge.yaml'
+      - name: Medien
+        label: Center
+        icon: mdi:plex
+        navigation_path: /phone-view/media
+        notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+        background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"     
+    

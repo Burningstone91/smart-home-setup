@@ -1,0 +1,33 @@
+# lovelace_gen
+
+type: custom:auto-entities
+filter:
+  include:
+    - attributes: 
+        type: fan
+      options:
+        !include
+        - '../button/button.yaml'
+        - entity: this.entity_id
+          grid: {{ grid|default('light-devices-grid') }}
+          template: '../popup-cards/light-switch.yaml'
+          lock: false
+          size: {{ icon_size|default('25%') }}
+          color: DodgerBlue
+          spin_on: true
+    - type: custom:button-card
+      color_type: blank-card
+      aspect_ratio: 1/1
+    - type: custom:button-card
+      color_type: blank-card
+      aspect_ratio: 1/1
+    - type: custom:button-card
+      color_type: blank-card
+      aspect_ratio: 1/1
+sort:
+  method: {{ sort|default('name') }}
+  numeric: true
+card:
+  type: custom:layout-card
+  column_num: {{ columns|default('3') }}
+  layout: horizontal

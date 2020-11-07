@@ -1,0 +1,133 @@
+sensor:
+  # Template Sensors (device counting)
+    - platform: template
+      sensors:
+        current_lights_on:
+          friendly_name: Lichter an
+          value_template: >-
+            {{ expand('group.all_light_entities')|selectattr('state','eq','on')|list|count }}
+        current_devices_on:
+          friendly_name: Geräte eingeschaltet
+          value_template: >-
+            {{ expand('group.all_device_switch_entities')|selectattr('state','eq','on')|list|count }}
+        current_binary_sensors_on:
+          friendly_name: Binärsensoren ein
+          value_template: >-
+            {{ expand('group.all_binary_sensor_entities')|selectattr('state','eq','on')|list|count }}
+        current_windows_open:
+          friendly_name: Fenster geöffnet
+          value_template: >-
+            {{ expand('group.all_window_sensor_entities')|selectattr('state','eq','on')|list|count }}
+        current_doors_open:
+          friendly_name: Türen geöffnet
+          value_template: >-
+            {{ expand('group.all_door_sensor_entities')|selectattr('state','eq','on')|list|count }}
+        current_motion_sensors_on:
+          friendly_name: Bewegung erkannt
+          value_template: >-
+            {{ expand('group.all_motion_sensor_entities')|selectattr('state','eq','on')|list|count }}
+  
+  # Frontend Greeting          
+    - platform: template
+      sensors:
+        greeting:
+          friendly_name: Greeting
+          value_template: >-
+            {% set time = states('sensor.time') %}
+            {% if '00:00' < time < '06:00' %}
+              {{ states.input_text.good_night.state }}
+            {% elif '06:00' < time < '12:00' %}
+              {{ states.input_text.good_morning.state }}
+            {% elif '12:00' < time < '18:00' %}
+              {{ states.input_text.good_afternoon.state }}
+            {% else %}
+              {{ states.input_text.good_evening.state }}
+            {% endif %}
+
+# Input Texts
+input_text:
+  good_morning:
+  good_afternoon:
+  good_evening:
+  good_night:
+
+# Input Booleans
+input_boolean:
+  dummy1:
+    initial: off
+  dummy2:
+    initial: off
+  dummy3:
+    initial: off
+  dummy4:
+    initial: on
+  empty:
+  remote_control:
+
+# Input Numbers
+input_number:
+  empty:
+    initial: 0
+    min: 0
+    max: 1
+
+# Input Selects
+input_select:
+  floor_selector:
+    options:
+      - '0'
+      - 1
+      - 2
+      - 3
+      - 4
+
+  media_view_selector:
+    name: media_view_selector
+    options:
+      - Media Players
+      - Remote Control
+      - Google Home
+      - Upcoming Media
+    initial: Media Players
+
+  show_media_view_selector:
+    options:
+      - 'Yes'
+      - 'No'
+
+  person_1:
+    options:
+      - Overview
+      - Location
+      - Calendar
+      - Vehicle
+
+  show_person_1_selector:
+    options:
+      - 'Yes'
+      - 'No'
+
+  person_2:
+    options:
+      - Overview
+      - Location
+      - Calendar
+      - Vehicle
+
+  show_person_2_selector:
+    options:
+      - 'Yes'
+      - 'No'
+
+  person_3:
+    options:
+      - Overview
+      - Location
+      - Calendar
+      - Vehicle
+
+  show_person_3_selector:
+    options:
+      - 'Yes'
+      - 'No'
+

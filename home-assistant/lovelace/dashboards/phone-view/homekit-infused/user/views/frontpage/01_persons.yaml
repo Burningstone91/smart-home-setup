@@ -1,0 +1,53 @@
+- type: horizontal-stack
+  cards:
+    - !include
+      - '../../../base/templates/picture-elements/frontpage-photo.yaml'
+      - person: person.dimitri
+        image_path: /local/person_pictures/dimitri_home.jpg
+        navigation_path: person_1
+        alignment: left
+        text_color: white
+        phone_battery_sensor: sensor.battery_level_phone_dimitri
+    - !include
+      - '../../../base/templates/picture-elements/frontpage-photo.yaml'
+      - person: person.sabrina
+        image_path: /local/person_pictures/sabrina_home.jpg
+        navigation_path: person_2
+        alignment: right
+        text_color: white
+        phone_battery_sensor: sensor.battery_level_phone_sabrina
+- type: picture-elements
+  style: |
+    ha-card {  
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+    }
+  image: /local/person_pictures/baghira.jpg
+  elements:
+    - type: image
+      entity: person.tala
+      image: /local/person_pictures/baghira.jpg
+      tap_action:
+        action: navigate
+        navigation_path: /phone-view/person_3
+      hold_action:
+        action: none
+      style:
+        left: 50%
+        top: 50%
+        width: 100%
+        heigth: 100%
+    # - type: state-label
+    #   entity: person.tala
+    #   style:
+    #     right: 0
+    #     bottom: 0
+    #     pointer-events: none
+    #     font-size: 13px
+    #     line-height: 15px
+    #     color: white
+    #     background-color: rgba(0, 0, 0, 0.3)
+    #     width: 100%
+    #     transform: initial
+    #     text-align: left

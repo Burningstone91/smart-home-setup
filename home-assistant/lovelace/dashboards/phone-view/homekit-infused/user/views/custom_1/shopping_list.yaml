@@ -1,0 +1,8 @@
+- type: vertical-stack
+  cards:  
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: shopping-list
+        - !include ../../../base/includes/gap.yaml
+    - !include ../../../base/includes/gap.yaml

@@ -1,8 +1,12 @@
 frontend:
+  themes: !include_dir_merge_named ../themes/
 
-lovelace_gen:
+lovelace_gen: !include_dir_merge_named ../lovelace/dashboards/phone-view/homekit-infused/user/config/
 
-#browser_mod:
+group:
+  !include ../lovelace/dashboards/phone-view/homekit-infused/user/device_counters.yaml
+
+browser_mod:
 
 lovelace:
   mode: storage
@@ -13,3 +17,9 @@ lovelace:
       icon: mdi:matrix
       show_in_sidebar: true
       filename: ./lovelace/dashboards/computer-view/computer-view.yaml
+    phone-view:
+      mode: yaml
+      title: Phone
+      icon: mdi:cellphone-android
+      show_in_sidebar: true
+      filename: ./lovelace/dashboards/phone-view/homekit-infused.yaml

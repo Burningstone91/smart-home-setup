@@ -1,0 +1,20 @@
+- type: vertical-stack
+  cards:
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Ankleidezimmer
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: switch.dehumidifier_dressroom
+            name: Entfeuchter
+            icon: mdi:fan
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    - !include ../../../base/includes/gap.yaml

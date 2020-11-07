@@ -1,0 +1,124 @@
+# Header Configuration File
+header:
+# This file will change the Header Properties, do NOT delete or comment any of
+# these lines. Titles can NOT have templates, subtitles CAN have JS templates.
+# e.g. "[[[ if (states['sensor.current_lights_on'].state == 0) return `All lights are off`; if (states['sensor.current_lights_on'].state == 1) return `There is 1 light on`; else return `There are ${states['sensor.current_lights_on'].state} lights on`; ]]]"
+# To change the language you can either do this manually or download the appropriate language file for predefined names in your language.
+
+
+# ========================= Alarm Entity ====================================== #
+  alarm_entity: alarm_control_panel.home_alarm
+# ============================================================================= #
+
+# ========================= Top Left Header Icons ============================= #
+  door_sensor: mdi:door
+  window_sensor: mdi:window-closed
+  motion_sensor: mdi:motion-sensor
+# ============================================================================= #
+
+# ========================= Person Titles ===================================== #
+  person_1_title: Dimitri
+  person_1_subtitle: Übersicht
+
+  person_2_title: Sabrina
+  person_2_subtitle: Übersicht
+
+  person_3_title: Baghira
+  person_3_subtitle: Übersicht
+
+  person_4_title: Baghira
+  person_4_subtitle: Übersicht
+# ============================================================================= #
+
+# ========================= Headers Titles ==================================== #
+  devices_title: Geräte
+  devices_subtitle: Steuerung
+  
+  automations_title: Automatisierungen
+  automations_subtitle: Übersicht
+  
+  climate_title: Klima
+  climate_subtitle: Übersicht
+  
+  battery_title: Batterien
+  battery_subtitle: Übersicht
+  
+  security_title: Sicherheit
+  security_subtitle: Panel
+  
+  waste_title: Recycling
+  waste_subtitle: Zeitplan
+  
+  certificates_title: Zertifikate
+  certificates_subtitle: Übersicht
+  
+  computers_title: Computer
+  computers_subtitle: Übersicht
+  
+  energy_title: Energie
+  energy_subtitle: Übersicht
+  
+  calendar_title: Kalender
+  calendar_subtitle: Overview
+  
+  lights_title: Licht
+  lights_subtitle: Steuerung
+  
+  location_title: Standort
+  location_subtitle: Karte
+  
+  media_title: Medien
+  media_subtitle: Center
+  
+  floorplan_title: Grundriss
+  floorplan_subtitle: Übersicht
+  
+  scenes_title: Szenen
+  scenes_subtitle: Steuerung
+  
+  vacuum_title: Staubsauger
+  vacuum_subtitle: Steuerung
+  
+  traffic_title: Verkehr
+  traffic_subtitle: Information
+  
+  cleaning_title: Haushalt
+  cleaning_subtitle: Aufgaben
+  
+  weather_title: Wetter
+  weather_subtitle: Info
+
+  covers_title: Rollos
+  covers_subtitle: Übersicht
+
+# ============================================================================= #
+
+# ========================= Subtitle Icons ==================================== #
+  person_1_icon: mdi:account
+  person_2_icon: mdi:account
+  person_3_icon: mdi:account
+  person_4_icon: mdi:account
+  devices_icon: mdi:power-plug
+  automations_icon: mdi:alpha-a-box
+  climate_icon: mdi:thermometer
+  battery_icon: mdi:battery-50
+  security_icon: mdi:cctv
+  waste_icon: mdi:trash-can
+  covers_icon: mdi:window-shutter
+  certificates_icon: mdi:certificate
+  computers_icon: mdi:desktop-tower-monitor
+  energy_icon: mdi:chart-line
+  calendar_icon: mdi:calendar
+  light_icon: mdi:floor-lamp
+  location_icon: mdi:map-marker
+  media_icon: mdi:plex
+  floorplan_icon: mdi:floor-plan
+  scenes_icon: mdi:arrange-send-backward
+  vacuum_icon: mdi:robot-vacuum
+  traffic_icon: mdi:waze
+  cleaning_icon: mdi:broom
+  weather_icon: mdi:weather-partly-cloudy
+  about_icon: mdi:help-circle
+  hki_settings_icon: mdi:palette
+  ha_settings_icon: mdi:home-assistant
+# ============================================================================= #

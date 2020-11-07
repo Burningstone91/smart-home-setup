@@ -1,0 +1,75 @@
+# lovelace_gen
+
+# Card 
+type: entities
+style: |
+  ha-card {
+    --ha-card-background: transparant;
+    -webkit-box-shadow: var(--header-shadow);
+    -moz-box-shadow: var(--header-shadow);
+    box-shadow: var(--header-shadow);
+    background: var(--primary-color);
+    border-radius: 0px !important;
+  }
+  .card-content {
+    padding: 0
+  }
+  :host {
+    z-index: 999;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+  }
+entities:
+  - type: custom:hui-vertical-stack-card
+    cards:
+      - type: horizontal-stack
+        cards:
+          - !include ../../includes/gap.yaml
+          - !include
+            - '../../templates/header/nav-icons.yaml'
+            - icon: {{ nav_icon|default('mdi:chevron-left') }}
+              path: {{ nav_path|default('menu') }}
+              icon_size: {{ icon_size|default('100%') }}
+          - type: markdown
+            style: |
+              ha-card {
+                font-family: var(--font-family);
+                font-size: var(--header-font-size);
+                font-weight: var(--header-font-weight);
+                color: var(--header-text-color);
+                box-shadow: none;
+                height: 20px;
+                margin-top: 1px;
+                margin-left: -15px;
+                letter-spacing: -1px;
+                overflow: visible;
+              }
+            content: >
+              ## {{ title|default('undefined') }}
+          - !include
+            - '../../templates/header/sensor-icons.yaml'
+            - icon: mdi:door
+              background_color: "[[[ if (states['sensor.current_doors_open'].state > 0) return 'red'; else return 'rgba(0,0,0,0.0)' ]]]"
+              badge: "[[[ if (states['sensor.current_doors_open'].state > 0) return states['sensor.current_doors_open'].state; else return '&nbsp;'; ]]]"
+              size: 100%
+              entity: group.all_door_sensor_entities 
+          - !include
+            - '../../templates/header/sensor-icons.yaml'
+            - icon: mdi:window-closed
+              background_color: "[[[ if (states['sensor.current_windows_open'].state > 0) return 'red'; else return 'rgba(0,0,0,0.0)' ]]]"
+              badge: "[[[ if (states['sensor.current_windows_open'].state > 0) return states['sensor.current_windows_open'].state; else return '&nbsp;'; ]]]"
+              entity: group.all_window_sensor_entities
+          - !include
+            - '../../templates/header/sensor-icons.yaml'
+            - icon: mdi:motion-sensor
+              background_color: "[[[ if (states['sensor.current_motion_sensors_on'].state > 0) return 'red'; else return 'rgba(0,0,0,0.0)' ]]]"
+              badge: "[[[ if (states['sensor.current_motion_sensors_on'].state > 0) return states['sensor.current_motion_sensors_on'].state; else return '&nbsp;'; ]]]"
+              entity: group.all_motion_sensor_entities
+          - !include ../../includes/gap.yaml
+      - !include 
+        - '../../templates/header/{{ header_bottom|default('header-bottom.yaml') }}'
+        - subtitle: "{{ subtitle|default('undefined') }}"
+          icon: "{{ icon|default('mdi:home') }}"
+          entity: {{ entity|default('input_boolean.dummy1') }}
+          spin: {{ spin|default('false') }}

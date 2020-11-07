@@ -1,0 +1,31 @@
+# lovelace_gen
+
+type: custom:auto-entities
+filter:
+  include:
+    - attributes: 
+        type: thermostat
+      options:
+        !include
+        - '../button/thermostat.yaml'
+        - entity: this.entity_id
+          lock: {{ lock|default('false') }}
+          ambient_entity: {{ ambient_entity|default('this.entity_id') }}
+          attributes: {{ attributes|default('attributes.current_temperature') }}
+    - type: custom:button-card
+      color_type: blank-card
+      aspect_ratio: 1/1
+    - type: custom:button-card
+      color_type: blank-card
+      aspect_ratio: 1/1
+    - type: custom:button-card
+      color_type: blank-card
+      aspect_ratio: 1/1
+show_empty: false
+sort:
+  method: {{ sort|default('name') }}
+  numeric: true
+card:
+  type: custom:layout-card
+  column_num: {{ columns|default('3') }}
+  layout: horizontal
