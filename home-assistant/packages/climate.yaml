@@ -10,6 +10,31 @@ sensor:
       - sensor.temperature_livingroom
       - sensor.temperature_storageroom
       - sensor.temperature_dressroom
+  # Average inside humidity
+  - platform: min_max
+    type: mean
+    name: humidity_average_inside
+    entity_ids:
+      - sensor.humidity_bathroomsmall
+      - sensor.humidity_bedroom
+      - sensor.humidity_office
+      - sensor.humidity_livingroom
+      - sensor.humidity_storageroom
+      - sensor.humidity_dressroom
+
+group:
+  windows_doors_outside:
+    name: Fenster
+    entities:
+      - binary_sensor.window_bathroomlarge
+      - binary_sensor.window_bedroom
+      - binary_sensor.window_dressroom
+      - binary_sensor.window_kitchen
+      - binary_sensor.window_livingroom
+      - binary_sensor.window_office
+      - binary_sensor.door_livingroom
+      - binary_sensor.door_kitchen
+      - binary_sensor.door_main
 
 automation:
 # Notify on door/window left open
@@ -83,5 +108,41 @@ automation:
         message: >
           {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} 
           ist seit {{ (trigger.for.seconds / 60) | int }} Minuten geöffnet. Bitte schliessen.
-
-                  
+# Notify on door/window left open when it's raining
+- id: notify_on_window_left_open_when_rain
+  alias: "Benachrichtigung wenn ein Fenster oder eine Türe offen ist bei Regen"
+  mode: parallel
+  trigger:
+    - platform: state
+      entity_id: weather.nafels
+      to:
+        - 'hail'
+        - 'lightning-rainy'
+        - 'pouring'
+        - 'rainy'
+        - 'snowy'
+        - 'snowy-rainy'
+  condition: "{{ expand('group.windows_doors_outside')|selectattr('state','eq','on')|list|count > 0 }}"
+  action:
+    - service: notify.mobile_app_phone_dimitri
+      data:
+        title: "Regen und Fenster geöffnet!"
+        message: >
+          Es regnet und es sind noch folgende Türen/Fenster geöffnet:
+          {{ expand('group.windows_doors_outside')|selectattr('state','eq','on')|map(attribute='friendly_name')|list|join(',') }}
+        data:
+          channel: Notfall
+# Turn on/off dehumidifer when window in the same room is opened/closed
+- id: turn_on_off_dehumidifer_on_window_open_close
+  alias: "Entfeucher aus-/einschalten wenn das Fenster geöffnet/geschlossen wird"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.window_dressroom
+      to: 'on'
+  condition: "{{ is_state('switch.dehumidifier_dressroom', 'on') }}"
+  action:
+    - service: switch.turn_off
+      entity_id: switch.dehumidifier_dressroom
+    - wait_template: "{{ is_state('binary_sensor.window_dressroom', 'off') }}"
+    - service: switch.turn_on
+      entity_id: switch.dehumidifier_dressroom

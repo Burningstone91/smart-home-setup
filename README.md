@@ -3597,6 +3597,76 @@ automation:
           is open for {{ (trigger.for.seconds / 60) | int }} minutes. Please close.
 ```
 
+### Notification on Window left open
+I use the following automation, which sends me a notification when a window is left open when it starts to rain. The notification contains the friendly names of the windows that are open.
+
+First create a group containing all windows/doors leading to the outside:
+
+```yaml
+group:
+  windows_doors_outside:
+    name: Fenster
+    entities:
+      - binary_sensor.window_bathroomlarge
+      - binary_sensor.window_bedroom
+      - binary_sensor.window_dressroom
+      - binary_sensor.window_kitchen
+      - binary_sensor.window_livingroom
+      - binary_sensor.window_office
+      - binary_sensor.door_livingroom
+      - binary_sensor.door_kitchen
+      - binary_sensor.door_main
+```
+
+Then the automation:
+```yaml
+automation:
+- id: notify_on_window_left_open_when_rain
+  alias: "Benachrichtigung wenn ein Fenster oder eine Türe offen ist bei Regen"
+  mode: parallel
+  trigger:
+    - platform: state
+      entity_id: weather.nafels
+      to:
+        - 'hail'
+        - 'lightning-rainy'
+        - 'pouring'
+        - 'rainy'
+        - 'snowy'
+        - 'snowy-rainy'
+  condition: "{{ expand('group.windows_doors_outside')|selectattr('state','eq','on')|list|count > 0 }}"
+  action:
+    - service: notify.mobile_app_phone_dimitri
+      data:
+        title: "Rain und window open!"
+        message: >
+          It's raining and the following windows are still open:
+          {{ expand('group.windows_doors_outside')|selectattr('state','eq','on')|map(attribute='friendly_name')|list|join(',') }}
+        data:
+          channel: emergency
+```
+This triggers when the weather entity changes to any of the rainy states.
+
+### Turn off dehumidifier when window in same room is opened
+I use the following automation to turn of the dehumidifier when the window in the same room is opened and turn it back on when the window is closed. There is a condition to only execute it when the dehumidifier is on when the window is opened.
+
+```yaml
+automation:
+- id: turn_on_off_dehumidifer_on_window_open_close
+  alias: "Entfeucher aus-/einschalten wenn das Fenster geöffnet/geschlossen wird"
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.window_dressroom
+      to: 'on'
+  condition: "{{ is_state('switch.dehumidifier_dressroom', 'on') }}"
+  action:
+    - service: switch.turn_off
+      entity_id: switch.dehumidifier_dressroom
+    - wait_template: "{{ is_state('binary_sensor.window_dressroom', 'off' }}"
+    - service: switch.turn_on
+      entity_id: switch.dehumidifier_dressroom
+```
+
 </p>
 </details>
 
