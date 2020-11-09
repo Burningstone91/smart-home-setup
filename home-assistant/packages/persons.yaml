@@ -62,6 +62,7 @@ automation:
           topic: "keys_device_tracker/{{ trigger.to_state.entity_id.split('_')[-1] }}"
           payload_template: >-
             {{ 'home' if trigger.to_state.state == 'on' else 'not_home'}}
+          retain: true
   
   # Update device tracker when room presence sensors changes
   - id: update_room_presence_device_tracker
@@ -98,6 +99,7 @@ automation:
             {% else %}
               home
             {% endif %}
+          retain: true
   
   # Sets the non-binary presence state of the persons
   - id: set_person_non_binary_presence_state
