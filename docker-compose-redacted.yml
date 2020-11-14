@@ -87,6 +87,7 @@ services:
       - ./mosquitto/config:/mosquitto/config
       - ./mosquitto/log:/mosquitto/log
       - ./mosquitto/data:/mosquitto/data
+
   portainer:
     container_name: portainer
     image: "portainer/portainer:latest"
@@ -111,6 +112,9 @@ services:
       - VALIDATION=http
       - EMAIL=yourmail@address.com
     image: ghcr.io/linuxserver/swag
+    networks:
+      default:
+        ipv4_address: 172.19.0.7
     ports:
       - "80:80"
       - "443:443"
@@ -118,3 +122,10 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./swag:/config
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/24
