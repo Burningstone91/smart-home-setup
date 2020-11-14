@@ -1,2 +1,3 @@
 voluptuous==0.11.7
-geopy
+packaging
+bs4

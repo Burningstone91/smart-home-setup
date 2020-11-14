@@ -31,5 +31,6 @@ portainer/
 home-assistant-db/
 esphome/
 swag/
+nextcloud/
 check_docker_latest.sh
 check_docker_list.txt

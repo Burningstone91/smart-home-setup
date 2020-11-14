@@ -1,11 +1,3 @@
-# bedroom:
-#   module: area
-#   class: Area
-#   area: bedroom
-#   attributes:
-#     friendly_name: Schlafzimmer
-#   priority: 1
-
 bedroom_light_switch:
   module: switches
   class: HueDimmerSwitch
@@ -30,13 +22,9 @@ bedroom_sabrina_switch:
       entity_id: 
         - light.bedroom_ceiling
     short_press_turn_off:
-      service: homeassistant.turn_off
+      service: light.turn_off
       entity_id: 
-        - switch.dehumidifier_dressroom
-        - light.bedroom
-        - light.livingroom
-        - light.dressroom
-        - light.office
+        - light.all_lights
 
 bedroom_dimitri_switch:
   module: switches
@@ -52,10 +40,6 @@ bedroom_dimitri_switch:
       entity_id: 
         - light.bedroom_ceiling
     short_press_turn_off:
-      service: homeassistant.turn_off
+      service: light.turn_off
       entity_id: 
-        - switch.dehumidifier_dressroom
-        - light.bedroom
-        - light.livingroom
-        - light.dressroom
-        - light.office
+        - light.all_lights

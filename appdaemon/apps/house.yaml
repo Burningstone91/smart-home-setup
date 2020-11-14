@@ -1,8 +1,0 @@
-house:
-  module: house
-  class: House
-  id: home
-  attributes:
-    friendly_name: Wohnung
-  priority: 1
-  

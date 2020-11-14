@@ -1,13 +1,11 @@
-# dressroom:
-#   module: area
-#   class: Area
-#   area: dressroom
-#   attributes:
-#     friendly_name: Ankleidezimmer
-#   priority: 1
-
 dressroom_light_switch:
   module: switches
   class: HueDimmerSwitch
   switch_id: remote_light_dressroom
   lights: light.dressroom
+  custom_button_config:
+    long_press_turn_off:
+      service: homeassistant.turn_off
+      entity_id: 
+        - light.dressroom
+        - switch.dehumidifier_dressroom
