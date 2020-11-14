@@ -1,1 +1,183 @@
 shopping_list:
+
+group:
+  household_tasks:
+    name: Haushaltsaufgaben
+    entities:
+      - sensor.chore_clean_dust
+      - sensor.chore_vacuum_clean
+      - sensor.chore_clean_floor_wet
+      - sensor.chore_oil_floor
+      - sensor.chore_dechalk
+      - sensor.chore_clean_covers
+      - sensor.chore_clean_curtains
+      - sensor.chore_clean_window_frames
+      - sensor.chore_clean_windows
+      - sensor.chore_clean_furniture
+      - sensor.chore_clean_cupboards
+      - sensor.chore_clean_oven
+      - sensor.chore_clean_fridge
+      - sensor.chore_defrost_fridge
+      - sensor.chore_clean_steam_exhaust
+      - sensor.chore_clean_dishwasher
+      - sensor.chore_clean_coffe_machine
+      - sensor.chore_check_food_fridge
+      - sensor.chore_change_cloths
+      - sensor.chore_clean_bath
+      - sensor.chore_clean_toilet
+      - sensor.chore_change_towels
+      - sensor.chore_clean_air_filter
+      - sensor.chore_change_bed_sheets
+      - sensor.chore_turn_mattress
+      - sensor.chore_clean_wash_machine
+      - sensor.chore_check_food_stock
+      - sensor.chore_clean_fur
+      - sensor.chore_clean_ears
+      - sensor.chore_clean_food_bowl
+      - sensor.chore_cut_claws
+
+automation:
+# Notify on household task due
+- id: notify_on_household_task_due
+  alias: "Benachrichtigung wenn eine Haushaltsaufgabe bald fällig ist"
+  variables:
+    entities: "group.household_tasks"
+  trigger:
+    - platform: time
+      at: "19:00:00"
+  action:
+    - repeat:
+        count: "{{ expand(entities) | list | count }}"
+        sequence:
+          - variables:
+              entity_id: >
+                {% set tasks = expand(entities) | map(attribute='entity_id') | list %}
+                {{ tasks[repeat.index - 1] }}
+              task_id: "{{ entity_id.split('.')[1] }}"
+              last_done_days: "{{ ((as_timestamp(now()) - (states(entity_id)) | float) / 60 / 60 / 24) | int }}"
+              cycle_days: "{{ state_attr(entity_id, 'cycle_days') | int }}"
+              warn_before_days: "{{ state_attr(entity_id, 'warning_before') | int }}"
+          - condition: template
+            value_template: "{{ last_done_days|int > (cycle_days|int - warn_before_days|int) }}"
+          - service: notify.mobile_app_phone_dimitri
+            data:
+              title: "🧹 {{ state_attr(entity_id, 'friendly_name') }}"
+              message: >
+                Aufgabe zuletzt vor {{ last_done_days }} Tagen erledigt.
+              data: 
+                group: household-tasks
+                tag: "{{ task_id }}"
+                actions:
+                  - action: done
+                    title: "Erledigt"
+
+# Mark task as solved and reply
+- id: mark_task_solved_when_confirmed
+  alias: "Markiere Aufgabe als erledigt und bedanke bei Benutzer"
+  trigger:
+    platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: done
+  action:
+    - variables:
+        task_id: "{{ trigger.event.data.tag }}"
+        sensor_name: "{{ 'sensor.' + task_id }}"
+        task_name: "{{ state_attr(sensor_name, 'friendly_name') }}"
+        executor: >
+          {% set user_id = trigger.event.context.user_id %}
+          {% set id_map = {
+            "6a6a294246724ba6a185d7830d21d48c": "dimitri",
+            "fb7da472ed7545edbca64c66440bce41": "sabrina"
+          } %}
+          {{ id_map[user_id] }}
+        other_person: "{{ 'dimitri' if executor == 'sabrina' else 'dimitri' }}"
+    # Mark task as solved by publishing timestamp to task topic
+    - service: mqtt.publish
+      data:
+        topic: "homeassistant/sensor/{{task_id}}/state"
+        payload: >
+          {
+            "state": {{ as_timestamp(now())|round(3) }},
+            "attributes": {
+              "executor": "{{ executor.title() }}",
+              "cycle_days": {{ state_attr(sensor_name, 'cycle_days') }},
+              "warning_before": {{ state_attr(sensor_name, 'warning_before') }}
+            } 
+          }
+        retain: true
+    # Thank person who did the task
+    - service: "notify.mobile_app_phone_{{ executor }}"
+      data:
+        title: "Danke!"
+        message: "Herzlichen Dank dafür, dass du die Aufgabe '{{ task_name }}' erledigt hast!"
+    # Clear notification from other person's phone
+    - service: "notify.mobile_app_phone_{{ other_person }}"
+      data:
+        message: clear_notification
+        data:
+          tag: "{{ task_id }}"
+    # Notify other person that task has been done already
+    - service: "notify.mobile_app_phone_{{ other_person }}"
+      data:
+        title: "Erledigt!"
+        message: "{{ executor.title() }} hat die Aufgabe '{{ task_name }}' bereits erledigt!"
+
+
+# Entity Customization
+homeassistant:
+  customize:
+    sensor.chore_clean_dust:
+      friendly_name: Abstauben
+    sensor.chore_vacuum_clean:
+      friendly_name: Staubsaugen
+    sensor.chore_clean_floor_wet:
+      friendly_name: Boden aufnehmen
+    sensor.chore_oil_floor:
+      friendly_name: Boden einölen
+    sensor.chore_dechalk:
+      friendly_name: Entkalken
+    sensor.chore_clean_covers:
+      friendly_name: Rollos reinigen
+    sensor.chore_clean_curtains:
+      friendly_name: Vorhänge reinigen
+    sensor.chore_clean_window_frames:
+      friendly_name: Fensterbänke reinigen
+    sensor.chore_clean_windows:
+      friendly_name: Fenster reinigen
+    sensor.chore_clean_furniture:
+      friendly_name:  Möbel pflegen
+    sensor.chore_clean_cupboards:
+      friendly_name: Schränke reinigen
+    sensor.chore_clean_oven:
+      friendly_name: Backofen reinigen
+    sensor.chore_clean_fridge:
+      friendly_name: Kühlschrank reinigen
+    sensor.chore_defrost_fridge:
+      friendly_name: Kühlschrank abtauen
+    sensor.chore_clean_steam_exhaust:
+      friendly_name: Dampfabzug reinigen
+    sensor.chore_clean_dishwasher:
+      friendly_name: Geschirrspüler reinigen
+    sensor.chore_clean_coffe_machine:
+      friendly_name: Kaffeemaschine reinigen
+    sensor.chore_check_food_fridge:
+      friendly_name: Lebensmittel prüfen
+    sensor.chore_change_cloths:
+      friendly_name: Putzlappen wechseln
+    sensor.chore_clean_bath:
+      friendly_name: Bad reinigen
+    sensor.chore_clean_toilet:
+      friendly_name: Toilette reinigen
+    sensor.chore_change_towels:
+      friendly_name: Handtücher wechseln
+    sensor.chore_clean_air_filter:
+      friendly_name: Luftfilter reinigen
+    sensor.chore_change_bed_sheets:
+      friendly_name: Bettwäsche wechseln
+    sensor.chore_turn_mattress:
+      friendly_name: Matratze wenden
+    sensor.chore_clean_wash_machine:
+      friendly_name: Waschmaschine reinigen
+    sensor.chore_check_food_stock:
+      friendly_name: Vorräte prüfen

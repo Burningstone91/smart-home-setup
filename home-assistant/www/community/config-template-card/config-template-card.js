@@ -3248,7 +3248,7 @@ function deepcopy(value) {
   return result;
 }
 
-const CARD_VERSION = '1.2.1';
+const CARD_VERSION = '1.3.0';
 
 /* eslint no-console: 0 */
 console.info(`%c  CONFIG-TEMPLATE-CARD  \n%c  Version ${CARD_VERSION}         `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
@@ -3261,11 +3261,14 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         if (!config) {
             throw new Error('Invalid configuration');
         }
-        if (!config.card) {
-            throw new Error('No card defined');
+        if (!config.card && !config.row && !config.element) {
+            throw new Error('No card or row or element defined');
         }
-        if (!config.card.type) {
+        if (config.card && !config.card.type) {
             throw new Error('No card type defined');
+        }
+        if (config.element && !config.element.style) {
+            throw new Error('No style defined for element');
         }
         if (!config.entities) {
             throw new Error('No entities defined');
@@ -3296,12 +3299,23 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         return true;
     }
     render() {
-        if (!this._config || !this.hass || !this._helpers) {
+        if (!this._config ||
+            !this.hass ||
+            !this._helpers ||
+            (!this._config.card && !this._config.row && !this._config.element)) {
             return html ``;
         }
-        let cardConfig = deepcopy(this._config.card);
-        cardConfig = this._evaluateConfig(cardConfig);
-        const element = this._helpers.createCardElement(cardConfig);
+        let config = this._config.card
+            ? deepcopy(this._config.card)
+            : this._config.row
+                ? deepcopy(this._config.row)
+                : deepcopy(this._config.element);
+        config = this._evaluateConfig(config);
+        const element = this._config.card
+            ? this._helpers.createCardElement(config)
+            : this._config.row
+                ? this._helpers.createRowElement(config)
+                : this._helpers.createHuiElement(config);
         element.hass = this.hass;
         return html `
       ${element}
@@ -3365,7 +3379,7 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         let varDef = '';
         if (this._config) {
             if (Array.isArray(this._config.variables)) {
-                // if variables is an array, create vars as an array
+                // if variables are an array, create vars as an array
                 vars = [];
                 for (const v in this._config.variables) {
                     const newV = eval(this._config.variables[v]);
@@ -3388,13 +3402,13 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
     }
 };
 __decorate([
-    property()
+    property({ attribute: false })
 ], ConfigTemplateCard.prototype, "hass", void 0);
 __decorate([
-    property()
+    internalProperty()
 ], ConfigTemplateCard.prototype, "_config", void 0);
 __decorate([
-    property()
+    internalProperty()
 ], ConfigTemplateCard.prototype, "_helpers", void 0);
 ConfigTemplateCard = __decorate([
     customElement('config-template-card')

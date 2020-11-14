@@ -56,6 +56,12 @@ I will explain here the different parts of my home automation system and how I s
 * <a href="https://github.com/Burningstone91/smart-home-setup#history-databases">
       History & Databases
   </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#history-databases">
+      Climate
+  </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#history-databases">
+      Household Tasks
+  </a>
 
 ## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"></a>
 
@@ -3443,10 +3449,6 @@ Enter the username and password of the InfluxDB. The URL for the InfluxDB databa
 </details>
 
 
-
-
-
-
 ## Climate <a name="climate" href="https://github.com/Burningstone91/smart-home-setup#climate"></a>
 ### Basic Explanation of Setup
 At our home we have floor heating, which is controlled by an outside temperature sensor from the landlord. So there's no automations for setting a thermostat or turning off heating when we leave (it's anyway not efficient to turn off floor heating for only a few hours). I do however have some automations to notify me about mold conditions, good opportunity to open the windows and ventilate the house, a window left open for too long and an automation to turn on/off the dehumidifier when someone opens/closes a window in the same room. And also some automations related to weather conditons, like close windows when rain is coming.
@@ -3672,13 +3674,272 @@ automation:
 
 
 
+## Household Tasks <a name="household-tasks" href="https://github.com/Burningstone91/smart-home-setup#household-tasks"></a>
+To keep track of the various tasks to be done around the house, I setup some sensors and automations to notify me and my wife about tasks that haven't been done for the predefined period. When one of us completed the task, he can push the "done" button in the automation. This will send a little "thank you" message to the person that did the task, clears the notification for the other person and sends a notification to the other person that the task has already been done. The sensor has an attribute that that tracks the user that marked the task as solved. 
 
+<details><summary>Step-by-step Guide</summary>
+<p>
+First create a lovelace template for the tasks. This template creates a button that when pressed creates an MQTT sensor with the name of the task. After the sensor has been created, another click will mark the task as solved. The button shows the number of days per cycle of the task and how many days before the task is due the users should be notified. I got this idea from this post on the Home Assistant forum [Chores - Keep track using HA](https://community.home-assistant.io/t/chores-keep-track-using-ha/153796/15).
 
+The template requires [lovelace gen](https://github.com/thomasloven/hass-lovelace_gen). 
 
+```yaml
+# lovelace_gen
 
+{% set entity = 'sensor.'+sensor_name %}
 
+type: 'custom:button-card'
+name: {{name}}
+entity: {{entity}}
+label: >
+  [[[ return variables.var.label ]]]
+show_label: true
+icon: >
+  [[[ return variables.var.icon ]]]
+custom_fields:
+  status: >
+    [[[ return '<span style="display: inline-block; color: white; background: '+variables.var.color+'; padding: 0 5px; border-radius: 5px;">'+variables.var.days_left+'</span>' ]]]
+styles:
+  grid:
+    - grid-template-areas: '"i n status" "i l status"'
+    - grid-template-columns: 15% 1fr 1fr
+    - grid-template-rows: 1fr 1fr
+  icon:
+    - color: >
+        [[[ return variables.var.color ]]]
+  label:
+    - color: var(--disabled-text-color)
+    - justify-self: start
+  name: 
+    - justify-self: start
+variables:
+  var: >
+    [[[
+      let colors = {};
+      colors["success"] = "#8BC24A";
+      colors["warning"] = "#FFC107";
+      colors["error"] = "#FF5252";
+      colors["disabled"] = "var(--disabled-text-color)";
+      
+      let result = {};
+      result.label = "Aufgabe erstellen";
+      result.color = colors["disabled"];
+      result.icon = "mdi:alert-plus";
+      result.days_left = "";
+      let timestamp;
+      let time;
+      let minutes;
+      let hours;
+      let days;
+      
+      if (states['{{entity}}']) {
+        if (entity.state != 'unknown') {
+          timestamp = parseInt(entity.state);
+          time = (Date.now() / 1000) - timestamp;
+          minutes = Math.floor(((time % 3600) / 60));
+          hours = Math.floor(((time % 86400) / 3600));
+          days = Math.floor((time / 86400));
+          
+          result.color = colors["success"];
+          result.icon = "mdi:checkbox-marked-circle-outline";
 
+          // LAST TRIGGER
+          if (time < 60)
+            result.label = 'weniger als 1 Minute';
+          else if (days == 1)
+            result.label = '1 Tag her';
+          else if (days > 1)
+            result.label = days+' Tage her';
+          else if (hours >= 1)
+            result.label = hours+' Stunden her';
+          else if (hours < 1)
+            result.label = minutes+(minutes > 1 ? ' Minuten' : ' Minute');
+          
+          // DAYS LEFT
+          result.days_left = Math.round(((timestamp + ({{cycle_days|int}}*86400)) - (Date.now()/1000)) / 86400);
+          if (result.days_left <= {{warning_before|int}}) {
+            result.color = colors["warning"];
+            result.icon = "mdi:clock-alert";
+          }
+          if (result.days_left <= 0) {
+            result.color = colors["error"];
+            result.icon = "mdi:alert-circle"
+          }
+          result.days_left = result.days_left + (result.days_left == 1 ? " Tag verbleibt" : " Tage verbleiben");
 
+        } else {
+          result.label = "Klicken zum Erledigen";
+        }
+      }
+      return result;
+      
+    ]]]
+tap_action:
+  confirmation:
+    text: >
+      [[[
+        if (!states['{{entity}}'])
+          return 'Entität {{entity}} wird erstellt.'
+        else
+          return 'Möchten sie diese Aufgabe wirklich als erledigt markieren?'
+      ]]]
+  action: call-service
+  service: mqtt.publish
+  service_data:
+    topic: >
+      [[[
+        if (!states['{{entity}}'])
+          return 'homeassistant/sensor/{{sensor_name}}/config'
+        else
+          return 'homeassistant/sensor/{{sensor_name}}/state'
+      ]]]
+    payload: >
+      [[[
+        if (!states['{{entity}}'])
+          return '{ "name": "{{sensor_name}}", "state_topic": "homeassistant/sensor/{{sensor_name}}/state", "value_template": "\{\{ value_json.state \}\}", "device_class": "timestamp", "json_attributes_topic": "homeassistant/sensor/{{sensor_name}}/state", "json_attributes_template": "\{\{ value_json.attributes | tojson \}\}" }'
+        else
+          return '{ "state":' + (Date.now() / 1000) + ', "attributes": { "cycle_days": {{cycle_days}}, "warning_before": {{warning_before}} } }'
+      ]]]
+    retain: true
+
+```
+
+And here a sample button for a task to change the bed sheets every 14 days and notify 1 day before the task is due. Using this button will create a sensor called `sensor.chore_change_bed_sheets`.
+
+```yaml
+cards:
+  - !include
+    - ../../templates/household_task.yaml
+    - name: Change Bed Sheets
+      sensor_name: chore_change_bed_sheets
+      warning_before: 1
+      cycle_days: 14
+```
+
+Afterwards create a group containing all the household tasks. E.g.
+
+```yaml
+group:
+  household_tasks:
+    name: Haushaltsaufgaben
+    entities:
+      - sensor.chore_clean_dust
+      - sensor.chore_vacuum_clean
+      - sensor.chore_clean_floor_wet
+      - sensor.chore_oil_floor
+      - sensor.chore_dechalk
+      - sensor.chore_clean_covers
+      - sensor.chore_clean_curtains
+      - sensor.chore_clean_window_frames
+      - sensor.chore_clean_windows
+      - etc.
+```
+</p>
+</details>
+
+Then the automation to notify the everyone that the task is due. Please note, this example is for the Android companion app, the iOS app handles actionable notifications differently. 
+
+```yaml
+automation:
+- id: notify_on_household_task_due
+  alias: "Benachrichtigung wenn eine Haushaltsaufgabe bald fällig ist"
+  variables:
+    entities: "group.household_tasks"
+  trigger:
+    - platform: time
+      at: "19:00:00"
+  action:
+    - repeat:
+        count: "{{ expand(entities) | list | count }}"
+        sequence:
+          - variables:
+              entity_id: >
+                {% set tasks = expand(entities) | map(attribute='entity_id') | list %}
+                {{ tasks[repeat.index - 1] }}
+              task_id: "{{ entity_id.split('.')[1] }}"
+              last_done_days: "{{ ((as_timestamp(now()) - (states(entity_id)) | float) / 60 / 60 / 24) | int }}"
+              cycle_days: "{{ state_attr(entity_id, 'cycle_days') | int }}"
+              warn_before_days: "{{ state_attr(entity_id, 'warning_before') | int }}"
+          - condition: template
+            value_template: "{{ last_done_days|int > (cycle_days|int - warn_before_days|int) }}"
+          - service: notify.mobile_app_phone_dimitri
+            data:
+              title: "🧹 {{ state_attr(entity_id, 'friendly_name') }}"
+              message: >
+                Task last done {{ last_done_days }} days ago.
+              data: 
+                group: household-tasks
+                tag: "{{ task_id }}"
+                actions:
+                  - action: done
+                    title: "Erledigt"
+```
+
+Then the automation that waits for someone to mark the task as solved by pressing the done button in the notification. This then updates the sensor with the name current time and the name of the executor of the task.
+
+```yaml
+# Mark task as solved and reply
+- id: mark_task_solved_when_confirmed
+  alias: "Markiere Aufgabe als erledigt und bedanke bei Benutzer"
+  trigger:
+    platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: done
+  action:
+    - variables:
+        task_id: "{{ trigger.event.data.tag }}"
+        sensor_name: "{{ 'sensor.' + task_id }}"
+        task_name: "{{ state_attr(sensor_name, 'friendly_name') }}"
+        executor: >
+          {% set user_id = trigger.event.context.user_id %}
+          {% set id_map = {
+            "abcdefghigdsfhldsfjldsfdsa": "his",
+            "fdfjldsagjdflagjldfaögjfdg": "her"
+          } %}
+          {{ id_map[user_id] }}
+        other_person: "{{ 'his' if executor == 'her' else 'his' }}"
+    # Mark task as solved by publishing timestamp to task topic
+    - service: mqtt.publish
+      data:
+        topic: "homeassistant/sensor/{{task_id}}/state"
+        payload: >
+          {
+            "state": {{ as_timestamp(now())|round(3) }},
+            "attributes": {
+              "executor": "{{ executor.title() }}",
+              "cycle_days": {{ state_attr(sensor_name, 'cycle_days') }},
+              "warning_before": {{ state_attr(sensor_name, 'warning_before') }}
+            } 
+          }
+        retain: true
+    # Thank person who did the task
+    - service: "notify.mobile_app_phone_{{ executor }}"
+      data:
+        title: "Thank you!"
+        message: "Many thanks for doing '{{ task_name }}'!"
+    # Clear notification from other person's phone
+    - service: "notify.mobile_app_phone_{{ other_person }}"
+      data:
+        message: clear_notification
+        data:
+          tag: "{{ task_id }}"
+    # Notify other person that task has been done already
+    - service: "notify.mobile_app_phone_{{ other_person }}"
+      data:
+        title: "Done!"
+        message: "{{ executor.title() }} already did '{{ task_name }}'!"
+```
+
+And finally some name customization to show nicer names in the frontend and the messages. E.g.
+
+```yaml
+# Entity Customization
+homeassistant:
+  customize:
+    sensor.chore_vacuum_clean:
+      friendly_name: Vacuum the House
+```
 
 
 ### Configure Denon AVR in Home Assistant

@@ -819,7 +819,7 @@
                       - base/templates/button/input-select-button.yaml
                       - entity: input_select.person_1
                         option: Vehicle
-                        icon: mdi:car-cog
+                        icon: mdi:train
         - type: vertical-stack
           cards:
             !include_dir_merge_list user/views/person_1/

@@ -78,18 +78,27 @@
   card:
     type: vertical-stack
     cards:
-      - !include
-        - '../../../base/templates/other/title-text.yaml'
-        - name: Kalender
-      - type: calendar
-        style: |
-          ha-card {
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-          }
-        entities:
-          # - calendar.stephanievanduuren_gmail_com
-          # - calendar.family  
+      - type: horizontal-stack
+        cards:
+          - !include ../../../base/includes/gap.yaml
+          - !include
+            - '../../../base/templates/other/title-text.yaml'
+            - name: Kalender
+          - !include ../../../base/includes/gap.yaml
+      - type: horizontal-stack
+        cards:
+          - !include ../../../base/includes/gap.yaml
+          - type: calendar
+            style: |
+              ha-card {
+                border-radius: var(--border-radius);
+                box-shadow: var(--box-shadow);
+              }
+            entities:
+              - calendar.personlich
+              # - calendar.family
+          - !include ../../../base/includes/gap.yaml
+      
 
 # - type: conditional
 #   conditions:

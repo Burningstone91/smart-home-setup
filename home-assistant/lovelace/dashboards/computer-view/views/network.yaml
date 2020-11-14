@@ -580,7 +580,7 @@ cards:
               - type: vertical-stack
                 cards:                
                   - type: custom:mini-graph-card
-                    name: Werbung Blockiert Heute
+                    name: Werbung Blockiert letzte 24 Stunden
                     icon: mdi:block-helper
                     entities:
                       - sensor.pi_hole_ads_blocked_today
@@ -609,7 +609,7 @@ cards:
               - type: vertical-stack
                 cards:                 
                   - type: custom:mini-graph-card
-                    name: DNS Queries Heute
+                    name: DNS Queries letze 24 Stunden
                     icon: mdi:comment-question-outline
                     entities:
                       - sensor.pi_hole_dns_queries_today
