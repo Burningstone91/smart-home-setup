@@ -1,6 +1,14 @@
 # Person Integration
 person:
 
+# Calendars
+calendar:
+  - platform: caldav
+    username: !secret nextcloud_user
+    password: !secret nextcloud_pass
+    url: !secret nextcloud_url
+    verify_ssl: false
+
 # Bluetooth Room Presence Tracker
 device_tracker:
   - platform: mqtt
@@ -70,31 +78,31 @@ automation:
     mode: parallel
     trigger:
       - platform: state
-        entity_id: sensor.dimitri_room_presence
+        entity_id: 
+          - sensor.dimitri_room_presence
+          - sensor.sabrina_room_presence
+        from: 'not_home'
+        to:
+          - 'livingroom'
+          - 'dressroom'
+          - 'office'
+          - 'bedroom'
+          - 'hallway'
+        for:
+          seconds: 5
+      - platform: state
+        entity_id: 
+          - sensor.sabrina_room_presence
+          - sensor.dimitri_room_presence
         to: 'not_home'
         for:
           minutes: 3
-      - platform: state
-        entity_id: sensor.dimitri_room_presence
-        for:
-          seconds: 5
-      - platform: state
-        entity_id: sensor.sabrina_room_presence
-        to: 'not_home'
-        for:
-          minutes: 3
-      - platform: state
-        entity_id: sensor.sabrina_room_presence
-        for:
-          seconds: 5
-    condition: 
-      - "{{ trigger.from_state.state != trigger.to_state.state }}"
     action:
       - service: mqtt.publish
         data:
           topic: "room_presence_device_tracker/{{ trigger.to_state.entity_id.split('.')[1].split('_')[0] }}"
           payload_template: >-
-            {% if trigger.to_state.state == 'not_home' and trigger.for.seconds == 3 * 60 %}
+            {% if trigger.to_state.state == 'not_home' %}
               not_home
             {% else %}
               home
