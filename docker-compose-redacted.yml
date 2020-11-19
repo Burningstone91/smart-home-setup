@@ -39,7 +39,7 @@ services:
 
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:0.117.4
+    image: homeassistant/home-assistant:0.118.0
     network_mode: host
     restart: unless-stopped
     volumes:
