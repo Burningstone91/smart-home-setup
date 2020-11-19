@@ -49,6 +49,8 @@ cards:
                       10.10.0.1<br>
                       **Firmware:**
                       {{ states('sensor.firmware_usg') }}<br>
+                      **Updates**
+                      {{ 'Update available' if state_attr('device_tracker.usg_router', 'upgradable') == 'true' else 'Up-to-date' }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_usg') }}
                     style: |
@@ -150,12 +152,14 @@ cards:
                       10.10.0.14<br>
                       **Firmware:**
                       {{ states('sensor.firmware_ap_livingroom') }}<br>
+                      **Updates:**
+                      {{ 'Update available' if state_attr('device_tracker.ap_livingroom', 'upgradable') == true else 'Up-to-date' }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_ap_livingroom') }}
                     style: |
                       ha-card {
                         color: teal;
-                        padding-top: 20px;
+                        padding-top: 5px;
                       }
               ####################################################
               #                  Switch Livingroom               #
@@ -186,12 +190,14 @@ cards:
                       10.10.0.6<br>
                       **Firmware:**
                       {{ states('sensor.firmware_switch_livingroom') }}<br>
+                      **Updates:**
+                      {{ 'Update available' if state_attr('device_tracker.switch_livingroom', 'upgradable') == true else 'Up-to-date' }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_switch_livingroom') }}
                     style: |
                       ha-card {
                         color: teal;
-                        padding-top: 20px;
+                        padding-top: 5px;
                       }
               ####################################################
               #                  Switch Storageroom              #
@@ -222,12 +228,14 @@ cards:
                       10.10.0.10<br>
                       **Firmware:**
                       {{ states('sensor.firmware_switch_storageroom') }}<br>
+                      **Updates:**
+                      {{ 'Update available' if state_attr('device_tracker.switch_storageroom', 'upgradable') == true   else 'Up-to-date' }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_switch_storageroom') }}
                     style: |
                       ha-card {
                         color: teal;
-                        padding-top: 20px;
+                        padding-top: 5px;
                       }
       ####################################################
       #                                                  #
@@ -673,7 +681,7 @@ cards:
                       **Firmware:**
                       {{ states('sensor.firmware_nas') }}<br>
                       **Updates:**
-                      {{ states('sensor.firmware_upgrade_nas') }}<br>
+                      {{ 'Update available' if states('binary_sensor.nas_update_available') == 'on' else 'Up-to-date' }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_nas') }}
                     style: |

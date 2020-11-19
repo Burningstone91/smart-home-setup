@@ -2488,7 +2488,7 @@ Add the following in the `sensor:` section of the system_monitoring.yaml file (e
 To monitor the Synology NAS we can use the [Synology DSM integration](https://www.home-assistant.io/integrations/synology_dsm/). In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Synology DSM" and click on it. In the host field enter the IP of your NAS, fill in the username and password to log into the NAS and press Submit. You should now have sensors for the disk temperature, disk size, cpu load etc.
 
 #### Model and Firmware
-To get the model, current firmware and whether an update is available we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP on the NAS. Login to the Web Interface of the NAS, go to "Control Panel" and then choose "Terminal & SNMP". Go to the tab "SNMP" and enable the SNMP Service.
+To get the model and current firmware we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP on the NAS. Login to the Web Interface of the NAS, go to "Control Panel" and then choose "Terminal & SNMP". Go to the tab "SNMP" and enable the SNMP Service.
 Add the following in the `sensor:` section of the system_monitoring.yaml file:\
 Model:
 ```yaml
@@ -2506,24 +2506,7 @@ Firmware:
     community: 'public'
     baseoid: 1.3.6.1.4.1.6574.1.5.3.0
 ```
-Firmware Upgrade Available:
-```yaml
-  - platform: snmp
-    name: Firmware Upgrade NAS
-    host: 10.10.40.15
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.6574.1.5.4.0
-    value_template: >
-      {% set mapping = {
-        '1': 'Upgrade available',
-        '2': 'Up-to-date',
-        '3': 'Unknown',
-        '4': 'Unknown',
-        '5': 'Unknown'
-      } %}
-      {{ mapping[value] if value in mapping else 'error' }}
-```
-This sensor will show "Upgrade Available", "Up-to-date" or "unknown" if the value can be read, otherwise it shows "error".
+The Synology DSM integration provides a binary_sensor that shows whether an update is available or not.
 
 ### Unifi Devices
 #### Unifi Controller

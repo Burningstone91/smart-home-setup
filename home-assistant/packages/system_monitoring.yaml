@@ -815,10 +815,8 @@ automation:
           - sensor.update_grafana
           - sensor.update_portainer
           - sensor.update_unifi_poller
+          - binary_sensor.nas_update_available
         to: "Update available"
-      - platform: state
-        entity_id: sensor.firmware_upgrade_nas
-        to: "Upgrade available"
       - platform: numeric_state
         entity_id: 
           - sensor.updates_pi_bathroomsmall
@@ -832,7 +830,6 @@ automation:
       - platform: template
         value_template: >
           {{ states('sensor.latest_version_deconz') > states('sensor.current_version_deconz') or
-              states('sensor.latest_firmware_conbee').lstrip('0x') > states('sensor.current_firmware_conbee').lstrip('0x') or 
               states('sensor.latest_version_homeassistant') > states('sensor.current_version_homeassistant') or
               states('sensor.latest_version_pihole_core') > states('sensor.current_version_pihole_core') or
               states('sensor.latest_version_pihole_ftl') > states('sensor.current_version_pihole_ftl') or
