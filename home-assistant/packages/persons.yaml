@@ -225,7 +225,7 @@ homeassistant:
     ## Phone
     sensor.battery_level_phone_dimitri:
       friendly_name: Handy Dimitri
-    sensor.charging_phone_dimitri:
+    binary_sensor.charging_phone_dimitri:
       friendly_name: Ladestatus Handy Dimitri
       icon: mdi:cellphone-charging
     sensor.next_alarm_phone_dimitri:
@@ -258,10 +258,24 @@ homeassistant:
     person.sabrina:
       friendly_name: Sabrina
       icon: mdi:account
+    ## Phone
+    sensor.battery_level_phone_sabrina:
+      friendly_name: Handy Sabrina
+    binary_sensor.charging_phone_sabrina:
+      friendly_name: Ladestatus Handy Sabrina
+      icon: mdi:cellphone-charging
+    sensor.next_alarm_phone_sabrina:
+      friendly_name: Nächster Wecker Sabrina
+      icon: mdi:alarm
+    sensor.call_state_phone_sabrina:
+      friendly_name: Anruf Sabrina
+      icon: mdi:phone
+    sensor.wifi_connection_phone_sabrina:
+      friendly_name: WiFi Handy Sabrina
     ## Presence
-    # device_tracker.gps_presence_sabrina:
-    #   friendly_name: Standort Sabrina
-    #   icon: mdi:map-marker
+    device_tracker.gps_presence_sabrina:
+      friendly_name: Standort Sabrina
+      icon: mdi:map-marker
     device_tracker.room_presence_sabrina:
       friendly_name: Raum Tracker Sabrina
       icon: mdi:bluetooth

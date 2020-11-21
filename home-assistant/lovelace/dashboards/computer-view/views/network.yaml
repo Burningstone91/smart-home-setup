@@ -50,7 +50,7 @@ cards:
                       **Firmware:**
                       {{ states('sensor.firmware_usg') }}<br>
                       **Updates**
-                      {{ 'Update available' if state_attr('device_tracker.usg_router', 'upgradable') == 'true' else 'Up-to-date' }}<br>
+                      {{ states('sensor.firmware_upgrade_usg_router') }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_usg') }}
                     style: |
@@ -153,7 +153,7 @@ cards:
                       **Firmware:**
                       {{ states('sensor.firmware_ap_livingroom') }}<br>
                       **Updates:**
-                      {{ 'Update available' if state_attr('device_tracker.ap_livingroom', 'upgradable') == true else 'Up-to-date' }}<br>
+                      {{ states('sensor.firmware_upgrade_ap_livingroom') }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_ap_livingroom') }}
                     style: |
@@ -191,7 +191,7 @@ cards:
                       **Firmware:**
                       {{ states('sensor.firmware_switch_livingroom') }}<br>
                       **Updates:**
-                      {{ 'Update available' if state_attr('device_tracker.switch_livingroom', 'upgradable') == true else 'Up-to-date' }}<br>
+                      {{ states('sensor.firmware_upgrade_switch_livingroom') }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_switch_livingroom') }}
                     style: |
@@ -229,7 +229,7 @@ cards:
                       **Firmware:**
                       {{ states('sensor.firmware_switch_storageroom') }}<br>
                       **Updates:**
-                      {{ 'Update available' if state_attr('device_tracker.switch_storageroom', 'upgradable') == true   else 'Up-to-date' }}<br>
+                      {{ states('sensor.firmware_upgrade_switch_storageroom') }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_switch_storageroom') }}
                     style: |
