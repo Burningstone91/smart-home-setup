@@ -2846,66 +2846,10 @@ notify:
 ```
 The notifier for the phone will automatically be created once you connected the Home Assistant Companion App on your phone with your Home Assistant instance. 
 
-The below automation triggers on all the different sensors that show that an update is available in different ways. The docker sensors show "Update Available", the Pi sensors have a number of updates available and the version sensors each have a latest and a current version sensor. If my Desktop is running, then the notification will be sent to my phone because then I may have time to do the update right now as I'm already using my computer. Otherwise it will be sent to my organization tool via Mail that I can plan it for later.
+The linked automation triggers on all the different sensors that show that an update is available in different ways. The docker sensors show "Update Available", the Pi sensors have a number of updates available and the version sensors each have a latest and a current version sensor. If my Desktop is running, then the notification will be sent to my phone because then I may have time to do the update right now as I'm already using my computer. Otherwise it will be sent to my organization tool via Mail that I can plan it for later.
 
-```yaml
-  # Notify on update available
-  - id: notify_on_update_available
-    alias: "Benachrichtigung wenn ein Update verfügbar ist"
-    mode: parallel
-    trigger:
-      - platform: state
-        entity_id: 
-          - sensor.update_esphome
-          - sensor.update_mosquitto
-          - sensor.update_influxdb
-          - sensor.update_grafana
-          - sensor.update_portainer
-          - sensor.update_unifi_poller
-        to: "Update available"
-      - platform: state
-        entity_id: sensor.firmware_upgrade_nas
-        to: "Upgrade available"
-      - platform: numeric_state
-        entity_id: 
-          - sensor.updates_pi_bathroomsmall
-          - sensor.updates_pi_livingroom
-          - sensor.updates_pi_dressroom
-          - sensor.updates_pi_zigbee_zwave
-          - sensor.updates_pi_network
-          - sensor.updates_pi_office
-          - sensor.hacs
-        above: 1
-      - platform: template
-        value_template: >
-          {{ states('sensor.latest_version_deconz') > states('sensor.current_version_deconz') or
-              states('sensor.latest_firmware_conbee').lstrip('0x') > states('sensor.current_firmware_conbee').lstrip('0x') or 
-              states('sensor.latest_version_homeassistant') > states('sensor.current_version_homeassistant') or
-              states('sensor.latest_version_pihole_core') > states('sensor.current_version_pihole_core') or
-              states('sensor.latest_version_pihole_ftl') > states('sensor.current_version_pihole_ftl') or
-              states('sensor.latest_version_pihole_web') > states('sensor.current_version_pihole_web') }}
-    condition:
-      - "{{ trigger.from_state.state != trigger.to_state.state }}"
-      - "{{ trigger.from_state.state not in ['unavailable', 'unknown', 'None'] }}"
-      - "{{ trigger.to_state.state not in ['unavailable', 'unknown', 'None'] }}"
-    action:
-      - variables:
-          name: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }}"
-      - choose:
-          # IF desktop is running notify phone
-          - conditions: "{{ is_state('device_tracker.desktop_dimitri', 'home') }}"
-            sequence:
-              - service: notify.mobile_app_phone_dimitri
-                data:
-                  title: "{{ name }}"
-                  message: "Update available"
-        # ELSE create a task in Evernote
-        default:
-          - service: notify.evernote
-            data:
-              title: "{{ name }}  @1 Next #!Heute #@computer"
-              message: "Plan update"
-```
+[Notify on update available](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L805)
+
 
 ### Home Assistant Heartbeat and Backup Sensors (Healthchecks.io)
 I use [Healtchecks.io](https://healthchecks.io/) to create a heartbeat monitor for Home Assistant. This works by sending a ping to a specific URL from healthchecks.io through the [rest sensor integration](https://www.home-assistant.io/integrations/rest/) every x minutes. Healthchecks.io checks at the given interval whether the ping is received or not, and if not it will send a notification through one of the various integrations they have such as WhatsApp, E-Mail, Slack, etc. 
@@ -2969,261 +2913,29 @@ sensor:
 ### Notification on Low Battery
 I use a simple automation to notify me when the battery level for any of the ZigBee or Z-Wave devices is below 20%.
 
-```yaml
-  - id: notify_on_low_batter_level
-    alias: "Benachrichtigung wenn Batterien bald leer sind"
-    mode: parallel
-    trigger:
-      - platform: numeric_state
-        entity_id:
-          - sensor.battery_level_door_bathroomlarge
-          - sensor.battery_level_door_bathroomsmall
-          - sensor.battery_level_door_bedroom
-          - sensor.battery_level_door_dressroom
-          - sensor.battery_level_door_kitchen
-          - sensor.battery_level_door_livingroom
-          - sensor.battery_level_door_main
-          - sensor.battery_level_door_office
-          - sensor.battery_level_door_storageroom
-          - sensor.battery_level_lux_office
-          - sensor.battery_level_lux_outside
-          - sensor.battery_level_motion_livingroom
-          - sensor.battery_level_multisensor_bathroomsmall
-          - sensor.battery_level_multisensor_bedroom
-          - sensor.battery_level_multisensor_dressroom
-          - sensor.battery_level_remote_dimitri
-          - sensor.battery_level_remote_light_bedroom
-          - sensor.battery_level_remote_light_dressroom
-          - sensor.battery_level_remote_light_livingroom
-          - sensor.battery_level_remote_light_office
-          - sensor.battery_level_remote_sabrina
-          - sensor.battery_level_temperature_bathroomsmall
-          - sensor.battery_level_temperature_livingroom
-          - sensor.battery_level_temperature_storageroom
-          - sensor.battery_level_window_bathroomlarge
-          - sensor.battery_level_window_bedroom
-          - sensor.battery_level_window_dressroom
-          - sensor.battery_level_window_kitchen
-          - sensor.battery_level_window_livingroom
-          - sensor.battery_level_window_office
-        below: 20
-    action:
-      - service: notify.evernote
-        data:
-          title: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} change batteries @1 Next #!Heute #@computer"
-          message: "Battery Level: {{ trigger.to_state.state }}"
-```
+[Notify on low battery level](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L859)
 
 ### Notification on Bad Login Attempt
 I use an automation to notify me when there was a bad login attempt. I use the emergency channel (only works for Android phones) for this notification. I configured my phone to allow messages from the emergency channel when in Do not Disturb Mode. 
 
-```yaml
-automation:
-  - id: notify_on_bad_login_attempt
-    alias: "Benachrichtigung bei Falschem Loginversuch"
-    mode: parallel
-    trigger:
-      - platform: state
-        entity_id: "persistent_notification.http_login"
-        to: "notifying"
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "Bad Login Attempt!"
-          message: >
-            {{ state_attr('persistent_notification.http_login', 'message') }}
-          data:
-            channel: Notfall
-```
+[Notify on bad login attempt](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L1000)
 
 ### Notification on Device Offline
 I use an automation to notify me when a device went offline. For network clients I check the device tracker generated by the Unifi integration going to 'not_home' for 5 minutes and for the ZigBee/Z-Wave devices I check when the respective sensor goes 'unavailable' for 5 minutes.
 
-```yaml
-automation:
-  - id: notify_on_device_offline
-    alias: "Benachrichtigung bei Gerät offline"
-    mode: parallel
-    trigger:
-      - platform: state
-        entity_id:
-          - device_tracker.ap_livingroom
-          - device_tracker.bed_sensor_bedroom
-          - device_tracker.media_player_livingroom
-          - device_tracker.nas
-          - device_tracker.pi_bathroomsmall
-          - device_tracker.pi_dressroom
-          - device_tracker.pi_livingroom
-          - device_tracker.pi_office
-          - device_tracker.pi_zigbee_zwave
-          - device_tracker.pi_network
-          - device_tracker.plug_dishwasher
-          - device_tracker.receiver_bedroom
-          - device_tracker.receiver_livingroom
-          - device_tracker.receiver_office
-          - device_tracker.remote_livingroom
-          - device_tracker.server_nuc
-          - device_tracker.switch_livingroom
-          - device_tracker.switch_storageroom
-          - device_tracker.unifi_controller
-          - device_tracker.usg_router
-          - device_tracker.vacuum_livingroom
-        from: "home"
-        to: "not_home"
-        for:
-          minutes: 5
-      - platform: state
-        entity_id:
-          - sensor.battery_level_remote_light_livingroom
-          - sensor.battery_level_remote_light_dressroom
-          - sensor.battery_level_remote_light_bedroom
-          - sensor.battery_level_remote_light_office
-          - sensor.battery_level_remote_sabrina
-          - sensor.battery_level_remote_dimitri
-          - binary_sensor.motion_livingroom
-          - binary_sensor.motion_dressroom
-          - binary_sensor.motion_bedroom
-          - binary_sensor.motion_office
-          - sensor.temperature_bathroomsmall
-          - sensor.temperature_livingroom
-          - sensor.temperature_storageroom
-          - sensor.lux_outside
-          - sensor.lux_office
-          - binary_sensor.door_bathroomlarge
-          - binary_sensor.door_bathroomsmall
-          - binary_sensor.door_office
-          - binary_sensor.door_bedroom
-          - binary_sensor.door_dressroom
-          - binary_sensor.door_storageroom
-          - binary_sensor.door_kitchen
-          - binary_sensor.door_livingroom
-          - binary_sensor.door_main
-          - binary_sensor.window_bathroomlarge
-          - binary_sensor.window_office
-          - binary_sensor.window_dressroom
-          - binary_sensor.window_bedroom
-          - binary_sensor.window_kitchen
-          - binary_sensor.window_livingroom
-        to: "unavailable"
-        for:
-          minutes: 5
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "Device offline!"
-          message: >
-            {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is offline for 5 minutes!
-          data:
-            channel: emergency
-```
+[Notify on device offline](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L1017)
+
 ### Notification on high usage/temperature of devices
 I use automations to notify me about high CPU load, high CPU temperature, high disk usage and under Voltage detected for the Pis.
 
-High CPU Load:
-```yaml
-automation:
-  - id: notify_on_high_cpu_usage
-    alias: "Benachrichtigung wenn CPU Last hoch ist"
-    mode: parallel
-    trigger:
-      - platform: numeric_state
-        entity_id:
-          - sensor.cpu_load_ha
-          - sensor.cpu_load_nas
-          - sensor.cpu_load_pi_bathroomsmall
-          - sensor.cpu_load_pi_livingroom
-          - sensor.cpu_load_pi_office
-          - sensor.cpu_load_pi_dressroom
-          - sensor.cpu_load_pi_network
-          - sensor.cpu_load_pi_zigbee_zwave
-        above: 60
-        for:
-          hours: 2
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "High CPU Load!"
-          message: >
-            The CPU Load for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is over 60% for 2 hours!
-          data:
-            channel: emergency
-```
-High CPU Temperature:
-```yaml
-automation:
-  - id: notify_on_high_cpu_temp
-    alias: "Benachrichtigung wenn CPU Temperatur hoch ist"
-    mode: parallel
-    trigger:
-      - platform: numeric_state
-        entity_id:
-          - sensor.nas_temperature
-          - sensor.temperature_cpu_nuc
-          - sensor.temperature_pi_bathroomsmall
-          - sensor.temperature_pi_livingroom
-          - sensor.temperature_pi_dressroom
-          - sensor.temperature_pi_office
-          - sensor.temperature_pi_zigbee_zwave
-          - sensor.temperature_pi_network
-          - sensor.temperature_switch_livingroom
-        above: 70
-        for:
-          hours: 2
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "High CPU Temperature!"
-          message: >
-            CPU Temperature for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is over 70° for 2 hours!
-          data:
-            channel: emergency
-```
-High Disk Usage:
-```yaml
-automation:
-  - id: notify_on_high_disk_usage
-    alias: "Benachrichtigung wenn Speicher fast voll ist"
-    mode: parallel
-    trigger:
-      - platform: numeric_state
-        entity_id:
-          - sensor.disk_use_pct_ha
-          - sensor.disk_use_pct_nas
-        above: 95
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "Disk almost full!"
-          message: >
-            Disk for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} is 95% full!
-          data:
-            channel: emergency
-```
-Undervoltage:
-```yaml
-automation:
-  - id: notify_on_undervoltage
-    alias: "Benachrichtigung bei Unterspannung"
-    mode: parallel
-    trigger:
-      - platform: state
-        entity_id:
-          - binary_sensor.undervoltage_pi_bathroomsmall
-          - binary_sensor.undervoltage_pi_livingroom
-          - binary_sensor.undervoltage_pi_dressroom
-          - binary_sensor.undervoltage_pi_office
-          - binary_sensor.undervoltage_pi_network
-          - binary_sensor.undervoltage_pi_zigbee_zwave
-        to: 'on'
-    action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "Undervoltage!"
-          message: >
-            Undervoltage for {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} detected!
-          data:
-            channel: emergency
-```
+[High CPU Load](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L903)
+
+[High CPU Temperature](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L949)
+
+[High Disk Usage](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L930)
+
+
+[Undervoltage](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L977)
 
 </p>
 </details>
