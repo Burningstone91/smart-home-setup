@@ -2517,214 +2517,17 @@ Enter your username and password and press "SUBMIT"
 This will give you a device_tracker for each network device and some additional data, such as IP address as attributes of the device trackers.
 
 #### Unifi Device statistics
-To get the model, current firmware and other measures we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP in Unifi. Login to the Web Interface of the Unifi Controller. Go to "Settings", then "Services". In the tab "SNMP" enable "SNMPV1, SNMPV2C".
+To get the model, current firmware and other measures we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP in Unifi. Login to the Web Interface of the Unifi Controller. Go to "Settings", then "Services". In the tab "SNMP" enable "SNMPV1, SNMPV2C". Availability of updates is an attribute of the device trackers created by the Unifi integration. The device trackers for the unifi devices have an attribute 'upgradeable', which is 'true' when an upgrade for the device is availble and it disappears when the device is up-to-date. 
 
 Add the following in the `sensor:` section of the system_monitoring.yaml file:\
-**AP-AC Pro**
-```yaml
-  ## Model
-  - platform: snmp
-    name: Model AP livingroom
-    host: 10.10.0.14
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.41112.1.6.3.3.0
-  ## Uptime
-  - platform: snmp
-    name: Uptime AP livingroom
-    host: 10.10.0.14
-    community: 'public'
-    baseoid: 1.3.6.1.2.1.1.3.0
-    value_template: >
-      {%- set time = value | int // 100 %}
-      {%- set minutes = ((time % 3600) // 60) %}
-      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
-      {%- set hours = ((time % 86400) // 3600) %}
-      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
-      {%- set days = (time // 86400) %}
-      {%- set days = '{}d '.format(days) if days > 0 else '' %}
-      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
-  ## Firmware
-  - platform: snmp
-    name: Firmware AP livingroom
-    host: 10.10.0.14
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.41112.1.6.3.6.0
-```
-**Switch US8-150w**
-```yaml
-  ## Temperature
-  - platform: snmp
-    name: Temperature Switch Livingroom
-    host: 10.10.0.6
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.4413.1.1.43.1.8.1.5.1.0
-    unit_of_measurement: "°C"
-  ## Uptime
-  - platform: snmp
-    name: Uptime Switch Livingroom
-    host: 10.10.0.6
-    community: 'public'
-    baseoid: 1.3.6.1.2.1.1.3.0
-    value_template: >
-      {%- set time = value | int // 100 %}
-      {%- set minutes = ((time % 3600) // 60) %}
-      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
-      {%- set hours = ((time % 86400) // 3600) %}
-      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
-      {%- set days = (time // 86400) %}
-      {%- set days = '{}d '.format(days) if days > 0 else '' %}
-      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
-  ## Model
-  - platform: snmp
-    name: Model Switch Livingroom
-    host: 10.10.0.6
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.2.0
-  ## Firmware
-  - platform: snmp
-    name: Firmware Switch Livingroom
-    host: 10.10.0.6
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.13.0  
-```
-**Switch US8-60w**
-```yaml
-  ## Uptime
-  - platform: snmp
-    name: Uptime Switch Storageroom
-    host: 10.10.0.10
-    community: 'public'
-    baseoid: 1.3.6.1.2.1.1.3.0
-    value_template: >
-      {%- set time = value | int // 100 %}
-      {%- set minutes = ((time % 3600) // 60) %}
-      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
-      {%- set hours = ((time % 86400) // 3600) %}
-      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
-      {%- set days = (time // 86400) %}
-      {%- set days = '{}d '.format(days) if days > 0 else '' %}
-      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
-  ## Model
-  - platform: snmp
-    name: Model Switch Storageroom
-    host: 10.10.0.10
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.2.0
-  ## Firmware
-  - platform: snmp
-    name: Firmware Switch Storageroom
-    host: 10.10.0.10
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.13.0
-```
-**Unifi Security Gateway 3**
-```yaml
-  ## CPU 1 min
-  - platform: snmp
-    name: cpu_load_1m_usg
-    host: 10.10.0.1
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.2021.10.1.3.1
-    value_template: "{{ ( value | float * 100 )| int }}"
-    unit_of_measurement: "%"
-  ## CPU 5 mins
-  - platform: snmp
-    name: cpu_load_5m_usg
-    host: 10.10.0.1
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.2021.10.1.3.2
-    value_template: "{{ ( value | float * 100 )| int }}"
-    unit_of_measurement: "%"
-  ## CPU 15 mins
-  - platform: snmp
-    name: cpu_load_15m_usg
-    host: 10.10.0.1
-    community: 'public'
-    baseoid: 1.3.6.1.4.1.2021.10.1.3.3
-    value_template: "{{ ( value | float * 100 )| int }}"
-    unit_of_measurement: "%"
-  ## CPU 0 Load
-  - platform: snmp
-    name: cpu_0_load_usg
-    host: 10.10.0.1
-    community: 'public'
-    baseoid: 1.3.6.1.2.1.25.3.3.1.2.196608
-    unit_of_measurement: "%"
-  ## CPU 1 Load
-  - platform: snmp
-    name: cpu_1_load_usg
-    host: 10.10.0.1
-    community: 'public'
-    baseoid: 1.3.6.1.2.1.25.3.3.1.2.196609
-    unit_of_measurement: "%"
-  ### CPU Load average
-  - platform: min_max
-    name: cpu_load_usg
-    type: mean
-    entity_ids:
-      - sensor.cpu_0_load_usg
-      - sensor.cpu_1_load_usg  
-  ## Uptime
-  - platform: snmp
-    name: Uptime USG
-    host: 10.10.0.1
-    community: 'public'
-    baseoid: 1.3.6.1.2.1.1.3.0
-    value_template: >
-      {%- set time = value | int // 100 %}
-      {%- set minutes = ((time % 3600) // 60) %}
-      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
-      {%- set hours = ((time % 86400) // 3600) %}
-      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
-      {%- set days = (time // 86400) %}
-      {%- set days = '{}d '.format(days) if days > 0 else '' %}
-      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
-  ## Firmware
-  - platform: snmp
-    name: Firmware USG
-    host: 10.10.0.1
-    community: 'public'
-    baseoid: 1.3.6.1.2.1.1.1.0
-    value_template: "{{ '.'.join(value.split('.')[:3]) }}"
-  ## WAN In
-  - platform: snmp
-    name: WAN In USG
-    host: 10.10.0.1
-    baseoid: 1.3.6.1.2.1.31.1.1.1.6.2
-    community: 'public'
-    version: '2c'
-    scan_interval: 10
-  - platform: derivative
-    source: sensor.wan_in_usg
-    unit_time: s
-    unit: B
-    name: wan_in_usg_derivative  
-  - platform: template
-    sensors:
-      wan_in_usg_mbps:
-        value_template:  "{{ ((states('sensor.wan_in_usg_derivative')|float*8)/1000000)|round(2) }}"
-        unit_of_measurement: 'Mbps'
-        friendly_name: WAN In USG Mbps
-  ## WAN Out
-  - platform: snmp
-    name: WAN Out USG
-    host: 10.10.0.1
-    baseoid: 1.3.6.1.2.1.31.1.1.1.10.2
-    community: 'public'
-    version: '2c'
-    scan_interval: 10
-  - platform: derivative
-    source: sensor.wan_out_usg
-    unit_time: s
-    unit: B
-    name: wan_out_usg_derivative
-  - platform: template
-    sensors:
-      wan_out_usg_mbps:
-        value_template:  "{{ ((states('sensor.wan_out_usg_derivative')|float*8)/1000000)|round(2) }}"
-        unit_of_measurement: 'Mbps'
-        friendly_name: WAN Out USG Mbps
-```
+
+[AP-AC Pro](https://github.com/Burningstone91/smart-home-setup/blob/5c6b161a2bccc7ad7227cdc8e7b9d0411bcfc469/home-assistant/packages/system_monitoring.yaml#L248)
+
+[Switch US8-150w](https://github.com/Burningstone91/smart-home-setup/blob/5c6b161a2bccc7ad7227cdc8e7b9d0411bcfc469/home-assistant/packages/system_monitoring.yaml#L283)
+
+[Switch US8-60w](https://github.com/Burningstone91/smart-home-setup/blob/5c6b161a2bccc7ad7227cdc8e7b9d0411bcfc469/home-assistant/packages/system_monitoring.yaml#L325)
+
+[Unifi Security Gateway 3](https://github.com/Burningstone91/smart-home-setup/blob/5c6b161a2bccc7ad7227cdc8e7b9d0411bcfc469/home-assistant/packages/system_monitoring.yaml#L360)
 
 ### PiHole
 To monitor a PiHole instance we can use the [Pi-Hole integration](https://www.home-assistant.io/integrations/pi_hole/). In order to enable/disable PiHole, we need to get the API key first. Log into the Web interface of Pi-Hole go to "Settings". In the tab "API/Web Interface" click on the button "Show API token". Copy the token.
@@ -3529,8 +3332,6 @@ group:
       - sensor.chore_clean_windows
       - etc.
 ```
-</p>
-</details>
 
 Then the automation to notify the everyone that the task is due. Please note, this example is for the Android companion app, the iOS app handles actionable notifications differently. 
 
@@ -3636,6 +3437,8 @@ homeassistant:
       friendly_name: Vacuum the House
 ```
 
+</p>
+</details>
 
 ### Configure Denon AVR in Home Assistant
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Denon AVR" and click on it.
