@@ -902,6 +902,7 @@ id yourusername
 ```
 Add the follwoing to docker-compose.yaml:
 
+```yaml
   swag:
     cap_add:
       - NET_ADMIN
@@ -921,6 +922,7 @@ Add the follwoing to docker-compose.yaml:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./swag:/config  
+```
 
 Replace the PUID and PGID values with the ones you got in the previous step. Replace `yourdomain.com` with your domain (I registered my own domain in combination with a DynamicDNS service from my ISP, but you can use DuckDNS or any other DynamicDNS provider) and replace `yourmailaddress@blabla.com` with your E-mail address.
 
@@ -2489,7 +2491,7 @@ To monitor the Synology NAS we can use the [Synology DSM integration](https://ww
 
 #### Model and Firmware
 To get the model and current firmware we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP on the NAS. Login to the Web Interface of the NAS, go to "Control Panel" and then choose "Terminal & SNMP". Go to the tab "SNMP" and enable the SNMP Service.
-Add the following in the `sensor:` section of the system_monitoring.yaml file:\
+Add the following in the `sensor:` section of the system_monitoring.yaml file:
 Model:
 ```yaml
   - platform: snmp
@@ -3371,7 +3373,7 @@ automation:
                     title: "Erledigt"
 ```
 
-Then the automation that waits for someone to mark the task as solved by pressing the done button in the notification. This then updates the sensor with the name current time and the name of the executor of the task.
+Then the automation that waits for someone to mark the task as solved by pressing the done button in the notification. This then updates the sensor with the name, current time and the name of the executor of the task.
 
 ```yaml
 # Mark task as solved and reply
@@ -3427,7 +3429,7 @@ Then the automation that waits for someone to mark the task as solved by pressin
         message: "{{ executor.title() }} already did '{{ task_name }}'!"
 ```
 
-And finally some name customization to show nicer names in the frontend and the messages. E.g.
+And finally some name customization to show nice names in the frontend and the messages. E.g.
 
 ```yaml
 # Entity Customization
@@ -3439,6 +3441,50 @@ homeassistant:
 
 </p>
 </details>
+
+
+## Security <a name="security" href="https://github.com/Burningstone91/smart-home-setup#security"></a>
+### Basic Explanation of Setup
+
+For Security I use the [manual alarm control panel integration](https://www.home-assistant.io/integrations/manual/). To detect activity and trigger the alarm I use the Xiaomi Door Sensor on every door and window, and the motion sensors in the rooms. In addition I use Xiaomi Water Leak Sensors in every bathroom, the storageroom and below the kitchen sink to warn me about water leaks.
+
+### Hardware used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:25%;">
+???? Cameras ????
+</td>
+<td align="center" style="width:25%;">
+4x Xiaomi Water Leak Sensor
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/.jpg" raw=true height="100" alt="Hue Dimmer" />
+</td>
+<td align="center" style="width:25%;">
+<img src="git-pictures/device_pictures/xiaomi_water_leak.png" raw=true height="100" alt="Xiaomi Water Leak Sensor" />
+</td>
+</tr>
+
+<tr><td colspan="5">
+The Hue Dimmer Switches are used to replace the dumb light switches and as a master control for me and my wife next to the bed on the respective side. The IKEA Symfonisk Controller is used to control music volume and lights in the office for when I'm doing Home Office. The IKEA Tradfri Switches are used to control some basic lights on the balcony and the Xiaomi Switch is currently looking for a job :)
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Adding water leak sensors to the ZigBee network (Xiaomi)
+Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute the following steps to integrate a Xiaomi Water Leak Sensor:
+
+* In Phoscon go to Devices -> Sensors and press "Add new sensor" at the bottom of the page.
+* Choose "Other".
+* Enable Pairing Mode on the device by pressing on the button ##################################
+
+
+
 
 ### Configure Denon AVR in Home Assistant
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Denon AVR" and click on it.
