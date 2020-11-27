@@ -1059,7 +1059,7 @@ automation:
           - device_tracker.switch_livingroom
           - device_tracker.switch_storageroom
           - device_tracker.unifi_controller
-          - device_tracker.usg_router
+          #- device_tracker.usg_router
           - device_tracker.vacuum_livingroom
         from: "home"
         to: "not_home"

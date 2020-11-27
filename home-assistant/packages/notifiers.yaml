@@ -3,6 +3,7 @@ notify:
     name: phones
     services:
       - service: mobile_app_phone_dimitri
+      - service: mobile_app_phone_sabrina
 
   - platform: smtp
     name: evernote

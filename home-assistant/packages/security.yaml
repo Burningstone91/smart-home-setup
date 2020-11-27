@@ -2,10 +2,259 @@ alarm_control_panel:
   - platform: manual
     name: Home Alarm
     code: !secret alarm_code
-    delay_time: 0
-    trigger_time: 100
+    arming_time: 30
+    trigger_time: 120
+    delay_time: 20
     disarmed:
       trigger_time: 0
     armed_home:
       delay_time: 0
-    disarm_after_trigger: false
+      arming_time: 0
+
+binary_sensor:
+  - platform: template
+    sensors:
+      nobody_home_alarm_disarmed:
+        value_template: >
+          {{ 
+            states('group.family') == 'not_home' and 
+            states('alarm_control_panel.home_alarm') == 'disarmed' 
+          }}
+
+automation:
+  # Arm away when everyone gone
+  - id: arm_away_when_everyone_gone
+    alias: "Alarm scharf stellen wenn alle geganen sind"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: group.family
+      to: not_home
+    action:
+      service: alarm_control_panel.alarm_arm_away
+      entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+
+  # Disarm when someone arrives
+  - id: disarm_when_someone_arrives
+    alias: "Alarm ausschalten wenn jemand ankommt"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: group.family
+      from: not_home
+      to: home
+    action:
+      service: alarm_control_panel.alarm_disarm
+      entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+
+  # Arm home when sleep mode activated
+  - id: arm_home_when_sleep_mode_activated
+    alias: "Alarm scharf stellen wenn der Schlafmodus aktiviert wird"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: input_boolean.sleep_mode
+      from: 'off'
+      to: 'on'
+    action:
+      service: alarm_control_panel.alarm_arm_home
+      entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+
+  # Disarm when sleep mode deactivated
+  - id: disarm_when_sleep_mode_deactivated
+    alias: "Alarm ausschalten wenn der Schlafmodus deaktiviert wird"
+    mode: single
+    trigger:
+      platform: state
+      entity_id: input_boolean.sleep_mode
+      from: 'on'
+      to: 'off'
+    action:
+      service: alarm_control_panel.alarm_disarm
+      entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+
+  # Arm alarm based on notification action
+  - id: arm_alarm_when_confirmed_by_mobile
+    alias: "Alarm einschalten aus Handy Benachrichtigungsbestätigung"
+    trigger:
+      platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: arm_alarm
+    action:
+      service: alarm_control_panel.alarm_arm_away
+      entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+
+  # Disable alarm based on notification action
+  - id: disable_alarm_when_confirmed_by_mobile
+    alias: "Alarm abschalten aus Handy Benachrichtigungsbestätigung"
+    trigger:
+      platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: wrong_alarm
+    action:
+      service: >
+        {% if states('group.family') == 'not_home' %}
+          alarm_control_panel.alarm_arm_away
+        {% elif states('input_boolean.sleep_mode') == 'on' %}
+          alarm_control_panel.alarm_arm_home
+        {% else %}
+          alarm_control_panel.alarm_disarm
+        {% endif %}
+      entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+
+  # Notify on alarm status change
+  - id: notify_on_alarm_status_change
+    alias: "Benachrichtigung bei Änderung des Alarm Status"
+    trigger:
+      platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to:
+        - 'armed_home'
+        - 'armed_away'
+        - 'disarmed'
+    action:
+      service: notify.mobile_app_phone_dimitri
+      data:
+        title: 'Alarmstatus'
+        message: >
+          Der neue Status der Alarmanlage ist:
+          {% if trigger.to_state.state == 'armed_home' %}
+            Alarm scharf, zu Hause
+          {% elif trigger.to_state.state == 'armed_away' %}
+            Alarm scharf, unterwegs
+          {% else %}
+            Alarm aus
+          {% endif %}
+
+  # Trigger Alarm armed home
+  - id: trigger_alarm_armed_home
+    alias: "Alarm auslösen when jemand zu Hause ist"
+    trigger:
+      platform: state
+      entity_id:
+        - binary_sensor.door_main
+        - binary_sensor.window_office
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_dressroom
+        - binary_sensor.window_bedroom
+        - binary_sensor.door_livingroom
+        - binary_sensor.window_livingroom
+        - binary_sensor.door_kitchen
+        - binary_sensor.window_kitchen
+      to: 'on'
+    condition:
+      - "{{ states('alarm_control_panel.home_alarm') == 'armed_home' }}"
+    action:
+      service: alarm_control_panel.alarm_trigger
+      entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+
+  # Trigger Alarm armed away
+  - id: trigger_alarm_armed_away
+    alias: "Alarm auslösen when niemand zu Hause ist"
+    trigger:
+      platform: state
+      entity_id:
+        - binary_sensor.door_main
+        - binary_sensor.door_office
+        - binary_sensor.window_office
+        - binary_sensor.door_bathroomlarge
+        - binary_sensor.window_bathroomlarge
+        - binary_sensor.window_dressroom
+        - binary_sensor.door_dressroom
+        - binary_sensor.door_bathroomsmall
+        - binary_sensor.door_bedroom
+        - binary_sensor.window_bedroom
+        - binary_sensor.door_livingroom
+        - binary_sensor.window_livingroom
+        - binary_sensor.door_kitchen
+        - binary_sensor.window_kitchen
+        - binary_sensor.door_storageroom
+        - binary_sensor.motion_office
+        - binary_sensor.motion_dressroom
+        - binary_sensor.motion_bathroomsmall
+        - binary_sensor.motion_bedroom
+        - binary_sensor.motion_livingroom
+      to: 'on'
+    condition:
+      - "{{ states('alarm_control_panel.home_alarm') == 'armed_away' }}"
+    action:
+      service: alarm_control_panel.alarm_trigger
+      entity_id: alarm_control_panel.home_alarm
+      data:
+        code: !secret alarm_code
+
+alert:
+  # Notify nobody home and alarm not armed
+  nobody_home_and_alarm_disarmed:
+    name: "Niemand ist zu Hause und der Alarm ist ausgeschaltet!"
+    done_message: "Die Alarmanlage ist jetzt scharf."
+    title: "Haus unsicher!"
+    entity_id: binary_sensor.nobody_home_alarm_disarmed
+    state: "on"
+    skip_first: true
+    repeat:
+      - 1
+      - 5
+    notifiers:
+      - mobile_app_phone_dimitri
+    data:
+      channel: Notfall
+      actions:
+        - action: arm_alarm
+          title: "Alarm einschalten"
+
+  # Notify when alarm is triggered
+  alarm_triggered:
+    name: "Der Alarm wurde ausgelöst!"
+    done_message: "Der Alarm wurde ausgeschaltet."
+    title: "ALARM!"
+    entity_id: alarm_control_panel.home_alarm
+    state: "triggered"
+    repeat:
+      - 1
+    notifiers:
+      - mobile_app_phone_dimitri
+    data:
+      channel: Notfall
+      actions:
+        - action: wrong_alarm
+          title: "Fehlalarm"
+
+  # Notify on water leak
+  # water_leak_detected:
+  #   name: "Wasserleck wurde entdeckt!"
+  #   done_message: "Das Wasserleck wurde behoben."
+  #   title: "Wasserleck!"
+  #   entity_id: group.water_leak_sensors
+  #   state: "on"
+  #   repeat:
+  #     - 1
+  #   notifiers:
+  #     - mobile_app_phone_dimitri
+  #   data:
+  #     channel: Notfall
+
+# group:
+#   water_leak_sensors:
+#     name: Wasserleck Sensoren
+#     entities:
+#       - binary_sensor.water_leak_kitchen
+#       - binary_sensor.water_leak_bathroomsmall
+#       - binary_sensor.water_leak_bathroomlarge
+#       - binary_sensor.water_leak_storageroom
