@@ -129,7 +129,7 @@ automation:
         title: "Regen und Fenster geöffnet!"
         message: >
           Es regnet und es sind noch folgende Türen/Fenster geöffnet:
-          {{ expand('group.windows_doors_outside')|selectattr('state','eq','on')|map(attribute='friendly_name')|list|join(',') }}
+          {{ expand('group.windows_doors_outside')|selectattr('state','eq','on')|map(attribute='name')|list|join(',') }}
         data:
           channel: Notfall
 # Turn on/off dehumidifer when window in the same room is opened/closed
