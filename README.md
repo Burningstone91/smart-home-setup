@@ -56,11 +56,14 @@ I will explain here the different parts of my home automation system and how I s
 * <a href="https://github.com/Burningstone91/smart-home-setup#history-databases">
       History & Databases
   </a>
-* <a href="https://github.com/Burningstone91/smart-home-setup#history-databases">
+* <a href="https://github.com/Burningstone91/smart-home-setup#climate">
       Climate
   </a>
-* <a href="https://github.com/Burningstone91/smart-home-setup#history-databases">
+* <a href="https://github.com/Burningstone91/smart-home-setup#household-tasks">
       Household Tasks
+  </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#household-tasks">
+      Security
   </a>
 
 ## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"></a>
@@ -3492,3 +3495,21 @@ Enter the IP of your Denon AVR in the field "IP address".
 Enter your username and password and press "SUBMIT"
 
 ### HACS
+
+
+
+local dir mopidy
+
+mount
+
+
+
+
+Spotify mopidy
+
+https://mopidy.com/ext/spotify/
+
+press green button
+
+copy id and secret in box below
+
