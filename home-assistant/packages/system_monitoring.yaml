@@ -111,7 +111,6 @@ sensor:
   # Uptime
   - platform: uptime
     name: uptime_home_assistant_minutes
-    unit_of_measurement: minutes
   - platform: template
     sensors:
       uptime_home_assistant:
@@ -279,7 +278,7 @@ sensor:
       firmware_upgrade_ap_livingroom:
         friendly_name: Firmware Upgrade AP Wohnzimmer
         value_template: >
-          {{ 'Update available' if state_attr('device_tracker.ap_livingroom', 'upgradable') == 'true' else 'Up-to-date' }}
+          {{ 'Update available' if state_attr('device_tracker.ap_livingroom', 'upgradable') == true else 'Up-to-date' }}
   # Switch Livingroom
   ## Temperature
   - platform: snmp
@@ -321,7 +320,7 @@ sensor:
       firmware_upgrade_switch_livingroom:
         friendly_name: Firmware Upgrade Switch Wohnzimmer
         value_template: >
-          {{ 'Update available' if state_attr('device_tracker.switch_livingroom', 'upgradable') == 'true' else 'Up-to-date' }}
+          {{ 'Update available' if state_attr('device_tracker.switch_livingroom', 'upgradable') == true else 'Up-to-date' }}
   # Switch Storageroom
   ## Uptime
   - platform: snmp
@@ -356,7 +355,7 @@ sensor:
       firmware_upgrade_switch_storageroom:
         friendly_name: Firmware Upgrade Switch Reduit
         value_template: >
-          {{ 'Update available' if state_attr('device_tracker.switch_storageroom', 'upgradable') == 'true' else 'Up-to-date' }}
+          {{ 'Update available' if state_attr('device_tracker.switch_storageroom', 'upgradable') == true else 'Up-to-date' }}
   # USG Router Livingroom
   ## CPU 1 min
   - platform: snmp
