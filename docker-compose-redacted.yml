@@ -208,7 +208,7 @@ services:
     image: ghcr.io/linuxserver/swag
     networks:
       default:
-        ipv4_address: 172.19.0.7
+        ipv4_address: 172.19.0.132
     ports:
       - "80:80"
       - "443:443"
