@@ -1,0 +1,21 @@
+spotify:
+  client_id: !secret spotify_user
+  client_secret: !secret spotify_pass
+
+media_player:
+  - platform: snapcast
+    host: 192.168.0.30
+  - platform: mpd
+    name: TTS
+    host: 192.168.0.30
+
+# Entity Customization
+homeassistant:
+  customize:
+    # Media Players
+    media_player.tts:
+      friendly_name: Text-zu-Sprache
+    media_player.spotify_dimitri:
+      friendly_name: Spotify Dimitri
+    media_player.spotify_sabrina:
+      friendly_name: Spotify Sabrina
