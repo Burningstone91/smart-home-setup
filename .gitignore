@@ -32,5 +32,10 @@ home-assistant-db/
 esphome/
 swag/
 nextcloud/
+music/
+tmp/
+media/
+snapserver/snapfifo/
 check_docker_latest.sh
 check_docker_list.txt
+*.conf
