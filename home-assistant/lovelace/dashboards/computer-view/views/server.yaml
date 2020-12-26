@@ -505,7 +505,7 @@ cards:
                       </center>
                     style: |
                       ha-card {
-                        margin-top: 80px;
+                        margin-top: 160px;
                         margin-left: 2.5px;
                       }
                   # Version
@@ -551,7 +551,9 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h5>Current:
+                        <h5>Uptime:
+                        {{ states('sensor.docker_hass_status') }}<br>
+                        Current:
                         {{ states('sensor.current_version_homeassistant') }}<br>
                         Latest:
                         {{ states('sensor.latest_version_homeassistant') }}</h5>
@@ -679,8 +681,10 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h5>Software:
-                        {{ states('sensor.update_mosquitto') }}<br><br></h5>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_mqtt_status') }}<br>
+                        Software:
+                        {{ states('sensor.update_mosquitto') }}<br></h5>
                       </center>
                     style: |
                       ha-card {
@@ -777,7 +781,135 @@ cards:
                           margin-right: 30px;
                           padding-left: 5px;
                         }    
-
+              ####################################################
+              #                    SWAG                          #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3>SWAG</h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="150" src="/local/system_monitoring/nginx.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -40px;
+                      }
+                  # Updates
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_swag_status') }}<br>
+                        Software:
+                        {{ states('sensor.update_swag') }}<br>
+                        </h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -44px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_swag_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_swag_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }    
               - type: vertical-stack
                 cards:
               ####################################################
@@ -808,7 +940,9 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h5>Software:
+                        <h5>Uptime:
+                        {{ states('sensor.docker_influxdb_status') }}<br>
+                        Software:
                         {{ states('sensor.update_influxdb') }}<br><br></h5>
                       </center>
                     style: |
@@ -934,8 +1068,10 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h5>Software:
-                        {{ states('sensor.update_grafana') }}<br><br></h5>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_grafana_status') }}<br>
+                        Software:
+                        {{ states('sensor.update_grafana') }}<br></h5>
                       </center>
                     style: |
                       ha-card {
@@ -1032,7 +1168,135 @@ cards:
                           margin-right: 30px;
                           padding-left: 5px;
                         }
-                
+              ####################################################
+              #                    Nextcloud                     #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3>Nextcloud</h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="70" src="/local/system_monitoring/nextcloud.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -50px;
+                      }
+                  # Updates
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_nextcloud_status') }}<br>
+                        Software:
+                        {{ states('sensor.update_nextcloud') }}<br>
+                        </h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -56px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_nextcloud_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_nextcloud_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }    
               - type: vertical-stack
                 cards:
               ####################################################
@@ -1063,7 +1327,9 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h5>Current:
+                        <h5>Uptime:
+                        {{ states('sensor.docker_appdaemon_status') }}<br>
+                        Current:
                         {{ states('sensor.docker_appdaemon_image').split(':')[1] }}<br>
                         Latest:
                         {{ states('sensor.latest_version_appdaemon') }}</h5>
@@ -1191,8 +1457,10 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h5>Software:
-                        {{ states('sensor.update_esphome') }}<br><br></h5>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_esphome_dashboard_status') }}<br>
+                        Software:
+                        {{ states('sensor.update_esphome') }}<br></h5>
                       </center>
                     style: |
                       ha-card {
@@ -1289,17 +1557,144 @@ cards:
                           margin-right: 30px;
                           padding-left: 5px;
                         }
-
-              - type: vertical-stack
-                cards:
               ####################################################
-              #                    Postgres                      #
+              #                    Nextcloud DB                  #
               ####################################################
                   # Title
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Postgres</h3>
+                        <h3>Nextcloud DB</h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="50" src="https://upload.wikimedia.org/wikipedia/de/thumb/4/4b/Postgresql.svg/1200px-Postgresql.svg.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -45.5px;
+                      }
+                  # DB Size
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_nextcloud_db_status') }}<br>
+                        Database Size:
+                        {{ states('sensor.db_size_nextcloud') }} MB<br></h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -54px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_nextcloud_db_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_nextcloud_db_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+              - type: vertical-stack
+                cards:
+              ####################################################
+              #               Home Assistant DB                  #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3>Home Assistant DB</h3>
                       </center>
                     style: |
                       ha-card {
@@ -1320,7 +1715,9 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h5>Database Size:
+                        <h5>Uptime:
+                        {{ states('sensor.docker_hass_db_status') }}<br>
+                        Database Size:
                         {{ states('sensor.db_size_hass') }} MB<br><br></h5>
                       </center>
                     style: |
@@ -1446,8 +1843,10 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h5>Software:
-                        {{ states('sensor.update_portainer') }}<br><br></h5>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_portainer_status') }}<br>
+                        Software:
+                        {{ states('sensor.update_portainer') }}<br></h5>
                       </center>
                     style: |
                       ha-card {

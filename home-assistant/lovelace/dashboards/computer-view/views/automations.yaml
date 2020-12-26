@@ -1,0 +1,146 @@
+####################################################
+#                                                  #
+#                  Automations                     #
+#                                                  #
+####################################################
+title: automations
+path: automations
+panel: true
+icon: mdi:robot
+badges: []
+cards:
+  - type: vertical-stack
+    cards:
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Präsenz
+            entities:
+              - entity: automation.detaillierten_prasenzstatus_bestimmen
+              - entity: automation.device_tracker_fur_fitbit_aktualisieren
+              - entity: automation.device_tracker_fur_schlussel_aktualisieren
+              - entity: automation.haus_prasenzstatus_bestimmen
+              - entity: input_select.presence_state_house
+              - entity: automation.alles_ausschalten_wenn_alle_gegangen_sind
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Schlaf
+            entities:
+              - entity: automation.bestimme_schlafstatus_personen
+              - entity: automation.schlafmodus_einschalten_wenn_alle_im_bett_und_ausschalten_wenn_alle_wach_sind
+              - entity: input_select.sleep_state_dimitri
+              - entity: input_select.sleep_state_dimitri
+              - entity: input_boolean.sleep_mode
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Alarmanlage
+            entities:
+              - entity: automation.alarm_ausschalten_wenn_der_schlafmodus_deaktiviert_wird
+              - entity: automation.alarm_scharf_stellen_wenn_der_schlafmodus_aktiviert_wird
+              - entity: automation.alarm_ausschalten_wenn_jemand_ankommt
+              - entity: automation.alarm_scharf_stellen_wenn_alle_geganen_sind
+              - entity: automation.benachrichtigung_bei_anderung_des_alarm_status
+              - entity: automation.alarm_auslosen_when_jemand_zu_hause_ist
+              - entity: automation.alarm_auslosen_when_niemand_zu_hause_ist
+              - entity: automation.alarm_abschalten_aus_handy_benachrichtigungsbestatigung
+              - entity: automation.alarm_einschalten_aus_handy_benachrichtigungsbestatigung
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Licht
+            entities:
+              - entity: automation.licht_an_bei_bewegung_buro
+              - entity: automation.licht_aus_buro_nicht_besetzt
+              - entity: automation.licht_an_bei_bewegung_wohnzimmer
+              - entity: automation.licht_aus_wohnzimmer_nicht_besetzt
+              - entity: automation.licht_an_bei_bewegung_schlafzimmer
+              - entity: automation.licht_aus_schlafzimmer_nicht_besetzt
+              - entity: automation.schlafmodus_fur_adaptive_beleuchtung_schlafzimmer
+              - entity: automation.licht_an_bei_bewegung_ankleidezimmer
+              - entity: automation.licht_aus_ankleidezimmer_nicht_besetzt
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Systeme
+            entities:
+              - entity: automation.benachrichtigung_bei_unterspannung
+              - entity: automation.benachrichtigung_wenn_batterien_bald_leer_sind_2
+              - entity: automation.benachrichtigung_wenn_cpu_load_hoch_ist
+              - entity: automation.benachrichtigung_wenn_cpu_temperatur_hoch_ist
+              - entity: automation.benachrichtigung_wenn_ein_update_verfugbar_ist
+              - entity: automation.benachrichtigung_wenn_speicher_fast_voll_ist
+              - entity: automation.benachrichtigung_bei_gerat_offline
+              - entity: automation.benachrichtigung_bei_falschem_loginversuch
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Klima
+            entities:
+              - entity: automation.benachrichtigung_wenn_ein_fenster_oder_eine_ture_zu_lange_offen_ist
+              - entity: automation.benachrichtigung_wenn_ein_fenster_oder_eine_ture_offen_ist_bei_regen
+              - entity: automation.entfeucher_aus_einschalten_wenn_das_fenster_geoffnet_geschlossen_wird
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Haushaltsaufgaben
+            entities:
+              - entity: automation.benachrichtigung_wenn_eine_haushaltsaufgabe_bald_fallig_ist
+              - entity: automation.markiere_aufgabe_als_erledigt_und_bedanke_bei_benutzer

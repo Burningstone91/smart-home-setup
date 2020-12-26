@@ -123,8 +123,12 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <img width="180" src="/local/system_monitoring/unifi_logo.png">
+                        <img width="100" src="/local/system_monitoring/private_devices.png">
                       </center>
+                    style: |
+                      ha-card {
+                        margin-top: -15px;
+                      }
                   - type: markdown
                     content: >
                       <center>
@@ -135,7 +139,7 @@ cards:
                     style: |
                       ha-card {
                         color: teal;
-                        margin-top: -30px;
+                        margin-top: -50px;
                       }
               ####################################################
               #                      Devices                     #        
@@ -189,8 +193,12 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <img width="180" src="/local/system_monitoring/unifi_logo.png">
+                        <img width="100" src="/local/system_monitoring/private_devices.png">
                       </center>
+                    style: |
+                      ha-card {
+                        margin-top: -15px;
+                      }
                   - type: markdown
                     content: >
                       <center>
@@ -201,7 +209,7 @@ cards:
                     style: |
                       ha-card {
                         color: teal;
-                        margin-top: -30px;
+                        margin-top: -50px;
                       }
               ####################################################
               #                      Devices                     #        
@@ -290,7 +298,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <img width="180" src="/local/system_monitoring/unifi_logo.png">
+                        <img width="50" src="/local/system_monitoring/nas_logo.png">
                       </center>
                   - type: markdown
                     content: >
@@ -349,7 +357,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <img width="180" src="/local/system_monitoring/unifi_logo.png">
+                        <img width="90" src="/local/system_monitoring/iot.png">
                       </center>
                   - type: markdown
                     content: >
@@ -419,11 +427,12 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <img width="180" src="/local/system_monitoring/unifi_logo.png">
+                        <img width="60" src="/local/system_monitoring/non_iot.png">
                       </center>
                     style: |
                       ha-card {
-                        margin-top: 40px;
+                        margin-top: 20px;
+                        margin-bottom: 10px;
                       }
                   - type: markdown
                     content: >
@@ -539,8 +548,12 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <img width="180" src="/local/system_monitoring/unifi_logo.png">
+                        <img width="100" src="/local/system_monitoring/multimedia_logo.png">
                       </center>
+                    style: |
+                      ha-card {
+                        margin-top: 10px;
+                      }
                   - type: markdown
                     content: >
                       <center>
@@ -551,7 +564,7 @@ cards:
                     style: |
                       ha-card {
                         color: teal;
-                        margin-top: -10px;
+                        margin-top: -30px;
                       }
               ####################################################
               #                      Devices                     #        
@@ -622,8 +635,12 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <img width="180" src="/local/system_monitoring/unifi_logo.png">
+                        <img width="100" src="/local/system_monitoring/multimedia_logo.png">
                       </center>
+                    style: |
+                      ha-card {
+                        margin-top: 10px;
+                      }
                   - type: markdown
                     content: >
                       <center>
@@ -634,7 +651,7 @@ cards:
                     style: |
                       ha-card {
                         color: teal;
-                        margin-top: -10px;
+                        margin-top: -30px;
                       }
               ####################################################
               #                      Devices                     #        

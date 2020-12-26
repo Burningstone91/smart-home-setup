@@ -4,4 +4,5 @@ views:
   - !include ./views/network.yaml
   - !include ./views/unifi-device-trackers.yaml
   - !include ./views/system-monitoring.yaml
+  - !include ./views/automations.yaml
   - !include ./views/debug.yaml
