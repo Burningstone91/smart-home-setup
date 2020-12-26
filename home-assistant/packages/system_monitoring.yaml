@@ -31,16 +31,24 @@ monitor_docker:
       - grafana
       - portainer
       - unifi-poller
+      - swag
+      - snapserver
+      - nextcloud
+      - nextcloud-db
     rename:
       appdaemon: AppDaemon
       esphome-dashboard: "ESPHome-Dashboard"
       hass: Home Assistant
-      hass-db: Postgres
+      hass-db: Home Assistant DB
       mqtt: Mosquitto
       influxdb: InfluxDB
       grafana: Grafana
       portainer: Portainer
       unifi-poller: "Unifi-Poller"
+      swag: NGINX
+      snapserver: Snapserver
+      nextcloud: Nextcloud
+      nextcloud-db: Nextcloud DB
     monitored_conditions:
       - version
       - status
@@ -125,13 +133,23 @@ sensor:
           {%- set days = '{}d '.format(days) if days > 0 else '' %}
           {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
   ###################
-  # Postgres DB Size
+  # Home Assitant DB Size
   ###################
   - platform: sql
     db_url: !secret db_url
     queries:
       - name: DB size Hass
         query: "SELECT (pg_database_size('smart_home')/1024/1024) as db_size;"
+        column: "db_size"
+        unit_of_measurement: MB
+  ###################
+  # Nextcloud DB Size
+  ###################
+  - platform: sql
+    db_url: !secret nextcloud_db_url
+    queries:
+      - name: DB size Nextcloud
+        query: "SELECT (pg_database_size('nextcloud')/1024/1024) as db_size;"
         column: "db_size"
         unit_of_measurement: MB
   ####################
@@ -206,6 +224,14 @@ sensor:
   - platform: mqtt
     state_topic: "docker-image-updates/portainer"
     name: Update Portainer
+  # Swag
+  - platform: mqtt
+    state_topic: "docker-image-updates/swag"
+    name: Update Swag
+  # Nextcloud
+  - platform: mqtt
+    state_topic: "docker-image-updates/nextcloud"
+    name: Update Nextcloud
   # Proxmox
   - platform: command_line
     name: Version Proxmox VE 
@@ -827,6 +853,8 @@ automation:
           - sensor.update_grafana
           - sensor.update_portainer
           - sensor.update_unifi_poller
+          - sensor.update_swag
+          - sensor.update_nextcloud
           - sensor.firmware_upgrade_usg_router
           - sensor.firmware_upgrade_ap_livingroom
           - sensor.firmware_upgrade_switch_livingroom
