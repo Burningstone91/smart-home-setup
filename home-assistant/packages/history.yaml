@@ -21,8 +21,8 @@ recorder:
       - device_tracker.keys*
       - device_tracker.phone*
       - input_select.sleep_state_*
+      - sensor.db_size*
     entities:
-      - binary_sensor.bed_dimitri
       - sensor.location_phone_dimitri
       - sensor.network_throughput_in_ha
       - sensor.network_throughput_out_ha
@@ -44,6 +44,13 @@ recorder:
       - sensor.pi_hole_ads_blocked_today
       - sensor.pi_hole_dns_queries_today
       - input_boolean.sleep_mode
+  exclude:
+    entities:
+      - sensor.cpu_load_1m_usg
+      - sensor.cpu_load_5m_usg
+      - sensor.cpu_load_1m_ha
+      - sensor.cpu_load_5m_ha
+      - sensor.cpu_load_15m_ha
 
 history:
 
@@ -77,8 +84,8 @@ influxdb:
       - sensor.lux*
       - sensor.ram_use_pct*
       - sensor.cpu_load*
+      - sensor.db_size*
     entities:
-      - binary_sensor.bed_dimitri
       - sensor.network_throughput_in_ha
       - sensor.network_throughput_out_ha
       - sensor.wan_in_usg_mbps
