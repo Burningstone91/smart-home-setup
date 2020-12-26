@@ -53,7 +53,7 @@ homeassistant:
       friendly_name: Tür Ankleide
       device_class: door
     # Dehumidifier
-    switch.dehumidifier_dressrom:
+    switch.dehumidifier_dressroom:
       friendly_name: Entfeuchter
       icon: mdi:fan
       room: dressroom

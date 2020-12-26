@@ -1,3 +1,9 @@
+media_player:
+  - platform: mpd
+    name: MPD Bedroom
+    host: 192.168.0.30
+    port: 6601
+
 binary_sensor:
   - platform: template
     sensors:
@@ -74,6 +80,13 @@ homeassistant:
     light.bedroom_bed:
       friendly_name: LED Bett
       icon: mdi:led-strip-variant
+    # Media Players
+    media_player.mpd_bedroom:
+      friendly_name: MPD Schlafzimmer
+    media_player.snapclient_bedroom:
+      friendly_name: Snapclient Schlafzimmer
+    media_player.music_bedroom:
+      friendly_name: Musik Schlafzimmer
     # Door/Window Sensor
     binary_sensor.window_bedroom:
       friendly_name: Fenster Schlafzimmer

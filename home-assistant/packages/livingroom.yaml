@@ -1,3 +1,17 @@
+media_player:
+  - platform: mpd
+    name: MPD Livingroom
+    host: 192.168.0.30
+    port: 6602
+
+emulated_roku:
+  servers:
+    - name: Roku
+      listen_port: 8060
+      host_ip: 192.168.0.30
+      advertise_ip: 10.10.40.6
+      advertise_port: 8060
+
 binary_sensor:
   - platform: template
     sensors:
@@ -52,6 +66,18 @@ homeassistant:
     light.livingroom_floor_back:
       friendly_name: Hinten
       icon: mdi:floor-lamp
+    # Media Players
+    media_player.mpd_livingroom:
+      friendly_name: MPD Wohnzimmer
+    media_player.snapclient_livingroom:
+      friendly_name: Snapclient Wohnzimmer
+    media_player.kodi_livingroom:
+      friendly_name: Medien Wohnzimmer
+    media_player.receiver_livingroom:
+      friendly_name: Verstärker Wohnzimmer
+    # Remotes
+    remote.wohnzimmer:
+      friendly_name: Fernbedienung Wohnzimmer
     # Door/Window Sensor
     binary_sensor.window_livingroom:
       friendly_name: Fenster Wohnzimmer

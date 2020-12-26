@@ -2,6 +2,11 @@
 # media_player:
 #   platform: yamaha_musiccast
 #   host: 10.10.80.7
+media_player:
+  - platform: mpd
+    name: MPD Office
+    host: 192.168.0.30
+    port: 6603
 
 binary_sensor:
   - platform: template
@@ -53,6 +58,14 @@ automation:
       service: light.turn_off
       entity_id: light.office
 
+  # - alias: blueprint_test
+  #   description: 'blueprint_test'
+  #   use_blueprint:
+  #     path: remotes/blueprints.yaml
+  #     input:
+  #       light: light.office
+  #       remote: livingroom
+
 # Entity Customization
 homeassistant:
   customize:
@@ -60,6 +73,13 @@ homeassistant:
     light.office:
       friendly_name: Deckenlampe
       icon: mdi:ceiling-light
+    # Media Players
+    media_player.mpd_office:
+      friendly_name: MPD Büro
+    media_player.snapclient_office:
+      friendly_name: Snapclient Büro
+    media_player.music_office:
+      friendly_name: Musik Büro
     # Door/Window Sensor
     binary_sensor.window_office:
       friendly_name: Fenster Büro
