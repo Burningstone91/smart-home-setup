@@ -47,6 +47,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./home-assistant:/config
       - /home/burningstone/.ssh:/root/.ssh
+      - /mnt/nas/burningstone/Musik:/media
 
   hass-db:
     container_name: hass-db
@@ -88,6 +89,68 @@ services:
       - ./mosquitto/log:/mosquitto/log
       - ./mosquitto/data:/mosquitto/data
 
+  mopidy_bedroom:
+    build:
+      context: ./mopidy/docker
+    container_name: mopidy_bedroom
+    image: burningstone/mopidy
+    ports:
+      - "6681:6680"
+      - "6601:6600"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapfifo:/run/snapserver/
+      - ./mopidy/bedroom/mopidy.conf:/config/mopidy.conf
+      - ./music:/var/lib/mopidy/media:ro
+      - ./mopidy/local:/var/lib/mopidy/local
+
+  mopidy_livingroom:
+    build:
+      context: ./mopidy/docker
+    container_name: mopidy_livingroom
+    image: burningstone/mopidy
+    ports:
+      - "6682:6680"
+      - "6602:6600"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapfifo:/run/snapserver/
+      - ./mopidy/livingroom/mopidy.conf:/config/mopidy.conf
+      - ./music:/var/lib/mopidy/media:ro
+      - ./mopidy/local:/var/lib/mopidy/local
+
+  mopidy_office:
+    build:
+      context: ./mopidy/docker
+    container_name: mopidy_office
+    image: burningstone/mopidy
+    ports:
+      - "6683:6680"
+      - "6603:6600"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapfifo:/run/snapserver/
+      - ./mopidy/office/mopidy.conf:/config/mopidy.conf
+      - ./music:/var/lib/mopidy/media:ro
+      - ./mopidy/local:/var/lib/mopidy/local
+
+  mopidy_tts:
+    build:
+      context: ./mopidy/docker
+    container_name: mopidy_tts
+    image: burningstone/mopidy
+    ports:
+      - "6680:6680"
+      - "6600:6600"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapfifo:/run/snapserver/
+      - ./mopidy/tts/mopidy.conf:/config/mopidy.conf
+
   portainer:
     container_name: portainer
     image: "portainer/portainer:latest"
@@ -99,6 +162,37 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - ./portainer:/data
+
+  nextcloud:
+    container_name: nextcloud
+    depends_on:
+      - nextcloud-db
+    environment:
+      POSTGRES_DB: "nextcloud"
+      POSTGRES_PASSWORD: secretusername
+      POSTGRES_USER: supersecretusername
+      POSTGRES_HOST: nextcloud-db
+    image: nextcloud
+    ports:
+      - "9001:80"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./nextcloud/config:/var/www/html
+
+  nextcloud-db:
+    container_name: nextcloud-db
+    environment:
+      POSTGRES_DB: "nextcloud"
+      POSTGRES_PASSWORD: secretusername
+      POSTGRES_USER: supersecretpassword
+    image: "postgres:9.6.19-alpine"
+    ports:
+      - "5433:5432"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./nextcloud/data:/var/lib/postgresql/data
 
   swag:
     cap_add:
