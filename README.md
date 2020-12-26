@@ -62,7 +62,7 @@ I will explain here the different parts of my home automation system and how I s
 * <a href="https://github.com/Burningstone91/smart-home-setup#household-tasks">
       Household Tasks
   </a>
-* <a href="https://github.com/Burningstone91/smart-home-setup#household-tasks">
+* <a href="https://github.com/Burningstone91/smart-home-setup#security">
       Security
   </a>
 
@@ -798,68 +798,15 @@ Restart Home Assistant. There should be four new device_trackers under "Develope
 #### Device Tracker Update Automation
 We need one automation to update the device tracker for the keys and one automation to update the device tracker for the FitBits (Room Presence Tracker).
 
-The automaiton to update the MQTT device tracker when the keys are attached/detached to/from the hook.
+The automation to update the MQTT device tracker when the keys are attached/detached to/from the hook.
 
-```yaml
-automation:
-  # Update device tracker when keys input boolean changes
-  - id: update_keys_device_tracker
-    alias: "Device Tracker für Schlüssel aktualisieren"
-    mode: parallel
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.keys_him
-      - platform: state
-        entity_id: binary_sensor.keys_her
-    action:
-      - service: mqtt.publish
-        data:
-          topic: "keys_device_tracker/{{ trigger.to_state.entity_id.split('_')[-1] }}"
-          payload_template: >-
-            {{ 'home' if trigger.to_state.state == 'on' else 'not_home'}}
-```
+[Update Keys Device Tracker](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/persons.yaml#L59)
 
 The second automation to update the device tracker for the room presence trackers.
 
-```yaml
-  # Update device tracker when room presence sensors changes
-  - id: update_room_presence_device_tracker
-    alias: "Device Tracker für Fitbit aktualisieren"
-    mode: parallel
-    trigger:
-      - platform: state
-        entity_id: sensor.dimitri_room_presence
-        to: 'not_home'
-        for:
-          minutes: 3
-      - platform: state
-        entity_id: sensor.dimitri_room_presence
-        for:
-          seconds: 5
-      - platform: state
-        entity_id: sensor.sabrina_room_presence
-        to: 'not_home'
-        for:
-          minutes: 3
-      - platform: state
-        entity_id: sensor.sabrina_room_presence
-        for:
-          seconds: 5
-    condition: 
-      - "{{ trigger.from_state.state != trigger.to_state.state }}"
-    action:
-      - service: mqtt.publish
-        data:
-          topic: "room_presence_device_tracker/{{ trigger.to_state.entity_id.split('.')[1].split('_')[0] }}"
-          payload_template: >-
-            {% if trigger.to_state.state == 'not_home' and trigger.for.seconds == 3 * 60 %}
-              not home
-            {% else %}
-              home
-            {% endif %}
-```
+[Update Room Presence Device Tracker](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/persons.yaml#L76)
 
-This automaiton will mark the device as not home when the sensor shows "not_home" for 3 minutes and home otherwise. I added a condition that the previous state should not be the same as the new state, in order to avoid continuously send the home message when the distance attribute of the room presence sensor changes state.
+This automation will mark the device as not home when the sensor shows "not_home" for 3 minutes and home otherwise. I added a condition that the previous state should not be the same as the new state, in order to avoid continuously send the home message when the distance attribute of the room presence sensor changes state.
 
 </p>
 </details>
@@ -1113,57 +1060,7 @@ input_select:
       - extended away
 ```
 
-And the automation:
-
-```yaml
-# Sets the non-binary presence state of the persons
-  - id: set_person_non_binary_presence_state
-    alias: "Detaillierten Präsenzstatus bestimmen"
-    mode: parallel
-    trigger:
-      - platform: state
-        entity_id: person.him
-      - platform: state
-        entity_id: person.her
-      - platform: state
-        entity_id: input_select.presence_state_him
-        to: "away"
-        for:
-          hours: 24
-      - platform: state
-        entity_id: input_select.presence_state_him
-        for:
-          minutes: 5
-      - platform: state
-        entity_id: input_select.presence_state_her
-        to: "away"
-        for:
-          hours: 24
-      - platform: state
-        entity_id: input_select.presence_state_her
-        for:
-          minutes: 5
-    action:
-      - variables:
-          person: "{{ trigger.to_state.entity_id.split('.')[1].split('_')[-1] }}"
-          input_select: "input_select.presence_state_{{ person }}"
-          new: "{{ trigger.to_state.state }}"
-      - service: input_select.select_option
-        data:
-          entity_id: "{{ input_select }}"
-          option: >
-            {% if (new == 'home' and is_state(input_select, 'just left')) or (new == 'just arrived' and trigger.for.seconds == 5 * 60) %}
-              at home
-            {% elif new == 'home' %}
-              just arrived
-            {% elif trigger.from_state.state == 'home' and new != 'home' %}
-              just left
-            {% elif new == 'just left' and trigger.for.seconds == 5 * 60 %}
-              away
-            {% elif trigger.for.seconds == 24 * 60 * 60 %}
-              extended away
-            {% endif %}
-```
+And the automation [Set Person Non-Binary Presence State](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/persons.yaml#L113)
 
 The house presence automation sets the state of the house to "someone_home", "nobody_home", "everyone_home" or "vacation" based on the persons peresence state.
 
@@ -1195,41 +1092,7 @@ group:
 
 ```
 
-And the automation to set it.
-
-```yaml
-- id: set_house_non_binary_presence_state
-    alias: "Haus Präsenzstatus bestimmen"
-    mode: queued
-    trigger:
-      - platform: state
-        entity_id: input_select.presence_state_him
-      - platform: state
-        entity_id: person.him
-      - platform: state
-        entity_id: input_select.presence_state_her
-      - platform: state
-        entity_id: person.her
-      - platform: homeassistant
-        event: start
-    action:
-      - service: input_select.select_option
-        data:
-          entity_id: input_select.presence_state_house
-          option: >
-            {% set persons_count = expand('group.family') | length %}
-            {% set pers_home_cnt = expand('group.family') | selectattr('state','eq','home') | list | length %}
-            {% set pers_vacation_cnt = expand('group.presence_input_selects') | selectattr('state','eq','extended away') | list | length %}
-            {% if pers_home_cnt == persons_count %}
-              everyone home
-            {% elif pers_vacation_cnt == persons_count %}
-              vacation
-            {% elif pers_home_cnt == 0 %}
-              nobody home
-            {% else %}
-              someone home
-            {% endif %}
-```
+And the automation to set it [Set House Non Binary Presence State](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/persons.yaml#L163)
 
 Now the the state of the persons non-binary presence and the presence state of the house will behave as follows:
 
@@ -1253,34 +1116,10 @@ Now the the state of the persons non-binary presence and the presence state of t
 I have an automation that turns all lights and devices off when everyone has left the house.
 For this I use a script that turns everything off and call the script from the automation. I do it like this in order to also be able to call the same script from other automations.
 
-Simple script to turn everything off.
+Simple script to turn everything off [Turn All Off](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/house.yaml#L15)
 
-```yaml
-script:
-  # Turn all lights and devices off
-  turn_all_off:
-    sequence:
-      - service: homeassistant.turn_off
-        entity_id: 
-          - light.all_lights
-          - media_player.livingroom
-          - switch.dehumidifers
-```
+The automation to run the script when everyone left [Turn Everything Off Everyone Gone](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/house.yaml#L3)
 
-The automation to run the script when everyone left.
-
-```yaml
-automation:
-  - id: turn_everything_off_everyone_gone
-    alias: "Alles ausschalten wenn alle gegangen sind."
-    mode: single
-    trigger:
-      - platform: state
-        entity_id: input_select.presence_state_house
-        to: "nobody home"
-    action:
-      - service: script.turn_all_off
-```
 
 </p>
 </details>
@@ -1442,86 +1281,11 @@ An automation to set the non-binary input_select, which works as follows:
 * Someone was "just got up" for 5 minutes -> select "awake"
 * Someone was "just laid down" or "back to bed" for 5 minutes -> select "sleeping"
 
-```yaml
-automation:
-  # Sets the sleep state of the persons
-  - id: set_person_sleep_state
-    alias: "Bestimme Schlafstatus Personen"
-    mode: single
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.bed_him
-        for:
-          seconds: 10
-      - platform: state
-        entity_id: input_select.sleep_state_him
-        for:
-          minutes: 5
-      - platform: state
-        entity_id: binary_sensor.bed_her
-        for:
-          seconds: 10
-      - platform: state
-        entity_id: input_select.sleep_state_her
-        for:
-          minutes: 5
-    action:
-      - variables:
-          person: "{{ trigger.to_state.entity_id.split('_')[-1] }}"
-          input_select: "input_select.sleep_state_{{ person }}"
-          new: "{{ trigger.to_state.state }}"
-      - service: input_select.select_option
-        data:
-          entity_id: "{{ input_select }}"
-          option: >
-            {% if new == 'on' and is_state(input_select, 'just got up') %}
-              back to bed
-            {% elif new == 'on' %}
-              just laid down
-            {% elif new == 'off' %}
-              just got up
-            {% elif new == 'just got up' %}
-              awake
-            {% elif new in ['back to bed', 'just laid down'] %}
-              sleeping
-            {% endif %}
-```
+[Set Person Sleep State](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/sleep.yaml#L32)
 
 These sleep states are going to be used later in other automations, e.g. lighting control, sleep/wakeup scenes etc.
 
-A second automation to set the global sleep state based on the persons' sleep states.
-
-```yaml
-automation:
-  - id: set_sleep_mode_based_on_bed_occupancy
-    alias: "Turn on sleep mode when everyone is in bed and turn off when everyone awake."
-    mode: single
-    variables:
-      in_bed_states: ['just laid down', 'sleeping', 'back to bed']
-    trigger:
-      - platform: state
-        entity_id: input_select.sleep_state_him
-      - platform: state
-        entity_id: input_select.sleep_state_her
-    action:
-      - choose:
-          # IF everyone just laid down/sleeping/back to bed -> turn on sleep mode
-          - conditions:
-              - "{{ is_state('input_boolean.sleep_mode', 'off') }}"
-              - "{{ states('input_select.sleep_state_him') in in_bed_states }}"
-              - "{{ states('input_select.sleep_state_her') in in_bed_states }}"
-            sequence:
-              service: input_boolean.turn_on
-              entity_id: input_boolean.sleep_mode
-          # IF everyone awake -> turn off sleep mode
-          - conditions:
-              - "{{ is_state('input_boolean.sleep_mode', 'on') }}"
-              - "{{ is_state('input_select.sleep_state_him', 'awake') }}"
-              - "{{ is_state('input_select.sleep_state_her', 'awake') }}"
-            sequence:
-              service: input_boolean.turn_off
-              entity_id: input_boolean.sleep_mode
-```
+A second automation to set the global sleep state based on the persons' sleep states [Set Sleep Mode Based on Bed Occupancy](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/sleep.yaml#L76)
 
 </p>
 </details>
@@ -3027,80 +2791,7 @@ I use the the [Meteo Swiss custom component](https://github.com/websylv/homeassi
 ### Notification on Window left open
 I use the following automation, which sends me a notification when a window is left open longer than a specified time. The time is determined by the month. In January, February and December it's 5 minutes, in March and November 10 minutes, in April, May, September and October 15 minutes, and in June, July and August 25 minutes. 
 
-```yaml
-automation:
-# Notify on window left open
-- id: notify_on_window_left_open
-  alias: "Benachrichtigung wenn ein Fenster oder eine Türe zu lange offen ist"
-  mode: parallel
-  trigger:
-    - platform: state
-      entity_id: 
-        - binary_sensor.window_bathroomlarge
-        - binary_sensor.window_bedroom
-        - binary_sensor.window_dressroom
-        - binary_sensor.window_kitchen
-        - binary_sensor.window_livingroom
-        - binary_sensor.window_office
-        - binary_sensor.door_livingroom
-        - binary_sensor.door_kitchen
-      to: 'on'
-      for:
-        minutes: 5
-    - platform: state
-      entity_id:
-        - binary_sensor.window_bathroomlarge
-        - binary_sensor.window_bedroom
-        - binary_sensor.window_dressroom
-        - binary_sensor.window_kitchen
-        - binary_sensor.window_livingroom
-        - binary_sensor.window_office
-        - binary_sensor.door_livingroom
-        - binary_sensor.door_kitchen
-      to: 'on'
-      for:
-        minutes: 10
-    - platform: state
-      entity_id:
-        - binary_sensor.window_bathroomlarge
-        - binary_sensor.window_bedroom
-        - binary_sensor.window_dressroom
-        - binary_sensor.window_kitchen
-        - binary_sensor.window_livingroom
-        - binary_sensor.window_office
-        - binary_sensor.door_livingroom
-        - binary_sensor.door_kitchen
-      to: 'on'
-      for:
-        minutes: 15
-    - platform: state
-      entity_id:
-        - binary_sensor.window_bathroomlarge
-        - binary_sensor.window_bedroom
-        - binary_sensor.window_dressroom
-        - binary_sensor.window_kitchen
-        - binary_sensor.window_livingroom
-        - binary_sensor.window_office
-        - binary_sensor.door_livingroom
-        - binary_sensor.door_kitchen
-      to: 'on'
-      for:
-        minutes: 25
-  condition:
-    condition: or
-    conditions:
-      - "{{ trigger.for.seconds == 5 * 60 and now().month in [1, 2, 12] }}"
-      - "{{ trigger.for.seconds == 10 * 60 and now().month in [3, 11] }}"
-      - "{{ trigger.for.seconds == 15 * 60 and now().month in [4, 5, 9, 10] }}"
-      - "{{ trigger.for.seconds == 25 * 60 and now().month in [6, 7, 8] }}"
-  action:
-    - service: notify.mobile_app_phone_dimitri
-      data:
-        title: "Window open for too long"
-        message: >
-          {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} 
-          is open for {{ (trigger.for.seconds / 60) | int }} minutes. Please close.
-```
+[Notify on Window Left Open](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/climate.yaml#L41)
 
 ### Notification on Window left open
 I use the following automation, which sends me a notification when a window is left open when it starts to rain. The notification contains the friendly names of the windows that are open.
@@ -3123,54 +2814,15 @@ group:
       - binary_sensor.door_main
 ```
 
-Then the automation:
-```yaml
-automation:
-- id: notify_on_window_left_open_when_rain
-  alias: "Benachrichtigung wenn ein Fenster oder eine Türe offen ist bei Regen"
-  mode: parallel
-  trigger:
-    - platform: state
-      entity_id: weather.nafels
-      to:
-        - 'hail'
-        - 'lightning-rainy'
-        - 'pouring'
-        - 'rainy'
-        - 'snowy'
-        - 'snowy-rainy'
-  condition: "{{ expand('group.windows_doors_outside')|selectattr('state','eq','on')|list|count > 0 }}"
-  action:
-    - service: notify.mobile_app_phone_dimitri
-      data:
-        title: "Rain und window open!"
-        message: >
-          It's raining and the following windows are still open:
-          {{ expand('group.windows_doors_outside')|selectattr('state','eq','on')|map(attribute='friendly_name')|list|join(',') }}
-        data:
-          channel: emergency
-```
+Then the automation [Notify on Window Left Open When Rain](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/climate.yaml#L112)
+
 This triggers when the weather entity changes to any of the rainy states.
 
 ### Turn off dehumidifier when window in same room is opened
 I use the following automation to turn of the dehumidifier when the window in the same room is opened and turn it back on when the window is closed. There is a condition to only execute it when the dehumidifier is on when the window is opened.
 
-```yaml
-automation:
-- id: turn_on_off_dehumidifer_on_window_open_close
-  alias: "Entfeucher aus-/einschalten wenn das Fenster geöffnet/geschlossen wird"
-  trigger:
-    - platform: state
-      entity_id: binary_sensor.window_dressroom
-      to: 'on'
-  condition: "{{ is_state('switch.dehumidifier_dressroom', 'on') }}"
-  action:
-    - service: switch.turn_off
-      entity_id: switch.dehumidifier_dressroom
-    - wait_template: "{{ is_state('binary_sensor.window_dressroom', 'off' }}"
-    - service: switch.turn_on
-      entity_id: switch.dehumidifier_dressroom
-```
+[Turn on/off Dehumidifier on Window Open/Close](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/climate.yaml#L136)
+
 
 </p>
 </details>
@@ -3340,97 +2992,11 @@ group:
 
 Then the automation to notify the everyone that the task is due. Please note, this example is for the Android companion app, the iOS app handles actionable notifications differently. 
 
-```yaml
-automation:
-- id: notify_on_household_task_due
-  alias: "Benachrichtigung wenn eine Haushaltsaufgabe bald fällig ist"
-  variables:
-    entities: "group.household_tasks"
-  trigger:
-    - platform: time
-      at: "19:00:00"
-  action:
-    - repeat:
-        count: "{{ expand(entities) | list | count }}"
-        sequence:
-          - variables:
-              entity_id: >
-                {% set tasks = expand(entities) | map(attribute='entity_id') | list %}
-                {{ tasks[repeat.index - 1] }}
-              task_id: "{{ entity_id.split('.')[1] }}"
-              last_done_days: "{{ ((as_timestamp(now()) - (states(entity_id)) | float) / 60 / 60 / 24) | int }}"
-              cycle_days: "{{ state_attr(entity_id, 'cycle_days') | int }}"
-              warn_before_days: "{{ state_attr(entity_id, 'warning_before') | int }}"
-          - condition: template
-            value_template: "{{ last_done_days|int > (cycle_days|int - warn_before_days|int) }}"
-          - service: notify.mobile_app_phone_dimitri
-            data:
-              title: "🧹 {{ state_attr(entity_id, 'friendly_name') }}"
-              message: >
-                Task last done {{ last_done_days }} days ago.
-              data: 
-                group: household-tasks
-                tag: "{{ task_id }}"
-                actions:
-                  - action: done
-                    title: "Erledigt"
-```
+[Notify on Household Task Due](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/household.yaml#L41)
 
 Then the automation that waits for someone to mark the task as solved by pressing the done button in the notification. This then updates the sensor with the name, current time and the name of the executor of the task.
 
-```yaml
-# Mark task as solved and reply
-- id: mark_task_solved_when_confirmed
-  alias: "Markiere Aufgabe als erledigt und bedanke bei Benutzer"
-  trigger:
-    platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: done
-  action:
-    - variables:
-        task_id: "{{ trigger.event.data.tag }}"
-        sensor_name: "{{ 'sensor.' + task_id }}"
-        task_name: "{{ state_attr(sensor_name, 'friendly_name') }}"
-        executor: >
-          {% set user_id = trigger.event.context.user_id %}
-          {% set id_map = {
-            "abcdefghigdsfhldsfjldsfdsa": "his",
-            "fdfjldsagjdflagjldfaögjfdg": "her"
-          } %}
-          {{ id_map[user_id] }}
-        other_person: "{{ 'his' if executor == 'her' else 'his' }}"
-    # Mark task as solved by publishing timestamp to task topic
-    - service: mqtt.publish
-      data:
-        topic: "homeassistant/sensor/{{task_id}}/state"
-        payload: >
-          {
-            "state": {{ as_timestamp(now())|round(3) }},
-            "attributes": {
-              "executor": "{{ executor.title() }}",
-              "cycle_days": {{ state_attr(sensor_name, 'cycle_days') }},
-              "warning_before": {{ state_attr(sensor_name, 'warning_before') }}
-            } 
-          }
-        retain: true
-    # Thank person who did the task
-    - service: "notify.mobile_app_phone_{{ executor }}"
-      data:
-        title: "Thank you!"
-        message: "Many thanks for doing '{{ task_name }}'!"
-    # Clear notification from other person's phone
-    - service: "notify.mobile_app_phone_{{ other_person }}"
-      data:
-        message: clear_notification
-        data:
-          tag: "{{ task_id }}"
-    # Notify other person that task has been done already
-    - service: "notify.mobile_app_phone_{{ other_person }}"
-      data:
-        title: "Done!"
-        message: "{{ executor.title() }} already did '{{ task_name }}'!"
-```
+[Mark Task Solved When Confirmed](https://github.com/Burningstone91/smart-home-setup/blob/7b0a9e6e8d19e47a13d662d29533813273a2e130/home-assistant/packages/household.yaml#L75)
 
 And finally some name customization to show nice names in the frontend and the messages. E.g.
 
@@ -3512,4 +3078,30 @@ https://mopidy.com/ext/spotify/
 press green button
 
 copy id and secret in box below
+
+
+
+
+
+
+
+Pi Zero W
+
+Volumio
+Install version 2.729 to SD Card
+hotspot address = volumio.local or 192.168.211.1
+hotspot password = volumio2
+settings -> system -> update to latest
+
+settings -> playback -> Enable I2S DAC -> Choose AdafruitUDA1334A
+volume settings -> choose software mixer to allow control of volume by clients
+
+nfs -> path = /volume1/homes/burningstone/Musik,  Protokoll NFS, 
+enable NFS in NAS: map all users to admin and rw access
+
+install Volumio Spotify Connect2 Plugin
+
+http://10.10.90.9/dev/ to enable ssh
+username = volumio
+initial password = volumio
 
