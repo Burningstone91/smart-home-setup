@@ -1,35 +1,14 @@
 """Define automations for switches/remote controls."""
-import voluptuous as vol
+from appdaemon.plugins.hass.hassapi import Hass
 
-from appbase import AppBase, APP_SCHEMA
-from utils import config_validation as cv
-
-
-class SwitchBase(AppBase):
+class SwitchBase(Hass)):
     """Define a base class for switches."""
 
-    APP_SCHEMA = APP_SCHEMA.extend(
-        {
-            vol.Required("switch_id"): str,
-            vol.Optional("lights"): cv.entity_ids,
-            vol.Optional("custom_button_config"): vol.Schema(
-                {
-                    vol.Required(str): vol.Schema(
-                        {
-                            vol.Required("service"): str,
-                            vol.Optional("entity_id"): cv.entity_ids,
-                            vol.Optional("data"): dict,
-                        }
-                    )
-                }
-            ),
-        }
-    )
-
-    def configure(self) -> None:
-        """Configure."""
+    def initialize(self) -> None:
+        """Initialize."""
         switch_id = self.args["switch_id"]
         self.lights = self.args.get("lights")
+        self.transition_time = self.args.get("transition_time", 50)
         self.custom_action_map = self.args.get("custom_button_config", {})
         self.action_map = {}
         self.button_map = {}
@@ -38,11 +17,12 @@ class SwitchBase(AppBase):
         self.check_deconz_light()
 
         # Listen for button presses
-        self.hass.listen_event(self.on_button_press, "deconz_event", id=switch_id)
+        self.listen_event(self.on_button_press, "deconz_event", id=switch_id)
 
     def on_button_press(self, event_name: str, data: dict, kwargs: dict) -> None:
         """Respond on button press."""
         button_name = self.get_button_name(data["event"])
+        # Get button configuration
         if self.lights:
             action_map = {**self.action_map, **self.custom_action_map}
         else:
@@ -58,7 +38,7 @@ class SwitchBase(AppBase):
         if isinstance(service_data, str):
             light_service = getattr(SwitchBase, service_data)
             light_service(self)
-            self.adbase.log(
+            self.log(
                 f"Switch executed {service_data} for {', '.join(self.lights)}"
             )
             return
@@ -66,8 +46,8 @@ class SwitchBase(AppBase):
         # Execute custom button presses
         delay = service_data.get("delay")
         if delay:
-            self.adbase.run_in(
-                self.action_on_schedule, delay, service_data=service_data
+            self.run_in(
+                self.action_delayed, delay, service_data=service_data
             )
         else:
             self.action(service_data)
@@ -76,7 +56,7 @@ class SwitchBase(AppBase):
         """Raise error when configured lights are not deconz lights."""
         if self.lights:
             if any(
-                self.hass.get_state(light, attribute="is_deconz_group") is None
+                self.get_state(light, attribute="is_deconz_group") is None
                 for light in self.lights
             ):
                 raise ValueError(
@@ -92,7 +72,7 @@ class SwitchBase(AppBase):
 
     def get_light_type(self, light: str) -> str:
         """Get the DeCONZ light type of the given light."""
-        if self.hass.get_state(light, attribute="is_deconz_group"):
+        if self.get_state(light, attribute="is_deconz_group"):
             return "/action"
         return "/state"
 
@@ -101,71 +81,71 @@ class SwitchBase(AppBase):
         service = service_data["service"].replace(".", "/")
         entity = service_data.get("entity_id")
         data = service_data.get("data", {})
-        self.hass.call_service(service, entity_id=entity, **data)
-        self.adbase.log(f"Switch executed {service} for {', '.join(entity)}")
+        self.call_service(service, entity_id=entity, **data)
+        self.log(f"Switch executed {service} for {', '.join(entity)}")
 
-    def action_on_schedule(self, kwargs: dict) -> None:
-        """Execute service on specified time."""
+    def action_delayed(self, kwargs: dict) -> None:
+        """Execute service delayed."""
         self.action(kwargs["service_data"])
 
     def light_on(self) -> None:
         """Turn lights on."""
         for light in self.lights:
-            self.hass.turn_on(light)
+            self.turn_on(light)
 
     def light_on_full(self) -> None:
         """Turn on light at full brightness."""
         for light in self.lights:
-            self.hass.call_service("light/turn_on", entity_id=light, brightness_pct=100)
+            self.call_service("light/turn_on", entity_id=light, brightness_pct=100)
 
     def light_off(self) -> None:
         """Turn lights off."""
         for light in self.lights:
-            self.hass.turn_off(light)
+            self.turn_off(light)
 
     def light_toggle(self) -> None:
         """Toggle lights."""
         for light in self.lights:
-            self.hass.toggle(light)
+            self.toggle(light)
 
     def light_dim_up_step(self) -> None:
         """Increase brightness by 10%."""
         for light in self.lights:
-            self.hass.call_service(
+            self.call_service(
                 "light/turn_on", entity_id=light, brightness_step_pct=10
             )
 
     def light_dim_up_hold(self) -> None:
         """Smoothly increase brightness."""
         for light in self.lights:
-            self.hass.call_service(
+            self.call_service(
                 "deconz/configure",
                 field=self.get_light_type(light),
                 entity=light,
-                data={"bri_inc": 254, "transitiontime": 50},
+                data={"bri_inc": 254, "transitiontime": self.transition_time},
             )
 
     def light_dim_down_step(self) -> None:
         """Decrease brightness by 10%."""
         for light in self.lights:
-            self.hass.call_service(
+            self.call_service(
                 "light/turn_on", entity_id=light, brightness_step_pct=-10
             )
 
     def light_dim_down_hold(self) -> None:
         """Smoothly decrease brightness."""
         for light in self.lights:
-            self.hass.call_service(
+            self.call_service(
                 "deconz/configure",
                 field=self.get_light_type(light),
                 entity=light,
-                data={"bri_inc": -254, "transitiontime": 50},
+                data={"bri_inc": -254, "transitiontime": self.transition_time},
             )
 
     def light_stop_dim(self) -> None:
         """Stop dimming."""
         for light in self.lights:
-            self.hass.call_service(
+            self.call_service(
                 "deconz/configure",
                 field=self.get_light_type(light),
                 entity=light,
@@ -176,9 +156,9 @@ class SwitchBase(AppBase):
 class HueDimmerSwitch(SwitchBase):
     """Define a base feature for Philips Hue Dimmer Switche."""
 
-    def configure(self) -> None:
+    def initialize(self) -> None:
         """Configure."""
-        super().configure()
+        super().initialize()
         self.button_map = {
             1000: "short_press_turn_on",
             1002: "short_release_turn_on",
@@ -214,9 +194,9 @@ class HueDimmerSwitch(SwitchBase):
 class XiaomiWXKG01LM(SwitchBase):
     """Define a base feature for Xiaomi Mi Round Wireless Switch."""
 
-    def configure(self) -> None:
+    def initialize(self) -> None:
         """Configure."""
-        super().configure()
+        super().initialize()
         self.button_map = {
             1000: "short_press",
             1002: "short_release",
@@ -239,9 +219,9 @@ class XiaomiWXKG01LM(SwitchBase):
 class XiaomiWXKG11LM2016(SwitchBase):
     """Define a base feature for Xiaomi Aqara Wireless Switch 2016 version."""
 
-    def configure(self) -> None:
+    def initialize(self) -> None:
         """Configure."""
-        super().configure()
+        super().initialize()
         self.button_map = {
             1002: "short_press",
             1004: "double_press",
@@ -258,9 +238,9 @@ class XiaomiWXKG11LM2016(SwitchBase):
 class IKEATradfriE1743(SwitchBase):
     """Define a base feature for IKEA Tradfri E1743 Switch."""
 
-    def configure(self) -> None:
+    def initialize(self) -> None:
         """Configure."""
-        super().configure()
+        super().initialize()
 
         self.button_map = {
             1002: "short_release_turn_on",
@@ -284,9 +264,9 @@ class IKEATradfriE1743(SwitchBase):
 class IKEASymfonisk(SwitchBase):
     """Define a base feature for IKEA Symfonisk Sound Controller."""
 
-    def configure(self) -> None:
+    def initialize(self) -> None:
         """Configure."""
-        super().configure()
+        super().initialize()
 
         self.button_map = {
             1002: "short_press",

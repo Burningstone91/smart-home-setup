@@ -1,0 +1,126 @@
+blueprint:
+  name: Deconz - Philips Hue Dimmer Switch - Light
+  description: |
+    Control lights with a Philips Hue Dimmer Switch.
+
+  domain: automation
+  input:
+    remote:
+      name: Remote id
+      description: The id of the remote to use
+      default: ""
+    light:
+      name: Light
+      description: The light to control
+      selector:
+        entity:
+          domain: light
+          integration: deconz
+    transition_time_dim:
+      name: Transition Time
+      description: Time to dim to full/no brightness
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 100
+          mode: slider
+          step: 1
+          unit_of_measurement: "s"
+    short_press_dim_up:
+      name: Dim Up - short press
+      description: Action to run on short press Dim Up button
+      default: []
+      selector:
+        action:
+    short_press_dim_down:
+      name: Dim Down - short press
+      description: Action to run on short press Dim Down button
+      default: []
+      selector:
+        action:
+    long_press_turn_off:
+      name: Turn Off - long press
+      description: Action to run on long press Turn Off button
+      default: []
+      selector:
+        action:
+
+mode: restart
+max_exceeded: silent
+
+variables:
+  remote: !input remote
+  light: !input light
+  transition_time: !input transition_time_dim
+  deconz_field: "{{ '/action' if state_attr(light, 'is_deconz_group') else '/state' }}"
+
+trigger:
+  - platform: event
+    event_type: deconz_event
+
+action:
+  - variables:
+      event: "{{ trigger.event.data.event }}"
+  - condition: template
+    value_template: "{{ trigger.event.data.id == remote }}"
+  - choose:
+      # Short press ON -> turn light on
+      - conditions: 
+          - "{{ event == 1002 }}"
+        sequence:
+          - service: light.turn_on
+            data:
+              entity_id: "{{ light }}"
+              transition: 1
+      # Long press ON -> turn light on at full brightness
+      - conditions:
+          - "{{ event == 1001 }}"
+        sequence:
+          - service: light.turn_on
+            data:
+              entity_id: "{{ light }}"
+              transition: 1
+              brightness_pct: 100
+      # Short press Dim Up -> Selected Action
+      - conditions:
+          - "{{ event == 2002 }}"
+        sequence: !input short_press_dim_up
+      # Long press Dim Up/Down -> start dimming lights up/down
+      - conditions:
+          - "{{ event in [2001, 3001] }}"
+        sequence: 
+          - service: deconz.configure
+            data:
+              field: "{{ deconz_field }}"
+              entity: "{{ light }}"
+              data:
+                bri_inc: "{{ 254 if event == 2001 else -254 }}"
+                transitiontime: "{{ transition_time | int * 10 }}"
+      # Short press Dim Up -> Selected Action
+      - conditions:
+          - "{{ event == 3002 }}"
+        sequence: !input short_press_dim_down
+
+      # Long press release Dim Up/Down -> stop dimming lights
+      - conditions:
+          - "{{ event in [3003, 2003] }}"
+        sequence: 
+          - service: deconz.configure
+            data:
+              field: "{{ deconz_field }}"
+              entity: "{{ light }}"
+              data:
+                bri_inc: 0
+      # Short press OFF -> turn light off
+      - conditions:
+          - "{{ event == 4002 }}"
+        sequence:
+          - service: light.turn_off
+            data:
+              entity_id: "{{ light }}"
+              transition: 1
+      # Long press OFF -> Selected Action
+      - conditions:
+         - "{{ event == 4001 }}"
+        sequence: !input long_press_turn_off

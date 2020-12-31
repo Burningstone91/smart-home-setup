@@ -37,6 +37,21 @@ automation:
     action:
       service: light.turn_off
       entity_id: light.dressroom
+  
+  # Light Remote Dressroom
+  - id: 'remote_light_dressroom'
+    alias: "Licht Schalter Ankleidezimmer"
+    use_blueprint:
+      path: custom/hue_dimmer_light.yaml
+      input:
+        transition_time_dim: '5'
+        remote: remote_light_dressroom
+        light: light.dressroom
+        long_press_turn_off:
+          - service: homeassistant.turn_off
+            entity_id:
+              - light.dressroom
+              - switch.dehumidifier_dressroom
 
 # Entity Customization
 homeassistant:

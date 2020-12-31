@@ -1,0 +1,108 @@
+blueprint:
+  name: Deconz - Philips Hue Dimmer Switch - General
+  description: |
+    Control anything with a Philips Hue Dimmer Switch.
+  domain: automation
+  input:
+    remote:
+      name: Remote
+      description: The remote to use
+      default: ""
+    short_press_turn_on:
+      name: Turn On - short press
+      description: Action to run on short press Turn On button
+      default: []
+      selector:
+        action:
+    long_press_turn_on:
+      name: Turn On - long press
+      description: Action to run on long press Turn On button
+      default: []
+      selector:
+        action:
+    short_press_dim_up:
+      name: Dim Up - short press
+      description: Action to run on short press Dim Up button
+      default: []
+      selector:
+        action:
+    long_press_dim_up:
+      name: Dim Up - long press
+      description: Action to run on long press Dim Up button
+      default: []
+      selector:
+        action:
+    short_press_dim_down:
+      name: Dim Down - short press
+      description: Action to run on short press Dim Down button
+      default: []
+      selector:
+        action:
+    long_press_dim_down:
+      name: Dim Down - long press
+      description: Action to run on long press Dim Down button
+      default: []
+      selector:
+        action:
+    short_press_turn_off:
+      name: Turn Off - short press
+      description: Action to run on short press Turn Off button
+      default: []
+      selector:
+        action:
+    long_press_turn_off:
+      name: Turn Off - long press
+      description: Action to run on long press Turn Off button
+      default: []
+      selector:
+        action:
+
+mode: restart
+max_exceeded: silent
+
+variables:
+  remote: !input remote
+
+trigger:
+  - platform: event
+    event_type: deconz_event
+
+action:
+  - variables:
+      event: "{{ trigger.event.data.event }}"
+  - condition: template
+    value_template: "{{ trigger.event.data.id == remote }}"
+  - choose:
+      # Turn On - short press 
+      - conditions: 
+          - "{{ event == 1002 }}"
+        sequence: !input short_press_turn_on
+      # Turn On - long press 
+      - conditions: 
+          - "{{ event == 1003 }}"
+        sequence: !input long_press_turn_on
+      # Dim Up - short press 
+      - conditions: 
+          - "{{ event == 2002 }}"
+        sequence: !input short_press_dim_up
+      # Dim Up - long press 
+      - conditions: 
+          - "{{ event == 2003 }}"
+        sequence: !input long_press_dim_up
+      # Dim Down - short press 
+      - conditions: 
+          - "{{ event == 3002 }}"
+        sequence: !input short_press_dim_down
+      # Dim Down - long press 
+      - conditions: 
+          - "{{ event == 3003 }}"
+        sequence: !input long_press_dim_down
+      # Turn Off - short press 
+      - conditions: 
+          - "{{ event == 4002 }}"
+        sequence: !input short_press_turn_off
+      # Turn Off - long press 
+      - conditions: 
+          - "{{ event == 4003 }}"
+        sequence: !input long_press_turn_off
+     

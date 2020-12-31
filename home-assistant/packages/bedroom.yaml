@@ -67,6 +67,16 @@ automation:
       service: "switch.turn_{{ trigger.to_state.state }}"
       entity_id: switch.adaptive_lighting_sleep_mode_bedroom_bed
 
+  # Light Remote Bedroom
+  - id: 'remote_light_bedroom'
+    alias: "Licht Schalter Schlafzimmer"
+    use_blueprint:
+      path: custom/hue_dimmer_light.yaml
+      input:
+        transition_time_dim: '5'
+        remote: remote_light_bedroom
+        light: light.bedroom
+
 # Entity Customization
 homeassistant:
   customize:

@@ -1,5 +1,0 @@
-livingroom_light_switch:
-  module: switches
-  class: HueDimmerSwitch
-  switch_id: remote_light_livingroom
-  lights: light.livingroom

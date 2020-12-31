@@ -53,6 +53,16 @@ automation:
       service: light.turn_off
       entity_id: light.livingroom
 
+  # Light Remote Livingroom
+  - id: 'remote_light_livingroom'
+    alias: "Licht Schalter Wohnzimmer"
+    use_blueprint:
+      path: custom/hue_dimmer_light.yaml
+      input:
+        transition_time_dim: '5'
+        remote: remote_light_livingroom
+        light: light.livingroom
+
 # Entity Customization
 homeassistant:
   customize:

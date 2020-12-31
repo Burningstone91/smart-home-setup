@@ -58,13 +58,15 @@ automation:
       service: light.turn_off
       entity_id: light.office
 
-  # - alias: blueprint_test
-  #   description: 'blueprint_test'
-  #   use_blueprint:
-  #     path: remotes/blueprints.yaml
-  #     input:
-  #       light: light.office
-  #       remote: livingroom
+  # Light Remote Office
+  - id: 'remote_light_office'
+    alias: "Licht Schalter Büro"
+    use_blueprint:
+      path: custom/hue_dimmer_light.yaml
+      input:
+        transition_time_dim: '5'
+        remote: remote_light_office
+        light: light.office
 
 # Entity Customization
 homeassistant:
