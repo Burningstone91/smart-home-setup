@@ -184,8 +184,8 @@ services:
     container_name: nextcloud-db
     environment:
       POSTGRES_DB: "nextcloud"
-      POSTGRES_PASSWORD: secretusername
-      POSTGRES_USER: supersecretpassword
+      POSTGRES_USER: secretusername
+      POSTGRES_PASSWORD: supersecretpassword
     image: "postgres:9.6.19-alpine"
     ports:
       - "5433:5432"
@@ -193,6 +193,24 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./nextcloud/data:/var/lib/postgresql/data
+
+  snapserver:
+    build: 
+      context: ./snapserver
+    container_name: snapserver
+    environment:
+      - DEVICE_NAME=MultiRoom
+    image: burningstone/snapserver
+    ports:
+      - "1704:1704"
+      - "1705:1705"
+      - "1780:1780"
+      - "5353:5353"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapserver.conf:/etc/snapserver.conf
+      - ./snapserver/snapfifo:/run/snapserver/
 
   swag:
     cap_add:
