@@ -1,0 +1,136 @@
+automation:
+  # Set home cinema lights when remote changes activity
+  - id: harmony_scene_lights
+    alias: Licht Szenen Heimkino
+    mode: single
+    trigger:
+      platform: state
+      entity_id: remote.wohnzimmer
+      attribute: current_activity
+    condition:
+      - "{{ trigger.to_state.state != 'unavailable' }}"
+    action:
+      service: script.turn_on
+      entity_id: script.set_home_cinema_lights
+
+  # Brighten/Dim Light on Pause/Play
+  - id: dim_brighten_light_play_pause
+    alias: Licht hell/dunkel bei Pause/Play
+    mode: single
+    trigger:
+      platform: event
+      event_type: roku_command
+    action:
+      - variables:
+          command: "{{ trigger.event.data.key }}"
+      - choose:
+          - conditions:
+              - "{{ command == 'Home' }}"
+            sequence:
+              - service: light.turn_on
+                entity_id: light.livingroom
+                data:
+                  brightness_pct: 100
+                  transition: 5
+          - conditions:
+              - "{{ command == 'Play' }}"
+            sequence:
+              - service: script.turn_on
+                entity_id: script.set_home_cinema_lights
+
+  # Pause/Play on phone call
+  - id: pause_play_on_phone_call
+    alias: Pause/Play bei Anruf
+    mode: single
+    trigger:
+      platform: state
+      entity_id: 
+        - sensor.call_state_phone_dimitri
+        - sensor.call_state_phone_sabrina
+    condition:
+      - "{{ is_state('person.' + trigger.entity_id.split('_')[-1], 'home') }}"
+      - "{{ is_state('remote.wohnzimmer', 'on') }}"
+    action:
+      - variables:
+          call_state: "{{ trigger.to_state.state }}"
+          current_activity: "{{ state_attr('remote.wohnzimmer', 'current_activity') }}"
+          device: >
+            {% set map = {
+              "Fernsehen": "Swisscom DVR",
+              "Filme/Serien": "Kodi Wohnzimmer"
+            }%}
+            {{ map[current_activity] }}
+      - choose:
+          - conditions:
+              - "{{ call_state == 'ringing' }}"
+            sequence:
+              - service: remote.send_command
+                data:
+                  device: "{{ device }}"
+                  command: Pause
+              - service: light.turn_on
+                entity_id: light.livingroom
+                data:
+                  brightness_pct: 100
+                  transition: 5
+          - conditions:
+              - "{{ call_state == 'idle' }}"
+            sequence:
+              - service: remote.send_command
+                data:
+                  device: "{{ device }}"
+                  command: Play
+              - service: script.turn_on
+                entity_id: script.set_home_cinema_lights
+
+
+script:
+  # Change home cinema lights based on current Harmony activity
+  set_home_cinema_lights:
+    mode: restart
+    variables:
+      activity: "{{ state_attr('remote.wohnzimmer', 'current_activity') }}"
+    sequence:
+      - choose:
+          - conditions:
+              - "{{ activity == 'Fernsehen' }}"
+            sequence:
+              - service: light.turn_on
+                entity_id: light.livingroom
+                data:
+                  color_name: yellow
+                  brightness_pct: 50
+                  transition: 3
+          - conditions:
+              - "{{ activity == 'Nintendo Switch' }}"
+            sequence:
+              - service: light.turn_on
+                entity_id: light.livingroom
+                data:
+                  color_name: green
+                  brightness_pct: 70
+                  transition: 3
+          - conditions:
+              - "{{ activity == 'Filme/Serien' }}"
+            sequence:
+              - service: light.turn_on
+                entity_id: light.livingroom
+                data:
+                  color_name: orange
+                  brightness_pct: 30
+                  transition: 3
+          - conditions:
+              - "{{ activity == 'Musik' }}"
+            sequence:
+              - service: light.turn_on
+                entity_id: light.livingroom
+                data:
+                  effect: colorloop
+                  brightness_pct: 80
+          - conditions:
+              - "{{ activity == 'PowerOff' }}"
+            sequence:
+              - service: light.turn_off
+                entity_id: light.livingroom
+                data:
+                  transition: 120
