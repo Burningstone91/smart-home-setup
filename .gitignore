@@ -39,3 +39,4 @@ snapserver/snapfifo/
 check_docker_latest.sh
 check_docker_list.txt
 *.conf
+!*mopidy.conf
