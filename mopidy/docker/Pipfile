@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+youtube-dl = "*"
+mopidy-iris = "*"
+mopidy-moped = "*"
+mopidy-gmusic = "*"
+mopidy-pandora = "*"
+mopidy-youtube = "*"
+pyopenssl = "*"
+
+[requires]
+python_version = "3.8"
