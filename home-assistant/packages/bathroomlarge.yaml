@@ -8,8 +8,14 @@ homeassistant:
     binary_sensor.door_bathroomlarge:
       friendly_name: Tür Grosses Bad
       device_class: door
+    # Waterleak Sensors
+    binary_sensor.water_leak_bathroomlarge:
+      friendly_name: Wasserleck Grosses Bad
+      device_class: moisture
     # Battery Sensors
     sensor.battery_level_door_bathroomlarge:
       friendly_name: Tür Sensor Grosses Bad
     sensor.battery_level_window_bathroomlarge:
       friendly_name: Fenster Sensor Grosses Bad
+    sensor.battery_level_water_leak_bathroomlarge:
+      friendly_name: Wasserleck Sensor Grosses Bad

@@ -21,6 +21,16 @@ binary_sensor:
             states('alarm_control_panel.home_alarm') == 'disarmed' 
           }}
 
+
+group:
+  water_leak_sensors:
+    name: Wasserleck Sensoren
+    entities:
+      - binary_sensor.water_leak_kitchen
+      - binary_sensor.water_leak_bathroomsmall
+      - binary_sensor.water_leak_bathroomlarge
+      - binary_sensor.water_leak_storageroom
+
 automation:
   # Arm away when everyone gone
   - id: arm_away_when_everyone_gone
@@ -237,24 +247,16 @@ alert:
           title: "Fehlalarm"
 
   # Notify on water leak
-  # water_leak_detected:
-  #   name: "Wasserleck wurde entdeckt!"
-  #   done_message: "Das Wasserleck wurde behoben."
-  #   title: "Wasserleck!"
-  #   entity_id: group.water_leak_sensors
-  #   state: "on"
-  #   repeat:
-  #     - 1
-  #   notifiers:
-  #     - mobile_app_phone_dimitri
-  #   data:
-  #     channel: Notfall
+  water_leak_detected:
+    name: "Wasserleck wurde entdeckt!"
+    done_message: "Das Wasserleck wurde behoben."
+    title: "Wasserleck!"
+    entity_id: group.water_leak_sensors
+    state: "on"
+    repeat:
+      - 1
+    notifiers:
+      - mobile_app_phone_dimitri
+    data:
+      channel: Notfall
 
-# group:
-#   water_leak_sensors:
-#     name: Wasserleck Sensoren
-#     entities:
-#       - binary_sensor.water_leak_kitchen
-#       - binary_sensor.water_leak_bathroomsmall
-#       - binary_sensor.water_leak_bathroomlarge
-#       - binary_sensor.water_leak_storageroom

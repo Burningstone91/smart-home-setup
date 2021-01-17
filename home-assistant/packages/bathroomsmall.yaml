@@ -12,6 +12,10 @@ homeassistant:
     binary_sensor.tamper_bathroomsmall:
       friendly_name: Manipulation Kleines Bad
       device_class: safety
+    # Waterleak Sensors
+    binary_sensor.water_leak_bathroomsmall:
+      friendly_name: Wasserleck Kleines Bad
+      device_class: moisture
     # Environment Sensors
     sensor.temperature_bathroomsmall:
       friendly_name: Kleines Bad
@@ -28,3 +32,5 @@ homeassistant:
       friendly_name: Multisensor Kleines Bad
     sensor.battery_level_temperature_bathroomsmall:
       friendly_name: Temperatur Sensor Kleines Bad
+    sensor.battery_level_water_leak_bathroomsmall:
+      friendly_name: Wasserleck Sensor Kleines Bad

@@ -8,8 +8,14 @@ homeassistant:
     binary_sensor.door_kitchen:
       friendly_name: Tür Küche
       device_class: door
+    # Waterleak Sensors
+    binary_sensor.water_leak_kitchen:
+      friendly_name: Wasserleck Küche
+      device_class: moisture
     # Battery Sensors
     sensor.battery_level_door_kitchen:
       friendly_name: Tür Sensor Küche
     sensor.battery_level_window_kitchen:
       friendly_name: Fenster Sensor Küche
+    sensor.battery_level_water_leak_kitchen:
+      friendly_name: Wasserleck Sensor Küche

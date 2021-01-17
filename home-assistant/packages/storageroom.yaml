@@ -8,6 +8,10 @@ homeassistant:
     binary_sensor.door_storageroom:
       friendly_name: Tür Reduit
       device_class: door
+    # Waterleak Sensors
+    binary_sensor.water_leak_storageroom:
+      friendly_name: Wasserleck Reduit
+      device_class: moisture
     # Environment Sensors
     sensor.temperature_storageroom:
       friendly_name: Reduit
@@ -24,3 +28,5 @@ homeassistant:
       friendly_name: Fenster Sensor Reduit
     sensor.battery_level_temperature_storageroom:
       friendly_name: Temperatur Sensor Reduit
+    sensor.battery_level_water_leak_storageroom:
+      friendly_name: Wasserleck Sensor Reduit
