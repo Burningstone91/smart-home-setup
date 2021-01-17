@@ -50,6 +50,7 @@ automation:
     condition:
       - "{{ is_state('person.' + trigger.entity_id.split('_')[-1], 'home') }}"
       - "{{ is_state('remote.wohnzimmer', 'on') }}"
+      - "{{ state_attr('remote.wohnzimmer', 'current_activity') in ['Fernsehen', 'Filme/Serien'] }}"
     action:
       - variables:
           call_state: "{{ trigger.to_state.state }}"
@@ -66,6 +67,7 @@ automation:
             sequence:
               - service: remote.send_command
                 data:
+                  entity_id: remote.livingroom
                   device: "{{ device }}"
                   command: Pause
               - service: light.turn_on
@@ -78,6 +80,7 @@ automation:
             sequence:
               - service: remote.send_command
                 data:
+                  entity_id: remote.livingroom
                   device: "{{ device }}"
                   command: Play
               - service: script.turn_on
