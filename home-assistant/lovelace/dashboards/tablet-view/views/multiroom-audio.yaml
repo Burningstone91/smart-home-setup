@@ -1,0 +1,206 @@
+####################################################
+#                                                  #
+#               Multiroom Audio                    #
+#                                                  #
+####################################################
+title: multiroom-audio
+path: multiroom-audio
+panel: true
+icon: mdi:speaker
+badges: []
+cards:
+  - type: picture-elements
+    image: /local/wallpaper/overlay_ipad.svg
+    style: |
+      ha-card {
+        --ha-card-background: none !important;
+        box-shadow: none !important;
+      } 
+    elements:
+      - type: custom:vertical-stack-in-card
+        style:
+          left: 50%
+          top: 5%
+          width: 100%
+          heigth: 5%
+        cards:
+          - type: horizontal-stack
+            cards:
+              # Room Selector
+              - type: 'custom:button-card'
+                aspect_ratio: 1/1
+                show_name: false
+                show_icon: true
+                icon: 'mdi:speaker'
+                size: 5%
+                entity: media_player.mpd_livingroom
+                styles:
+                  card:
+                    - padding: 0px
+                    - box-shadow: none
+                  icon:
+                    - filter: opacity(100%)
+                    - transition: all 0.5s ease
+                    - color: '#FFFFFF' #color of button while playing
+                tap_action:
+                  action: call-service
+                  service: media_player.media_previous_track
+                  service_data:
+                    entity_id: media_player.spotify_dimitri
+                  haptic: medium
+                hold_action:
+                  action: none
+                style:
+                  left: 15%
+                  top: 15%
+      ####################################################
+      #           Media Browser (Left Side)             #
+      ####################################################
+      - type: custom:vertical-stack-in-card
+        style:
+          top: 52%
+          left: 25%
+          width: 50%
+          height: 100%
+          #'--ha-card-border-radius': '20px'
+          '--ha-card-box-shadow': 'none'
+        cards:
+          # Media Browser
+          - type: custom:mod-card
+            style: |
+              ha-card {
+                background: rgba(0, 0, 0, 1);
+                border-radius: 20px;
+              }
+            card:
+              type: iframe
+              url: http://10.10.40.6:6682/iris/discover/categories
+              aspect_ratio: 147%
+      ####################################################
+      #            Media Player (Right Side)             #
+      ####################################################
+      # Background
+      - type: 'custom:button-card'
+        aspect_ratio: 2/3
+        entity: media_player.mpd_livingroom
+        show_icon: false
+        show_label: false
+        show_last_changed: false
+        show_entity_picture: true
+        show_name: false
+        show_state: false
+        tap_action:
+          action: none
+        style:
+          height: 40%
+          width: 50%
+          top: 20%
+          left: 75%
+        state:
+          - value: paused
+            styles:
+              entity_picture:
+                - filter: grayscale(100%) blur(16px)
+                - transition: all 0.5s ease
+        styles:
+          card:
+            - padding: 0px
+            - background-color: var(--card-background-off) #the color when there is no artwork, change or remove to use own color
+          entity_picture:
+            - border-radius: 20px
+            - height: 100%
+            - width: 100%
+            - position: absolute
+            - filter: blur(16px)
+            - transition: all 0.5s ease
+      - type: custom:vertical-stack-in-card
+        style:
+          left: 90%
+          top: 42%
+          width: 64%
+          '--mini-media-player-accent-color': 'blue'
+        cards:
+          # Album Cover
+          - type: custom:mini-media-player
+            entity: media_player.mpd_livingroom
+            artwork: full-cover
+            hide:
+              name: true
+              info: true
+              volume: true
+              source: true
+              controls: true
+              power: true
+              icon: true
+            style: |
+              ha-card {
+                height: 54%;
+                width: 54%;
+                margin-top: 10%;
+              }
+          # Title
+          - type: markdown
+            content: >
+              <h3>{{ state_attr('media_player.mpd_livingroom', 'media_title') }}</h3>
+            style: |
+              ha-card {
+                font-size: 13pt;
+                font-weigt: bold;
+                color: white;
+                margin-top: 3%;
+              }
+          # Artist
+          - type: markdown
+            content: >
+              {{ state_attr('media_player.mpd_livingroom', 'media_artist') }}
+            style: |
+              ha-card {
+                font-size: 10pt;
+                color: white;
+                margin-top: -4%
+              }
+          # Media Player Controls
+          - type: custom:mini-media-player
+            entity: media_player.mpd_livingroom
+            hide:
+              name: true
+              info: true
+              volume: true
+              source: true
+              artwork: true
+              power: true
+              play_stop: false
+              icon: true
+              progress: true
+            style: |
+              ha-card {
+                height: 60%;
+                width: 55%; 
+                box-shadow: none;
+              }
+           # Volume
+          - type: horizontal-stack
+            cards:
+              - type: markdown
+                content: >
+                  <ha-icon icon="mdi:volume-high"></ha-icon>
+              - type: custom:mini-media-player
+                entity: media_player.mpd_livingroom
+                hide:
+                  name: true
+                  info: true
+                  source: true
+                  artwork: true
+                  controls: true
+                  power: true
+                  icon: true
+                  progress: true
+                style: |
+                  ha-card {
+                    height: 60%;
+                    width: 107%;
+                    margin-top: 4.25%;
+                    margin-left: -90%;
+                    color: blue;
+                    box-shadow: none;
+                  }

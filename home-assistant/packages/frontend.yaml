@@ -14,7 +14,7 @@ lovelace:
     computer-view:
       mode: yaml
       title: Computer
-      icon: mdi:matrix
+      icon: mdi:desktop-tower-monitor
       show_in_sidebar: true
       filename: ./lovelace/dashboards/computer-view/computer-view.yaml
     phone-view:
@@ -23,3 +23,9 @@ lovelace:
       icon: mdi:cellphone-android
       show_in_sidebar: true
       filename: ./lovelace/dashboards/phone-view/homekit-infused.yaml
+    tablet-view:
+      mode: yaml
+      title: Tablet
+      icon: mdi:tablet
+      show_in_sidebar: true
+      filename: ./lovelace/dashboards/tablet-view/tablet-view.yaml

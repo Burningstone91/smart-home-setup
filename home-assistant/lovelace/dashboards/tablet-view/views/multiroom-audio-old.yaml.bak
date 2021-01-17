@@ -1,0 +1,466 @@
+####################################################
+#                                                  #
+#               Multiroom Audio                    #
+#                                                  #
+####################################################
+title: multiroom-audio
+path: multiroom-audio
+panel: true
+icon: mdi:speaker
+badges: []
+cards:
+  - type: picture-elements
+    image: /local/wallpaper/overlay_ipad.svg
+    style: |
+      ha-card {
+        --ha-card-background: none !important;
+        box-shadow: none !important;
+      } 
+    elements:
+      ####################################################
+      #                    Background                    #
+      ####################################################
+      - type: 'custom:button-card'
+        aspect_ratio: 4/3
+        entity: media_player.spotify_dimitri
+        show_icon: false
+        show_label: false
+        show_last_changed: false
+        show_entity_picture: true
+        show_name: false
+        show_state: false
+        tap_action:
+          action: none
+        style:
+          height: 75%
+          width: 100%
+          top: 37%
+          left: 50%
+        state:
+          - value: paused
+            styles:
+              entity_picture:
+                - filter: grayscale(100%) blur(4px)
+                - transition: all 0.5s ease
+        styles:
+          card:
+            - padding: 0px
+            - background-color: var(--card-background-off) #the color when there is no artwork, change or remove to use own color
+          entity_picture:
+            - border-radius: 20px
+            - height: 100%
+            - width: 100%
+            - position: absolute
+            - filter: blur(4px)
+            - transition: all 0.5s ease
+      ####################################################
+      #          Volume Slider   (Bottom Right)          #
+      ####################################################
+      - type: custom:vertical-stack-in-card
+        style:
+          left: 67%
+          top: 72%
+          width: 64%
+        cards:
+          - type: custom:mod-card
+            style: |
+              ha-card {
+                background: none;
+              }
+            card:
+              type: horizontal-stack
+              cards:
+                # Volume Slider Livingroom
+                - type: vertical-stack
+                  cards:
+                    # Volume Slider
+                    - type: custom:mod-card
+                      style: |
+                        ha-card {
+                          background: none;
+                        }
+                      card:
+                        type: custom:media_player-popup-card
+                        entity: media_player.snapclient_livingroom
+                        fullscreen: false
+                        icon: mdi-blank
+                        sliderHeight: 240px
+                        sliderWidth: 122.5px
+                        borderRadius: 25px
+                        sliderThumbColor: teal
+                        sliderTrackColor: rgba(255, 255, 255, 0.2)
+                    # Media Player Name
+                    - type: markdown
+                      content: >
+                        **Wohnzimmer**
+                      style: |
+                        ha-card {
+                          color: white;
+                          margin-top: -10px;
+                          text-align: center;
+                          background: transparent;
+                          box-shadow: None;
+                        }
+                # Volume Slider Bedroom
+                - type: vertical-stack
+                  cards:
+                    # Volume Slider
+                    - type: custom:mod-card
+                      style: |
+                        ha-card {
+                          background; None;
+                        }
+                      card:
+                        type: custom:media_player-popup-card
+                        entity: media_player.snapclient_bedroom
+                        fullscreen: false
+                        icon: mdi-blank
+                        sliderHeight: 240px
+                        sliderWidth: 122.5px
+                        borderRadius: 25px
+                        sliderThumbColor: teal
+                        sliderTrackColor: rgba(255, 255, 255, 0.2)
+                    # Media Player Name
+                    - type: markdown
+                      content: >
+                        **Schlafzimmer**
+                      style: |
+                        ha-card {
+                          color: white;
+                          margin-top: -10px;
+                          text-align: center;
+                          background: transparent;
+                          box-shadow: None;
+                        }
+                # Volume Slider Office
+                - type: vertical-stack
+                  cards:
+                    # Volume Slider
+                    - type: custom:mod-card
+                      style: |
+                        ha-card {
+                          background; None;
+                        }
+                      card:
+                        type: custom:media_player-popup-card
+                        entity: media_player.snapclient_bedroom
+                        fullscreen: false
+                        icon: mdi-blank
+                        sliderHeight: 240px
+                        sliderWidth: 122.5px
+                        borderRadius: 25px
+                        sliderThumbColor: teal
+                        sliderTrackColor: rgba(255, 255, 255, 0.2)
+                    # Media Player Name
+                    - type: markdown
+                      content: >
+                        **Büro**
+                      style: |
+                        ha-card {
+                          color: white;
+                          margin-top: -10px;
+                          text-align: center;
+                          background: transparent;
+                          box-shadow: None;
+                        }
+                # Volume Slider Balcony
+                - type: vertical-stack
+                  cards:
+                    # Volume Slider
+                    - type: custom:mod-card
+                      style: |
+                        ha-card {
+                          background; None;
+                        }
+                      card:
+                        type: custom:media_player-popup-card
+                        entity: media_player.snapclient_bedroom
+                        fullscreen: false
+                        icon: mdi-blank
+                        sliderHeight: 240px
+                        sliderWidth: 122.5px
+                        borderRadius: 25px
+                        sliderThumbColor: teal
+                        sliderTrackColor: rgba(255, 255, 255, 0.2)
+                    # Media Player Name
+                    - type: markdown
+                      content: >
+                        **Balkon**
+                      style: |
+                        ha-card {
+                          color: white;
+                          margin-top: -10px;
+                          text-align: center;
+                          background: transparent;
+                          box-shadow: None;
+                        }
+                # Volume Slider Group
+                - type: vertical-stack
+                  cards:
+                    # Volume Slider
+                    - type: custom:mod-card
+                      style: |
+                        ha-card {
+                          background; None;
+                        }
+                      card:
+                        type: custom:media_player-popup-card
+                        entity: media_player.snapclient_bedroom
+                        fullscreen: false
+                        icon: mdi-blank
+                        sliderHeight: 240px
+                        sliderWidth: 122.5px
+                        borderRadius: 25px
+                        sliderThumbColor: teal
+                        sliderTrackColor: rgba(255, 255, 255, 0.2)
+                    # Media Player Name
+                    - type: markdown
+                      content: >
+                        **Gruppe**
+                      style: |
+                        ha-card {
+                          color: white;
+                          margin-top: -10px;
+                          text-align: center;
+                          background: transparent;
+                          box-shadow: None;
+                        }  
+      ####################################################
+      #            Media Browser (Left Panel)            #
+      ####################################################
+      - type: custom:vertical-stack-in-card
+        style:
+          top: 70%
+          left: 18%
+          width: 31%
+          height: 135%
+          #'--ha-card-border-radius': '20px'
+          '--ha-card-box-shadow': 'none'
+        cards:
+          # Media Browser
+          - type: custom:mod-card
+            style: |
+              ha-card {
+                background: rgba(0, 0, 0, 1);
+                border-radius: 20px;
+              }
+            card:
+              type: iframe
+              url: http://10.10.40.6:3123/media-browser
+              aspect_ratio: 200%
+
+            
+          # Source Selector
+          - type: horizontal-stack
+            cards:
+              # Text
+              - type: markdown
+                content: >
+                  <ha-icon icon="mdi:speaker"></ha-icon>
+                  **Lautsprecher**
+                style: |
+                  ha-card {
+                    color: white;
+                    text-align: center;
+                    background: rgba(0, 0, 0, 1);
+                    border-radius: none;
+                    box-shadow: None;
+                    margin-top: -5px;
+                  }
+              - type: custom:mod-card
+                style: |
+                  ha-card {
+                    background: rgba(0, 0, 0, 1);
+                    border-radius: none;
+                    margin-top: -5px;
+                    height: 50px;
+                  }
+                card:
+                  type: custom:mini-media-player
+                  entity: media_player.spotify_dimitri
+                  hide:
+                    name: true
+                    info: true
+                    volume: true
+                    source: false
+                    power: true
+                    icon: true
+                    progress: true
+                    controls: true
+      ####################################################
+      #            Media Players (Top Right)             #
+      ####################################################  
+      - type: custom:swipe-card
+        style:
+          left: 67%
+          top: 35%
+          width: 60%
+          height: 65%
+          '--mini-media-player-accent-color': 'teal'
+          'mini-media-player-scale': '2'
+        cards:
+          - type: custom:vertical-stack-in-card
+            style: |
+              ha-card {
+                border-radius: 20px;
+                background: rgba(0, 0, 0, 1);
+              }
+            cards:
+              - type: horizontal-stack
+                cards:
+                  # Artwork - Left side
+                  - type: custom:mini-media-player
+                    entity: media_player.spotify_dimitri
+                    info: short
+                    artwork: full-cover
+                    hide:
+                      name: true
+                      info: true
+                      volume: true
+                      source: true
+                      controls: true
+                      power: true
+                      icon: true
+                  # Media Info & Control - Right side
+                  - type: custom:vertical-stack-in-card
+                    style: |
+                      ha-card {
+                        margin-left: -2.5px;
+                        box-shadow: none;
+                      }
+                    cards:
+                      # Artist
+                      - type: markdown
+                        content: >
+                          {{ state_attr('media_player.spotify_dimitri', 'media_artist') }}
+                        style: |
+                          ha-card {
+                            font-size: 10pt;
+                            color: white;
+                            margin-top: -5px;
+                          }
+                      # Title
+                      - type: markdown
+                        content: >
+                          <h3>{{ state_attr('media_player.spotify_dimitri', 'media_title') }}</h3>
+                        style: |
+                          ha-card {
+                            font-size: 11pt;
+                            font-weigt: bold;
+                            color: white;
+                            margin-top: -30px;
+                            margin-bottom: 17.5px;
+                          }
+                      # Media Player Controls
+                      - type: horizontal-stack
+                        cards:
+                          # Previous Track
+                          - type: 'custom:button-card'
+                            aspect_ratio: 1/1
+                            show_name: false
+                            show_icon: true
+                            icon: 'mdi:skip-previous-circle'
+                            size: 65%
+                            entity: media_player.spotify_dimitri
+                            state:
+                              - styles:
+                                  icon:
+                                    - filter: opacity(30%)
+                                    - transition: all 0.5s ease
+                                    - color: '#FFFFFF' #color of button while paused
+                                value: paused
+                            styles:
+                              card:
+                                - padding: 0px
+                                - border-radius: 50%
+                                - box-shadow: none
+                              icon:
+                                - filter: opacity(100%)
+                                - transition: all 0.5s ease
+                                - color: '#FFFFFF' #color of button while playing
+                            tap_action:
+                              action: call-service
+                              service: media_player.media_previous_track
+                              service_data:
+                                entity_id: media_player.spotify_dimitri
+                              haptic: medium
+                            hold_action:
+                              action: none
+                          # Play/Pause
+                          - type: 'custom:button-card'
+                            aspect_ratio: 1/1
+                            show_name: false
+                            show_icon: true
+                            icon: 'mdi:pause-circle'
+                            size: 85%
+                            entity: media_player.spotify_dimitri
+                            state:
+                              - styles:
+                                  icon:
+                                    - filter: opacity(30%)
+                                    - transition: all 0.5s ease
+                                    - color: '#FFFFFF' #color of button while paused
+                                value: paused
+                                icon: 'mdi:play-circle'
+                            styles:
+                              card:
+                                - padding: 0px
+                                - border-radius: 50%
+                                - box-shadow: none
+                              icon:
+                                - filter: opacity(100%)
+                                - transition: all 0.5s ease
+                                - color: '#FFFFFF' #color of button while playing
+                            tap_action:
+                              action: call-service
+                              service: media_player.media_play_pause
+                              service_data:
+                                entity_id: media_player.spotify_dimitri
+                              haptic: medium
+                            hold_action:
+                              action: none
+                          # Next Track
+                          - type: 'custom:button-card'
+                            aspect_ratio: 1/1
+                            show_name: false
+                            show_icon: true
+                            icon: 'mdi:skip-next-circle'
+                            size: 65%
+                            entity: media_player.spotify_dimitri
+                            state:
+                              - styles:
+                                  icon:
+                                    - filter: opacity(30%)
+                                    - transition: all 0.5s ease
+                                    - color: '#FFFFFF' #color of button while paused
+                                value: paused
+                            styles:
+                              card:
+                                - padding: 0px
+                                - border-radius: 50%
+                                - box-shadow: none
+                              icon:
+                                - filter: opacity(100%)
+                                - transition: all 0.5s ease
+                                - color: '#FFFFFF' #color of button while playing
+                            tap_action:
+                              action: call-service
+                              service: media_player.media_next_track
+                              service_data:
+                                entity_id: media_player.spotify_dimitri
+                              haptic: medium
+                            hold_action:
+                              action: none
+                      # Media Source
+                      - type: markdown
+                        content: >
+                          <ha-icon icon="mdi:speaker"></ha-icon>
+                          {{ state_attr('media_player.spotify_dimitri', 'source') }} | 
+                          <ha-icon icon="mdi:spotify"></ha-icon>
+                          Spotify
+                        style: |
+                          ha-card {
+                            font-size: 10pt;
+                            color: white;
+                            margin-bottom: 5px;
+                          }

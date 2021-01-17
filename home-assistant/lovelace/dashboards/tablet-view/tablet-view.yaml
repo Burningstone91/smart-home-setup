@@ -1,0 +1,4 @@
+#views: !include_dir_list ./views/
+views:
+  - !include ./views/multiroom-audio.yaml
+  - !include ./views/multi.yaml
