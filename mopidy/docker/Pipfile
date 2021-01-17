@@ -12,7 +12,9 @@ mopidy-moped = "*"
 mopidy-gmusic = "*"
 mopidy-pandora = "*"
 mopidy-youtube = "*"
+mopidy-local = "*"
+mopidy-mpd ="*"
 pyopenssl = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"
