@@ -89,6 +89,22 @@ services:
       - ./mosquitto/log:/mosquitto/log
       - ./mosquitto/data:/mosquitto/data
 
+  mopidy_balcony:
+    build:
+      context: ./mopidy/docker
+    container_name: mopidy_balcony
+    image: burningstone/mopidy
+    ports:
+      - "6684:6680"
+      - "6604:6600"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapfifo:/run/snapserver/
+      - ./mopidy/balcony/mopidy.conf:/config/mopidy.conf
+      - ./music:/var/lib/mopidy/media:ro
+      - ./mopidy/local:/var/lib/mopidy/local
+      
   mopidy_bedroom:
     build:
       context: ./mopidy/docker

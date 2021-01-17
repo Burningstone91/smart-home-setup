@@ -1,3 +1,9 @@
+media_player:
+  - platform: mopidy
+    name: MPD Balcony
+    host: 192.168.0.30
+    port: 6684
+
 # Light switch template to transform switch. into light. entity
 light:
   - platform: switch
@@ -11,6 +17,13 @@ homeassistant:
     light.balcony_ceiling:
       friendly_name: Lichterkette
       icon: mdi:string-lights
+     # Media Players
+     media_player.mpd_balcony:
+      friendly_name: MPD Balkon
+      media_player.snapclient_balcony:
+        friendly_name: Snapclient Balkon
+      media_player.music_balcony:
+        friendly_name: Musik Balkon
     # Environment Sensors
     sensor.lux_outside:
       friendly_name: Aussen
