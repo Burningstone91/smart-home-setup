@@ -18,12 +18,12 @@ homeassistant:
       friendly_name: Lichterkette
       icon: mdi:string-lights
      # Media Players
-     media_player.mpd_balcony:
+    media_player.mpd_balcony:
       friendly_name: MPD Balkon
-      media_player.snapclient_balcony:
-        friendly_name: Snapclient Balkon
-      media_player.music_balcony:
-        friendly_name: Musik Balkon
+    media_player.snapclient_balcony:
+      friendly_name: Snapclient Balkon
+    media_player.music_balcony:
+      friendly_name: Musik Balkon
     # Environment Sensors
     sensor.lux_outside:
       friendly_name: Aussen
