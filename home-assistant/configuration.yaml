@@ -11,8 +11,8 @@ map:
 sun:
 system_health:
 
-#Uncomment to enable automations trough UI 
-#automation: !include automations.yaml
+# Uncomment to enable automations trough UI 
+automation: !include automations.yaml
 
-#Uncomment to enable Nabu Casa
-#cloud:
+# Uncomment to enable Nabu Casa
+# cloud:
