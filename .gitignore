@@ -42,3 +42,4 @@ check_docker_list.txt
 !*mopidy.conf
 mopidy/local
 mopidy/music
+!snapserver_example.conf
