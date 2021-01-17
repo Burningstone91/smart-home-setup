@@ -1,0 +1,8 @@
+{
+  "domain": "mopidy",
+  "name": "Mopidy",
+  "documentation": "https://www.home-assistant.io/integrations/mopidy",
+  "requirements": ["mopidyapi==1.0.0"],
+  "codeowners": ["@bushvin"]
+}
+

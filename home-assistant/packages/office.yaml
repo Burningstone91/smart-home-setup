@@ -2,11 +2,17 @@
 # media_player:
 #   platform: yamaha_musiccast
 #   host: 10.10.80.7
+# media_player:
+#   - platform: mpd
+#     name: MPD Office
+#     host: 192.168.0.30
+#     port: 6603
+
 media_player:
-  - platform: mpd
+  - platform: mopidy
     name: MPD Office
     host: 192.168.0.30
-    port: 6603
+    port: 6683
 
 binary_sensor:
   - platform: template

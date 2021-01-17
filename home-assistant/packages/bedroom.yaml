@@ -1,8 +1,14 @@
+# media_player:
+#   - platform: mpd
+#     name: MPD Bedroom
+#     host: 192.168.0.30
+#     port: 6601
+
 media_player:
-  - platform: mpd
+  - platform: mopidy
     name: MPD Bedroom
     host: 192.168.0.30
-    port: 6601
+    port: 6681
 
 binary_sensor:
   - platform: template
@@ -76,6 +82,40 @@ automation:
         transition_time_dim: '5'
         remote: remote_light_bedroom
         light: light.bedroom
+
+  # Remote Sabrina
+  - id: 'remote_sabrina'
+    alias: "Fernbedieung Sabrina"
+    use_blueprint:
+      path: custom/hue_dimmer_general.yaml
+      input:
+        remote: remote_sabrina
+        short_press_turn_on:
+          - service: light.turn_on
+            entity_id: light.bedroom_bed
+        long_press_turn_on:
+          - service: light.turn_on
+            entity_id: light.bedroom_ceiling
+        short_press_turn_off:
+          - service: script.turn_on
+            entity_id: script.turn_all_off
+
+  # Remote Dimitri
+  - id: 'remote_dimitri'
+    alias: "Fernbedienung Dimitri"
+    use_blueprint:
+      path: custom/hue_dimmer_general.yaml
+      input:
+        remote: remote_dimitri
+        short_press_turn_on:
+          - service: light.turn_on
+            entity_id: light.bedroom_bed
+        long_press_turn_on:
+          - service: light.turn_on
+            entity_id: light.bedroom_ceiling
+        short_press_turn_off:
+          - service: script.turn_on
+            entity_id: script.turn_all_off
 
 # Entity Customization
 homeassistant:

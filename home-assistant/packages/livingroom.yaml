@@ -1,8 +1,14 @@
+# media_player:
+#   - platform: mpd
+#     name: MPD Livingroom
+#     host: 192.168.0.30
+#     port: 6602
+
 media_player:
-  - platform: mpd
+  - platform: mopidy
     name: MPD Livingroom
     host: 192.168.0.30
-    port: 6602
+    port: 6682
 
 emulated_roku:
   servers:
@@ -21,7 +27,7 @@ binary_sensor:
         device_class: occupancy
         value_template: >-
           {% set motion = is_state('binary_sensor.motion_livingroom', 'on') %}
-          {% set tv = is_state('media_player.receiver_livingroom', 'on') %}
+          {% set tv = is_state('remote.wohnzimmer', 'on') %}
           {{ motion or tv }}
         delay_off:
           minutes: 10
