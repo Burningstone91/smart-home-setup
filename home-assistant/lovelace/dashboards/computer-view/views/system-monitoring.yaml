@@ -1292,6 +1292,42 @@ cards:
                         color: teal;
                         margin-top: -40px;
                       }
+              ####################################################
+              #              Philips Motion Sensor               #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3>Philips<br>
+                        Bewegungssensor </h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -10px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="250" src="/local/system_monitoring/hue_motion.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -50px;
+                      }
+                  # Battery Type
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Battery Type: AAA (2x) </h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -70px;
+                      }
               - type: vertical-stack
                 cards:
               ####################################################
@@ -1606,7 +1642,43 @@ cards:
                         bar-card-currentbar	 {
                           border-radius: 5px;
                         }
-              
+              ####################################################
+              #       Philips Motion Sensor Battery Levels       #
+              ####################################################
+                  # Living Room Motion Sensor
+                  - type: custom:bar-card
+                    positions:
+                      name: inside
+                      value: inside
+                      icon: 'off'
+                      indicator: 'off'
+                    height: 20px
+                    width: 80%
+                    icon: mdi:battery
+                    entities:
+                      - entity: sensor.battery_level_motion_livingroom
+                        name: Wohnzimmer
+                        severity:
+                          - color: rgb(163,0,0,0.60)
+                            from: 0
+                            to: 24.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 25
+                            to: 59.9
+                          - color: rgb(26,204,147,0.33)
+                            from: 60
+                            to: 100
+                    style: |
+                      ha-card {
+                        border-radius: 5px;
+                        margin-top: 160px;
+                      }
+                        bar-card-backgroundbar	 {
+                          border-radius: 5px;
+                        }
+                        bar-card-currentbar	 {
+                          border-radius: 5px;
+                        }
               - type: vertical-stack
                 cards:
               ####################################################
@@ -1680,6 +1752,42 @@ cards:
                       ha-card {
                         color: teal;
                         margin-top: -35px;
+                      }
+              ####################################################
+              #                Xiaomi Water Leak                 #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3>Xiaomi<br>
+                        Wasserleck Sensor </h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -10px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="110" src="/local/system_monitoring/xiaomi_water_leak.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -40px;
+                      }
+                  # Battery Type
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Battery Type: CR2032 3V</h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -45px;
                       }
               - type: vertical-stack
                 cards:
@@ -1838,6 +1946,145 @@ cards:
                     entities:
                       - entity: sensor.battery_level_lux_office
                         name: Büro
+                        severity:
+                          - color: rgb(163,0,0,0.60)
+                            from: 0
+                            to: 24.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 25
+                            to: 59.9
+                          - color: rgb(26,204,147,0.33)
+                            from: 60
+                            to: 100
+                    style: |
+                      ha-card {
+                        border-radius: 5px;
+                        margin-top: -22.5px;
+                      }
+                        bar-card-backgroundbar	 {
+                          border-radius: 5px;
+                        }
+                        bar-card-currentbar	 {
+                          border-radius: 5px;
+                        }
+              ####################################################
+              #        Xiaomi Water Leak Battery Levels          #
+              ####################################################
+                  # Small Bathroom
+                  - type: custom:bar-card
+                    positions:
+                      name: inside
+                      value: inside
+                      icon: 'off'
+                      indicator: 'off'
+                    height: 20px
+                    width: 80%
+                    icon: mdi:battery
+                    entities:
+                      - entity: sensor.battery_level_water_leak_bathroomsmall
+                        name: Kleines Bad
+                        severity:
+                          - color: rgb(163,0,0,0.60)
+                            from: 0
+                            to: 24.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 25
+                            to: 59.9
+                          - color: rgb(26,204,147,0.33)
+                            from: 60
+                            to: 100
+                    style: |
+                      ha-card {
+                        border-radius: 5px;
+                        margin-top: 135px;
+                      }
+                        bar-card-backgroundbar	 {
+                          border-radius: 5px;
+                        }
+                        bar-card-currentbar	 {
+                          border-radius: 5px;
+                        }
+                  # Large Bathroom
+                  - type: custom:bar-card
+                    positions:
+                      name: inside
+                      value: inside
+                      icon: 'off'
+                      indicator: 'off'
+                    height: 20px
+                    width: 80%
+                    icon: mdi:battery
+                    entities:
+                      - entity: sensor.battery_level_water_leak_bathroomlarge
+                        name: Grosses Bad
+                        severity:
+                          - color: rgb(163,0,0,0.60)
+                            from: 0
+                            to: 24.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 25
+                            to: 59.9
+                          - color: rgb(26,204,147,0.33)
+                            from: 60
+                            to: 100
+                    style: |
+                      ha-card {
+                        border-radius: 5px;
+                        margin-top: -22.5px;
+                      }
+                        bar-card-backgroundbar	 {
+                          border-radius: 5px;
+                        }
+                        bar-card-currentbar	 {
+                          border-radius: 5px;
+                        }
+                  # Kitchen
+                  - type: custom:bar-card
+                    positions:
+                      name: inside
+                      value: inside
+                      icon: 'off'
+                      indicator: 'off'
+                    height: 20px
+                    width: 80%
+                    icon: mdi:battery
+                    entities:
+                      - entity: sensor.battery_level_water_leak_kitchen
+                        name: Küche
+                        severity:
+                          - color: rgb(163,0,0,0.60)
+                            from: 0
+                            to: 24.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 25
+                            to: 59.9
+                          - color: rgb(26,204,147,0.33)
+                            from: 60
+                            to: 100
+                    style: |
+                      ha-card {
+                        border-radius: 5px;
+                        margin-top: -22.5px;
+                      }
+                        bar-card-backgroundbar	 {
+                          border-radius: 5px;
+                        }
+                        bar-card-currentbar	 {
+                          border-radius: 5px;
+                        }
+                  # Storageroom
+                  - type: custom:bar-card
+                    positions:
+                      name: inside
+                      value: inside
+                      icon: 'off'
+                      indicator: 'off'
+                    height: 20px
+                    width: 80%
+                    icon: mdi:battery
+                    entities:
+                      - entity: sensor.battery_level_water_leak_storageroom
+                        name: Reduit
                         severity:
                           - color: rgb(163,0,0,0.60)
                             from: 0
