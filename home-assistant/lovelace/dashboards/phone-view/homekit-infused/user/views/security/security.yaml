@@ -127,4 +127,36 @@
           - entity: binary_sensor.door_storageroom
             tap_action: more-info
         - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Wasserleck Sensoren
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.water_leak_bathroomsmall
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.water_leak_bathroomlarge
+            tap_action: more-info
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.water_leak_kitchen
+            tap_action: more-info
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: binary_sensor.water_leak_storageroom
+            tap_action: more-info
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
     - !include ../../../base/includes/gap.yaml

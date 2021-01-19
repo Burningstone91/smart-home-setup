@@ -9,17 +9,17 @@ header_user:
   custom_view_1_title: Einkaufsliste
   custom_view_1_subtitle: 
   
-  custom_view_2_title: Custom View 2
-  custom_view_2_subtitle: Edit ../user/config/custom_views_header_config.yaml
+  custom_view_2_title: Musik
+  custom_view_2_subtitle: Wohnzimmer
   
-  custom_view_3_title: Custom View 3
-  custom_view_3_subtitle: Edit ../user/config/custom_views_header_config.yaml
+  custom_view_3_title: Musik
+  custom_view_3_subtitle: Schlafzimmer
   
-  custom_view_4_title: Custom View 4
-  custom_view_4_subtitle: Edit ../user/config/custom_views_header_config.yaml
+  custom_view_4_title: Musik
+  custom_view_4_subtitle: Büro
 
-  custom_view_5_title: Custom View 5
-  custom_view_5_subtitle: Edit ../user/config/custom_views_header_config.yaml
+  custom_view_5_title: Musik
+  custom_view_5_subtitle: Balkon
   
   custom_view_6_title: Custom View 6
   custom_view_6_subtitle: Edit ../user/config/custom_views_header_config.yaml
@@ -34,10 +34,10 @@ header_user:
 
 # ========================= Subtitle Icons ==================================== #
   custom_view_1_icon: mdi:shopping-cart
-  custom_view_2_icon: mdi:account-alert
-  custom_view_3_icon: mdi:account-alert
-  custom_view_4_icon: mdi:account-alert
-  custom_view_5_icon: mdi:account-alert
+  custom_view_2_icon: mdi:music
+  custom_view_3_icon: mdi:music
+  custom_view_4_icon: mdi:music
+  custom_view_5_icon: mdi:music
   custom_view_6_icon: mdi:account-alert
   custom_view_7_icon: mdi:account-alert
   custom_view_8_icon: mdi:account-alert

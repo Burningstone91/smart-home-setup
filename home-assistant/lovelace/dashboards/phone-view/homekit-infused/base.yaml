@@ -1000,7 +1000,7 @@
           cards:
             !include_dir_merge_list user/views/weather/
 
-# Custom 1 View
+# Shopping List
 - path: custom_1
   visible: false
   panel: true
@@ -1017,8 +1017,8 @@
           cards:
             !include_dir_merge_list user/views/custom_1/
 
-# Custom 2 View
-- path: custom_2
+# Music Livingroom
+- path: music-livingroom
   visible: false
   panel: true
   cards:
@@ -1034,8 +1034,8 @@
           cards:
             !include_dir_merge_list user/views/custom_2/
 
-# Custom 3 View
-- path: custom_3
+# Music Bedroom
+- path: music-bedroom
   visible: false
   panel: true
   cards:
@@ -1051,8 +1051,8 @@
           cards:
             !include_dir_merge_list user/views/custom_3/
 
-# Custom 4 View
-- path: custom_4
+# Music Office
+- path: music-office
   visible: false
   panel: true
   cards:
@@ -1068,8 +1068,8 @@
           cards:
             !include_dir_merge_list user/views/custom_4/
 
-# Custom 5 View
-- path: custom_5
+# Music Balcony
+- path: music-balcony
   visible: false
   panel: true
   cards:
