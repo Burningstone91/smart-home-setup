@@ -320,7 +320,7 @@ You should now see "Hello World" showing up on the first terminal.
 
 ### Configure MQTT Broker in Home Assistant
 #### Configure via UI
-In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "MQTT" and click on it.
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "MQTT" and click on it.
 Enter "127.0.0.1" in the field "broker".
 Enter your username and password. Tick the box next to "Enable Discovery". If Discovery is enabled, Home Assistant will automatically detect certain devices. The device needs to send a specific payload when it first connects to MQTT, this message contains the information that Home Assistant needs to create the device and the corresponding entities. Lots of integrations have this specific payload built-in and therefore your devices should be detected automatically.
 
@@ -832,7 +832,7 @@ This automation will mark the device as not home when the sensor shows "not_home
 <p>
 
 #### Creating Additional Users
-I have one user per device that access Home Assistant in order to serve different frontends based on the used device. To create an additional user click on "Configuration" in the sidebar of Home Assistant and then click on "Users". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE". Enter the Name (name shown in the frontend), Username (name used to login) and a Password. Toggle if the user should be in the Administrator group or not.
+I have one user per device that access Home Assistant in order to serve different frontends based on the used device. To create an additional user click on "Configuration" in the sidebar of Home Assistant and then click on "Users". Press the "+ ADD INTEGRATION" at the bottom right. Enter the name of the person and press "CREATE". Enter the Name (name shown in the frontend), Username (name used to login) and a Password. Toggle if the user should be in the Administrator group or not.
 
 #### Remote Access Setup (Nabu Casa)
 Setup Nabu Casa by following the official instructions [here](https://www.nabucasa.com/config/) and [here](https://www.nabucasa.com/config/remote/). Home Assistant should now be accessible outside the network through the address that has been generated in the setup of Nabu Casa, e.g. https://abcdefghijklmnopqrstuvwxyz.ui.nabu.casa
@@ -975,7 +975,7 @@ You should now see a bunch of new entities, a device_tracker and some sensors su
 
 #### Zone Setup
 The [zone integration](https://www.home-assistant.io/integrations/zone/) is used to define different zones outside your home such as workplace or shopping mall. This way if the phone is inside the radius of one of the defined zones, the device tracker will show the name of this zone. This enables automations like "Send notification when Husband leaves work". 
-To configure a zone go to the Sidebar in Home Assistant and click on "Configuration" and then click on "Zones". You should see a map with your home in a circle. To add a new zone, press the orange plus sign at the bottom right. Enter a name for the zone, move the pin to the desired location (or enter longitude and latitude) and choose a radius. Press create. Repeat for as many zones as needed.
+To configure a zone go to the Sidebar in Home Assistant and click on "Configuration" and then click on "Zones". You should see a map with your home in a circle. To add a new zone, press the "+ ADD INTEGRATION" at the bottom right. Enter a name for the zone, move the pin to the desired location (or enter longitude and latitude) and choose a radius. Press create. Repeat for as many zones as needed.
 
 </p>
 </details>
@@ -1025,7 +1025,7 @@ homeassistant:
 
 #### Creating a Person
 After the onboarding process Home Assistant will automatically create a person with the details you entered in the onboarding process.
-To create an additional person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the orange plus sign at the bottom right. Enter the name of the person and press "CREATE".
+To create an additional person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Press the "+ ADD INTEGRATION" at the bottom right. Enter the name of the person and press "CREATE".
 
 #### Binding Device Trackers to Persons
 To bind a device tracker to a person, click on "Configuration" in the sidebar of Home Assistant and then click on "Persons". Click on the person you want to assign the device trackers to. In the field below "Select the devices that belong to this person" pick one of the device trackers, a second field to choose a device will appear, choose the second device tracker and then press "Update" in the bottom right.
@@ -1144,10 +1144,10 @@ NodeMCU ESP32
 
 <tr>
 <td align="center" style="width:50%;">
-<img src="git-pictures/device_pictures/esp32.jpg" raw=true height="250" alt="ESP32" />
+<img src="git-pictures/device_pictures/esp32.jpg" raw=true height="150" alt="ESP32" />
 </td>
 <td align="center" style="width:50%;">
-<img src="git-pictures/device_pictures/pressure_mats.jpg" raw=true height="250" alt="Pressure Mats" />
+<img src="git-pictures/device_pictures/pressure_mats.jpg" raw=true height="150" alt="Pressure Mats" />
 </td>
 </tr>
 
@@ -1235,7 +1235,7 @@ binary_sensor:
 ```
 
 ### Configure Sensor into Home Assistant
-In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "ESPHome" and click on it.
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "ESPHome" and click on it.
 Enter the IP or hostname of the ESP32 Sensor in the field "host", "port" can be left as it is at 6053. Click "SUBMIT". Enter the password set in the section "api" of the ESPHome config file. Click "SUBMIT" again. You should now see the binary sensors configured on the ESP.
 
 ### Make Bed Occupancy not so binary
@@ -1430,7 +1430,7 @@ docker-compose up -d
 This way you can view the ZigBee mesh through VNC on port 5900 and with the password you set in DECONZ_VNC_PASSWORD. The Web Portal (Phoscon) and the REST API (which will be used to connect to Home Assistant) are available under port 8080.
 
 ### Configure deCONZ integration in Home Assistant
-In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "deconz" and click on it.
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "deconz" and click on it.
 Choose "Manually define gateway".
 Enter the ip of the Pi in the field "host" and in the field port enter "8080".
 Hit "Submit".
@@ -1488,7 +1488,7 @@ OZW_NETWORK_KEY: "network_key"
 If you already paired devices securely to your Aeotec stick, put the network key you used to configure the stick in the past.
 
 ### Configure OpenZWave integration in Home Assistant
-In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "openzwave" and click on "OpenZWave (Beta).
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "openzwave" and click on "OpenZWave (Beta).
 Hit "Submit".
 
 If you already had devices paired to the Aeotec stick previously your devices should appear under "Configuration" -> "Integrations" -> "OpenZWave (Beta)". 
@@ -1531,16 +1531,16 @@ Philips Hue Bulbs (8x Color E27, 3x White GU10, 1x LED strip 5m)
 <img src="git-pictures/device_pictures/philips_hue.jpg" raw=true height="150" alt="Philips Hue" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="150" alt="IKEA Plug" />
+<img src="git-pictures/device_pictures/ikea_plug.jpg" raw=true height="120" alt="IKEA Plug" />
 </td>
 <td align="center" style="width:20%;">
 <img src="git-pictures/device_pictures/hue_motion.jpg" raw=true height="150" alt="Hue Motion" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/aeotec_multi.jpg" raw=true height="150" alt="Aeotec Multisensor" />
+<img src="git-pictures/device_pictures/aeotec_multi.jpg" raw=true height="120" alt="Aeotec Multisensor" />
 </td>
 <td align="center" style="width:20%;">
-<img src="git-pictures/device_pictures/xiaomi_lux.jpg" raw=true height="150" alt="Xiaomi Lux" />
+<img src="git-pictures/device_pictures/xiaomi_lux.jpg" raw=true height="100" alt="Xiaomi Lux" />
 </td>
 </tr>
 
@@ -1838,19 +1838,19 @@ This is still a work in progress, but here are some screenshots.
 
 The Server View:
 
-![Alt text](/git-pictures/lovelace_views/server_lovelace.png?raw=true "Server View")
+![Alt text](/git-pictures/lovelace_views/server.png?raw=true "Server View")
 
 The Network View:
 
-![Alt text](/git-pictures/lovelace_views/network_lovelace.png?raw=true "Network View")
+![Alt text](/git-pictures/lovelace_views/network.png?raw=true "Network View")
 
 The Unifi Device Tracker View:
 
-![Alt text](/git-pictures/lovelace_views/device_tracker_lovelace.png?raw=true "Device Tracker")
+![Alt text](/git-pictures/lovelace_views/unifi_devices.png?raw=true "Device Tracker")
 
 The System Monitoring View:
 
-![Alt text](/git-pictures/lovelace_views/system_monitoring_lovelace.png?raw=true "System Monitoring")
+![Alt text](/git-pictures/lovelace_views/system_monitoring.png?raw=true "System Monitoring")
 
 Create a file called system_monitoring.yaml inside the packages directory of Home Assistant.
 
@@ -2254,7 +2254,7 @@ Add the following in the `sensor:` section of the system_monitoring.yaml file (e
 
 ### Synology NAS
 #### Statistics
-To monitor the Synology NAS we can use the [Synology DSM integration](https://www.home-assistant.io/integrations/synology_dsm/). In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Synology DSM" and click on it. In the host field enter the IP of your NAS, fill in the username and password to log into the NAS and press Submit. You should now have sensors for the disk temperature, disk size, cpu load etc.
+To monitor the Synology NAS we can use the [Synology DSM integration](https://www.home-assistant.io/integrations/synology_dsm/). In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "Synology DSM" and click on it. In the host field enter the IP of your NAS, fill in the username and password to log into the NAS and press Submit. You should now have sensors for the disk temperature, disk size, cpu load etc.
 
 #### Model and Firmware
 To get the model and current firmware we can use the [SNMP integration](https://www.home-assistant.io/integrations/snmp/). First you need to enable SNMP on the NAS. Login to the Web Interface of the NAS, go to "Control Panel" and then choose "Terminal & SNMP". Go to the tab "SNMP" and enable the SNMP Service.
@@ -2279,7 +2279,7 @@ The Synology DSM integration provides a binary_sensor that shows whether an upda
 
 ### Unifi Devices
 #### Unifi Controller
-In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Unifi" and click on it.
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "Unifi" and click on it.
 Enter the IP of your Unifi Controller in the field "host".
 Enter your username and password and press "SUBMIT"
 
@@ -2300,13 +2300,13 @@ Add the following in the `sensor:` section of the system_monitoring.yaml file:\
 
 ### PiHole
 To monitor a PiHole instance we can use the [Pi-Hole integration](https://www.home-assistant.io/integrations/pi_hole/). In order to enable/disable PiHole, we need to get the API key first. Log into the Web interface of Pi-Hole go to "Settings". In the tab "API/Web Interface" click on the button "Show API token". Copy the token.
-In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Pi-Hole" and click on it.
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "Pi-Hole" and click on it.
 Enter the IP of your Pi-Hole instance in the field "Host".
 Paste the token from the previous step in the field "API key" and press "SUBMIT".
 
 ### Speedtest
 To get Speedtest data we can use the [Speedtest.net integration](https://www.home-assistant.io/integrations/speedtestdotnet/).
-In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "speedtest" and click on it. Press "SUBMIT".
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "speedtest" and click on it. Press "SUBMIT".
 
 
 ### Remote Raspberry Pis
@@ -3020,24 +3020,24 @@ For Security I use the [manual alarm control panel integration](https://www.home
 ### Hardware used
 <table align="center" border="0">
 <tr>
-<td align="center" style="width:25%;">
+<td align="center" style="width:50%;">
 ???? Cameras ????
 </td>
-<td align="center" style="width:25%;">
+<td align="center" style="width:50%;">
 4x Xiaomi Water Leak Sensor
 </td>
 </tr>
 
 <tr>
-<td align="center" style="width:25%;">
-<img src="git-pictures/device_pictures/.jpg" raw=true height="100" alt="Hue Dimmer" />
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/.jpg" raw=true height="100" alt="Camera" />
 </td>
-<td align="center" style="width:25%;">
-<img src="git-pictures/device_pictures/xiaomi_water_leak.png" raw=true height="100" alt="Xiaomi Water Leak Sensor" />
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/xiaomi_water_leak.png" raw=true height="200" alt="Xiaomi Water Leak Sensor" />
 </td>
 </tr>
 
-<tr><td colspan="5">
+<tr><td colspan="2">
 The Hue Dimmer Switches are used to replace the dumb light switches and as a master control for me and my wife next to the bed on the respective side. The IKEA Symfonisk Controller is used to control music volume and lights in the office for when I'm doing Home Office. The IKEA Tradfri Switches are used to control some basic lights on the balcony and the Xiaomi Switch is currently looking for a job :)
 </td></tr>
 </table>
@@ -3050,58 +3050,471 @@ Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute
 
 * In Phoscon go to Devices -> Sensors and press "Add new sensor" at the bottom of the page.
 * Choose "Other".
-* Enable Pairing Mode on the device by pressing on the button ##################################
+* Enable Pairing Mode on the device by pressing on the button on top of the sensor for at least 5 seconds.
 
 
+</p>
+</details>
 
+## Home Cinema <a name="home-cinema" href="https://github.com/Burningstone91/smart-home-setup#home-cinema"></a>
+### Basic Explanation of Setup
+We have a little "Home Cinema" in the living room with an Epson projector, a 107" fixed screen, a Denon AVR and a pair of Dynaudio stand speakers. To play media there's a Raspberry Pi 4 running Libreelec, a Nintendo Switch and a Box from our cable provider for TV.  Home Assistant is used to set the lights based on the current activity of the Logitech Harmony Remote, brighten/dim the lights on pause/play and pause/play on a phone call.
+
+### Hardware Used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:50%;">
+Logitech Harmony Hub
+</td>
+<td align="center" style="width:50%;">
+Denon AVR-X2200W
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/harmony.png" raw=true height="120" alt="Camera" />
+</td>
+<td align="center" style="width:50%;">
+<img src="git-pictures/device_pictures/denon_avr.png" raw=true height="150" alt="Xiaomi Water Leak Sensor" />
+</td>
+</tr>
+<tr><td colspan="2">
+Everything is controlled by a Logitech Harmony Remote (which I plan to replace with the YIO remote once I get the time). I integrated the Denon AVR into Home Assistant to easily be able to control the volume from Home Assistant.
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Configure Logitech Harmony Remote in Home Assistant
+To use the Logitech Harmony Hub with Home Assistant, we can use the [Logitech Harmony Hub integration](https://www.home-assistant.io/integrations/harmony/).
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "Logitech Harmony Hub" and click on it.
+Enter the IP of your Harmony Hub in the field "Host".
+Enter the name of your Hub set in the Logitech app in the field "Hub name" and press "SUBMIT".
+
+You should now have an entity `remote.name_of_your_hub` and a file `harmony_XXXX.conf` should be created in the same directory as configuration.yaml. It contains the configuration of the Logitech Harmony Remote such as the commands for the different devices.
+
+### Setup Emulated Roku
+Because Home Assistant can not detect when a button has been pressed on the Harmony Remote, we can use the [Emulated Roku integration ](https://www.home-assistant.io/integrations/emulated_roku/) as a workaround. The emulated Roku can be added to the Logitech Harmony Remote and then you add the Roku to the activity you want to know button presses for. Now you assign an action on the Roku to any of the buttons for this activity and then Home Assistant will see an event when this button has been pressed, as you can see below. 
+
+#####################################################################3
+
+
+### Set Home Cinema Light based on Harmony Activity
+We set the light color and brightness based on the currently active scene, e.g. for "Music" we play a colorloop, for "Movies" the light is dim and orange etc. For this we have a script, which is called by multiple automations.
+
+Script:
+[Set lights based on Harmony activity](https://github.com/Burningstone91/smart-home-setup/blob/5f97f97020edd0402e7d48e4b8aee1ebffc81c81/home-assistant/packages/home_cinema.yaml#L89)
+
+And the automation that calls the script whenever the Harmony Activity changes.
+[Change lights when Harmony activity changes](https://github.com/Burningstone91/smart-home-setup/blob/5f97f97020edd0402e7d48e4b8aee1ebffc81c81/home-assistant/packages/home_cinema.yaml#L3)
+
+### Brighten/Dim Light on Pause/Play
+When the Pause button on the Harmony Remote has been pressed (detected through the emulated Roku), the lights brighten up to 100%, when the Play button is pressed the lights change back according to the currently running activity.
+
+[Brighten/Dim Light on Pause/Play](https://github.com/Burningstone91/smart-home-setup/blob/5f97f97020edd0402e7d48e4b8aee1ebffc81c81/home-assistant/packages/home_cinema.yaml#L17)
+
+### Pause/Play on Phone Call
+When my wife or I receive a phone call (detected through Home Assistant Companion App) while we are home and the Home Cinema is running, the currently playing media is paused and then resumed once the phone call ends.
+
+[Pause/Play on Phone Call](https://github.com/Burningstone91/smart-home-setup/blob/5f97f97020edd0402e7d48e4b8aee1ebffc81c81/home-assistant/packages/home_cinema.yaml#L42)
 
 ### Configure Denon AVR in Home Assistant
-In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on the orange plus in the bottom right corner, search for "Denon AVR" and click on it.
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "Denon AVR" and click on it.
 Enter the IP of your Denon AVR in the field "IP address".
 Enter your username and password and press "SUBMIT"
+
+</p>
+</details>
+
+
+
+## Multiroom Media <a name="multiroom-audio" href="https://github.com/Burningstone91/smart-home-setup#multiroom-audio"></a>
+### Basic Explanation of Setup
+
+### Mopidy/Snapcast
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+#### Snapserver
+Create a folder called `snapserver` in the same directory as home-assistant, appdaemon etc. and put the files from [here](https://github.com/Burningstone91/smart-home-setup/tree/master/snapserver) into this directory. Create a subfolder called "snapfifo". Add a file called `snapserver.conf`, this holds the configuration for the different streams that will be available to stream to the snapclients. Below is an example with two Spotify Accounts and four pipes from mopidy (livingroom, bedroom, office and TTS).
+
+```conf
+[server]
+
+[http]
+
+doc_root = /usr/share/snapserver/snapweb
+
+[tcp]
+
+[stream]
+
+source = librespot:///librespot?name=House&devicename=House&username=some-username&password=some-password&killall=false&bitrate=320&volume=100&params=--zeroconf-port%205353
+source = librespot:///librespot?name=Multiroom&devicename=Multiroom&username=some-username&password=some-password&killall=false&bitrate=320&volume=100&params=--zeroconf-port%205353
+source = pipe:///run/snapserver/tts_fifo?name=TTS
+source = pipe:///run/snapserver/office_fifo?name=Office
+source = pipe:///run/snapserver/livingroom_fifo?name=Livingroom
+source = pipe:///run/snapserver/bedroom_fifo?name=Bedroom
+
+[logging]
+```
+
+Add the following to `docker-compose.yml`:
+
+```yaml
+  snapserver:
+    build: 
+      context: ./snapserver
+    container_name: snapserver
+    environment:
+      - DEVICE_NAME=MultiRoom
+    image: burningstone/snapserver
+    ports:
+      - "1704:1704"
+      - "1705:1705"
+      - "1780:1780"
+      - "5353:5353"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapserver.conf:/etc/snapserver.conf
+      - ./snapserver/snapfifo:/run/snapserver/
+```
+
+Build the docker container with `docker-compose build snapserver` and start it with `docker-compose up -d`. Install Snapcast on your Android phone. Point it to the instance running snapserver, you should now see 6 differnt Streams available, two for Spotify and four for Mopidy. In Spotify Connect you should now see a new device available with the respective accounts configured in `snapserver.conf`. This will be used to play Spotify Connect in multiple rooms.
+
+#### Mopidy
+Create a folder called `mopidy` in the same directory as home-assistant, appdaemon etc. and put the files from [here](https://github.com/Burningstone91/smart-home-setup/tree/master/mopidy/docker) into this directory. Create a subfolder for each room and one for TTS, in my case `livingroom`, `bedroom`, `office` and `tts`. Add a file called `mopidy.conf` in each of these subfolder with the following content:
+
+```conf
+[core]
+data_dir = /var/lib/mopidy
+
+[mpd]
+hostname = 0.0.0.0
+
+[http]
+hostname = 0.0.0.0
+
+[iris]
+country = CH
+locale = de_CH
+
+[local]
+media_dir = /var/lib/mopidy/media
+
+[audio]
+output = audioresample ! audioconvert ! audio/x-raw,rate=48000,channels=2,format=S16LE ! wavenc ! filesink location=/run/snapserver/livingroom_fifo
+
+[spotify]
+enabled = false
+
+[spotify-web]
+enabled = false
+
+[soundcloud]
+enabled = false
+
+[file]
+enabled = false
+
+[gmusic]
+enabled = false
+
+[moped]
+enabled = false
+
+[pandora]
+enabled = false
+
+[youtube]
+enabled = false
+```
+
+Where you adjust `livingroom_fifo` for each room accordingly. Make sure that the fifo has the same name as you configured in `snapserver.conf` above. 
+
+To add spotify go to https://mopidy.com/ext/spotify/ to authenticate your Spotify account with their API.
+Press green button and copy the client_id and the client_secret in the box below the button.
+
+Add the following to the above configured mopidy.conf files:
+
+```conf
+[spotify]
+enabled = true
+client_id = client_id_generated_in_previous_step
+client_secret = client_secret_generated_in_previous_step
+username = spotify_username_used_to_authenticate
+password = password_of_spotify_user
+```
+
+Now add a section to the `docker-compose.yml` file for each Mopidy instance, like this:
+
+```yaml
+  mopidy_bedroom:
+    build:
+      context: ./mopidy/docker
+    container_name: mopidy_bedroom
+    image: burningstone/mopidy
+    ports:
+      - "6681:6680"
+      - "6601:6600"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapfifo:/run/snapserver/
+      - ./mopidy/bedroom/mopidy.conf:/config/mopidy.conf
+      - ./music:/var/lib/mopidy/media:ro
+      - ./mopidy/local:/var/lib/mopidy/local
+
+  mopidy_livingroom:
+    build:
+      context: ./mopidy/docker
+    container_name: mopidy_livingroom
+    image: burningstone/mopidy
+    ports:
+      - "6682:6680"
+      - "6602:6600"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapfifo:/run/snapserver/
+      - ./mopidy/livingroom/mopidy.conf:/config/mopidy.conf
+      - ./music:/var/lib/mopidy/media:ro
+      - ./mopidy/local:/var/lib/mopidy/local
+
+  mopidy_office:
+    build:
+      context: ./mopidy/docker
+    container_name: mopidy_office
+    image: burningstone/mopidy
+    ports:
+      - "6683:6680"
+      - "6603:6600"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapfifo:/run/snapserver/
+      - ./mopidy/office/mopidy.conf:/config/mopidy.conf
+      - ./music:/var/lib/mopidy/media:ro
+      - ./mopidy/local:/var/lib/mopidy/local
+
+  mopidy_tts:
+    build:
+      context: ./mopidy/docker
+    container_name: mopidy_tts
+    image: burningstone/mopidy
+    ports:
+      - "6680:6680"
+      - "6600:6600"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./snapserver/snapfifo:/run/snapserver/
+      - ./mopidy/tts/mopidy.conf:/config/mopidy.conf
+```
+Make sure that you configure different ports for each mopidy instance, otherwise you'll get port conflicts. Also make sure that the line `./mopidy/livingroom/mopidy.conf:/config/mopidy.conf` matches the respective directory where you put the mopidy.conf file from above. For the rooms you can see two additional volumes being mapped, `./music:/var/lib/mopidy/media:ro` which is an NFS mount of a remote NAS on the host system and `./mopidy/local:/var/lib/mopidy/local` which is used by Mopidy to save metadata about local media. This way you can play local media files on each room instance from the same soruce. 
+
+Build each container with `docker-compose build mopidy_tts` and then run `docker-compose up -d`. You should now be able to reach the Mopidy web interface through http://ip-of-mopidy-server:6680 (mopidy tts instance) where you change the port according to which mopidy instance you wanna access. 
+
+Now with Snapserver and Mopidy setup and configured, you should be able to play music on any of the Mopidy instances, change the source from one of the snapclients to this Mopidy instance and you should hear the music from the snapclient.
+
+</p>
+</details>
+
+### Music Only Client (Volumio)
+#### Hardware used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:33%;">
+3x Pi Zero W
+</td>
+<td align="center" style="width:34%;">
+2x HifiBerry DAC
+</td>
+<td align="center" style="width:33%;">
+1x HifiBerry Mini Amp
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:33%;">
+<img src="git-pictures/device_pictures/pi_zero_w.jpg" raw=true height="250" alt="Pi Zero W"/>
+</td>
+<td align="center" style="width:34%;">
+<img src="git-pictures/device_pictures/hifiberry_dac_zero.jpg" raw=true height="250" alt="HifiBerry DAC Zero" />
+</td>
+<td align="center" style="width:33%;">
+<img src="git-pictures/device_pictures/hifiberry_amp_mini.jpg" raw=true height="250" alt="HifiBerry Mini Amp" />
+</td>
+</tr>
+
+<tr><td colspan="3">
+In rooms without a display (bathroom, balcony, etc.) we use a Pi Zero W with [Volumio](https://volumio.org/) as a media player for music. The Pi Zeros are either coupled with a HifiBerry DAC and an existing amplifier + speakers or with a HifiBerry Amp and passive speakers. In Volumio we use the Spotify Connect Plugin and the Snapcast Plugin. This way one can either connect through Spotify Connect directly to play music in this specific room or through Snapcast to play in multiple rooms.
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+#### Volumio
+Follow the instructions from HifiBerry to mount the HifiBerry DAC/Amp onto the Pi.
+1. Download Volumio version 2.729 (Somehow newer versions don't work with the Pi directly, but you can install the old version and update, this works well) from here -> http://updates.volumio.org/pi/volumio/2.729/volumio-2.729-2020-03-18-pi.img.zip
+2. Flash the image to an SD card and insert it into the Pi. Then plug the power cable into the Pi.
+3. Wait a few minutes until you see a WiFi hotspot created by Volumio. To access the hotspot use username: volumio and password: volumio2
+4. Go to http://volumio.local
+5. Follow the instructions to configure the initial settings. DON'T enable I2S DAC yet when using a HifiBerry DAC.
+6. Restart Volumio
+7. Go to Settings -> Playback -> Enable I2S DAC -> Choose Adafruit UDA1334A (HifiBerry DAC+ Zero) and press Save.
+8. Update Volumio through Settings -> System -> Search for Updates
+
+#### Spotify Connect Plugin
+In Volumio go to Plugins and install the plugin "Volumio Spotify Connect2".
+
+#### Snapcast Plugin
+I had some issues with the official plugin available in Volumio, maybe because it is a few versions behind. That's why I install the newer version of the plugin manually.
+1. Go to http://ip-of-volumio-pi/dev/ to enable SSH. 
+2. SSH into Volumio `ssh volumio@ip-of-volumio-pi`, password is `volumio`.
+3. Clone repo `git clone https://github.com/Saiyato/volumio-snapcast-plugin.git`
+4. `cd volumio-snapcast-plugin`
+5. `rm volumio-snapcast-plugin.zip`
+6. `volumio plugin install`, wait for successful install message and restart Volumio.
+7. In Volumio go to Settings -> Plugins -> Installed Plugins -> Activate the SnapCast plugin and go to its settings.
+8. Disable SnapServer, for SnapClient enable custom host and put the IP of the machine running Snapserver.
+9. Choose HifiBerry DAC+ for "Soundcard To Use For Playback" 
+
+#### Configure Volumio integration in Home Assistant
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "volumio" and click on it.
+Enter the IP of the Pi in the field "Host" and hit "SUBMIT".
+
+</p>
+</details>
+
+
+### Audio/Video Client (Libreelec)
+#### Hardware used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:33%;">
+Raspberry Pi 4
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:33%;">
+<img src="git-pictures/device_pictures/pi4.jpg" raw=true height="250" alt="Pi Zero W"/>
+</td>
+</tr>
+
+<tr><td colspan="3">
+In rooms with a display (livingroom, bedroom, etc.) we use a Pi 4 with [Libreelec](https://libreelec.tv/) as a media player for music and video. In Kodi we use the Spotify Connect Plugin and the Snapclient Plugin. This way one can either connect through Spotify Connect directly to play music in this specific room or through Snapcast to play in multiple rooms.
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+#### Libreelec
+1. Download latest Libreelec image from https://libreelec.tv/downloads_new/
+2. Flash the image to an SD card and insert it into the Pi. Then plug the HDMI and power cable into the Pi.
+3. Once Libreelec booted up go to Settings -> Libreelec -> Audio -> Audio Output and choose ALSA
+
+#### Spotify Connect Add-On
+In Libreelec go to Add-Ons -> Services -> Install Librespot Add-On
+
+#### Snapclient Add-on
+1. In Libreelec go to Add-Ons -> Services -> Install Snapclient Add-On.
+2. SSH into Libreelec `ssh root@ip-of-libreelec-pi`, password is `libreelec`.
+3. Change password with `passwd`.
+4. Adjust the snapclient start file, otherwise the snapserver can't be found if it is not on the same network.
+5. `nano /storage/.kodi/addons/service.snapclient/bin/snapclient.start`
+6. Remove `ID` from `hostID` in the line and save.
+```
+[ -n "$sc_h" ] && sc_H="--hostID $sc_h"
+```
+7. Reboot the Pi.
+8. Configure the Snapclient Add-On through the UI, in the field "HostID", enter the IP of the machine running snapserver.
+
+#### Configure Kodi integration in Home Assistant
+In Libreelec go to Settings -> Services -> Control -> Enable "Allow remote control via HTTP"
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "kodi" and click on it.
+Enter the IP of the Pi in the field "Host" and hit "SUBMIT".
+
+#### Add Kodi to Logitech Harmony Remote
+Open the Logitech Harmony app on the phone and add a new entertainment device. Choose manufacturer "Microsoft" and Model "Kodi".
+In Libreelec go to Settings -> Libreelec -> Bluetooth, a new device should appear called "Harmony Keyboard", clickt it and choose "pair".
+
+#### Setup a Centralized DB for Kodi with a Synology NAS
+To keep watched state etc. of my movies and tv-shows synced across my Kodi devices, I setup a centralized DB on the Synology NAS.
+1. Login to the web interface of the Synology NAS.
+2. Install MariaDB 10 and set a strong password. Open the settings and check the box "Enable TCP/IP connection"
+3. Install phpMyAdmin.
+4. Login to phpMyAdmin with username `root` and the password used for MariaDB configured in step 2.
+5. Go to the tab "User accounts" and press "Add user account".
+6. Configure a username and password for the Kodi clients.
+7. Check the box "Grant all privileges on wildcard name (username\_%).
+8. Check the box "Check all" next to "Global privileges".
+9. Press "Go" in the bottom right corner.
+
+Now on the first Kodi instance add file called advancedsettings.xml to configure the connection to the DB.
+1. SSH into Libreelec `ssh root@ip-of-libreelec-pi`.
+2. `nano ~/.kodi/userdata/advancedsettings.xml`
+3. Add the following content, replace the capital strings with your respective info and save.
+
+```xml
+<advancedsettings>
+  <videodatabase>
+    <type>mysql</type>
+    <host>IP_OF_SYNOLOGY_NAS</host>
+    <port>3307</port>
+    <name>kodi_video</name>
+    <user>USERNAME_KODI_CLIENT</user>
+    <pass>PASSWORD_KODI_CLIENT</pass>
+  </videodatabase>
+  <musicdatabase>
+     <type>mysql</type>
+     <host>IP_OF_SYNOLOGY_NAS</host>
+     <port>3307</port>
+     <name>kodi_music</name>
+     <user>USERNAME_KODI_CLIENT</user>
+    <pass>PASSWORD_KODI_CLIENT</pass>
+  </musicdatabase>
+  <videolibrary>
+    <importwatchedstate>true</importwatchedstate>
+    <importresumepoint>true</importresumepoint>
+  </videolibrary>
+</advancedsettings>
+```
+4. Reboot the Pi.
+5. Add all the media and scrape the information.
+For all the other Kodi clients, copy the files "sources.xml", "mediasources.xml" and "advancedsettings.xml" from the userdata folder of the first Pi.
+After all these steps you should now be able to pause a video in one room and then resume at the same point in another room. Also the watched status of your episodes will be synced across all instances and movie information etc. is shared across all instances.
+
+
+</p>
+</details>
+
+### Multiroom Audio in Home Assistant
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+#### Configure Spotify integration in Home Assistant
+#### Configure Snapcast integration in Home Assistant
+#### Configure MPD (Mopidy) integration in Home Assistant
+
+</p>
+</details>
 
 ### HACS
 
 
 
-local dir mopidy
-
-mount
-
-
-
-
-Spotify mopidy
-
-https://mopidy.com/ext/spotify/
-
-press green button
-
-copy id and secret in box below
 
 
 
 
 
-
-
-Pi Zero W
-
-Volumio
-Install version 2.729 to SD Card
-hotspot address = volumio.local or 192.168.211.1
-hotspot password = volumio2
-settings -> system -> update to latest
-
-settings -> playback -> Enable I2S DAC -> Choose AdafruitUDA1334A
-volume settings -> choose software mixer to allow control of volume by clients
-
-nfs -> path = /volume1/homes/burningstone/Musik,  Protokoll NFS, 
-enable NFS in NAS: map all users to admin and rw access
-
-install Volumio Spotify Connect2 Plugin
-
-http://10.10.90.9/dev/ to enable ssh
-username = volumio
-initial password = volumio
 
