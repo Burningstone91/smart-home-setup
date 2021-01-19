@@ -65,6 +65,12 @@ I will explain here the different parts of my home automation system and how I s
 * <a href="https://github.com/Burningstone91/smart-home-setup#security">
       Security
   </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#home-cinema">
+      Home Cinema
+  </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#multiroom-audio">
+      Multiroom Audio
+  </a>
 
 ## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"></a>
 
