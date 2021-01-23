@@ -3044,13 +3044,30 @@ For Security I use the [manual alarm control panel integration](https://www.home
 </tr>
 
 <tr><td colspan="2">
-The Hue Dimmer Switches are used to replace the dumb light switches and as a master control for me and my wife next to the bed on the respective side. The IKEA Symfonisk Controller is used to control music volume and lights in the office for when I'm doing Home Office. The IKEA Tradfri Switches are used to control some basic lights on the balcony and the Xiaomi Switch is currently looking for a job :)
+The water leak sensors are placed in every place a water leak could occur :).
 </td></tr>
 </table>
 
 <details><summary>Step-by-step Guide</summary>
 <p>
 
+### Setup Manual Alarm Control Panel
+Configure the the [manual alarm control panel integration](https://www.home-assistant.io/integrations/manual/) according to the docs. Here's an example from my system:
+
+```yaml
+alarm_control_panel:
+  - platform: manual
+    name: Home Alarm
+    code: !secret alarm_code
+    arming_time: 30
+    trigger_time: 120
+    delay_time: 20
+    disarmed:
+      trigger_time: 0
+    armed_home:
+      delay_time: 0
+      arming_time: 0
+```
 ### Adding water leak sensors to the ZigBee network (Xiaomi)
 Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute the following steps to integrate a Xiaomi Water Leak Sensor:
 
@@ -3058,6 +3075,52 @@ Head over to the Phoscon Web UI under http://ip-of-your-pi:8080/pwa. And execute
 * Choose "Other".
 * Enable Pairing Mode on the device by pressing on the button on top of the sensor for at least 5 seconds.
 
+### Arm When Everyone Gone
+This automation sets the alarm control panel to `armed_away` when everyone left the house. First create a group containing all household members.
+
+```yaml
+group:
+  family:
+    name: Familie
+    entities:
+      - person.him
+      - person.her
+```
+Then use the automation
+[Arm Away When Everyone Gone](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L36).
+
+### Arm When Sleep Mode is activated
+This automation sets the alarm control panel to `armed_home` when the the sleep mode is activated.
+[Arm Home When Sleep Mode Activated](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L65)
+
+### Disarm When Someone Arrives or Sleep Mode Is Deactivated
+This automation disarms the alarm when someone arrives at home.
+[Disarm When Someone Arrives](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L50)
+
+### Notify On Alarm Status Change
+This automation notifies us when the alarm panel is armed/disarmed.
+[Notify on Alarm Status Change](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L130)
+
+### Trigger Alarm
+These two automations (one for armed home, one for armed away) trigger the alarm when one of the configured sensors detects activity (motion, door opened).
+[Trigger Alarm Armed Home](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L154)
+[Trigger Alarm Armed Away](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L178)
+
+### Alert When House is Insecure
+For important repeating notifications we use the [alert integration](https://www.home-assistant.io/integrations/alert/), this way we get notified until the issue has been resolved (e.g. a notification is sent every 5 minutes until the configured binary_sensor is off). This alert sends a repeating, actionable notification when nobody is home and the alarm panel is not armed. The alarm can be activated by pressing the button in the actionable notifation. 
+[Nobody Home And Alarm Disarmed](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L214)
+The corresponding automation for the actionable notification action:
+[Arm Alarm When Confirmed By Mobile](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L95)
+
+### Alert When Alarm Has Been Triggered
+This alert sends a repeating, actionable notification when the alarm has been triggered. The alert can be ignored by pressing the button in the actionable notification. The alarm panel will then be set to the correct state based on home presence and sleep mode.
+[Alarm Triggered](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L233)
+The corresponding automation for the actionable notification action:
+[Disable Alarm When Confirmed By Mobile](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L109)
+
+### Alert When Water Lead Detected
+This alert sends a repeating notification when a water leak has been detected. 
+[Waterleak Detected](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L250)
 
 </p>
 </details>

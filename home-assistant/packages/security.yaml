@@ -20,6 +20,8 @@ binary_sensor:
             states('group.family') == 'not_home' and 
             states('alarm_control_panel.home_alarm') == 'disarmed' 
           }}
+        delay_on:
+          minutes: 1
 
 
 group:
@@ -34,7 +36,7 @@ group:
 automation:
   # Arm away when everyone gone
   - id: arm_away_when_everyone_gone
-    alias: "Alarm scharf stellen wenn alle geganen sind"
+    alias: "Alarm scharf stellen wenn alle gegangen sind"
     mode: single
     trigger:
       platform: state
@@ -46,15 +48,19 @@ automation:
       data:
         code: !secret alarm_code
 
-  # Disarm when someone arrives
-  - id: disarm_when_someone_arrives
+  # Disarm when someone arrives or sleep mode deactivated
+  - id: disarm_when_someone_arrives_or_sleep_mode_deactivated
     alias: "Alarm ausschalten wenn jemand ankommt"
     mode: single
     trigger:
-      platform: state
-      entity_id: group.family
-      from: not_home
-      to: home
+      - platform: state
+        entity_id: group.family
+        from: not_home
+        to: home
+      - platform: state
+        entity_id: input_boolean.sleep_mode
+        from: 'on'
+        to: 'off'
     action:
       service: alarm_control_panel.alarm_disarm
       entity_id: alarm_control_panel.home_alarm
@@ -72,21 +78,6 @@ automation:
       to: 'on'
     action:
       service: alarm_control_panel.alarm_arm_home
-      entity_id: alarm_control_panel.home_alarm
-      data:
-        code: !secret alarm_code
-
-  # Disarm when sleep mode deactivated
-  - id: disarm_when_sleep_mode_deactivated
-    alias: "Alarm ausschalten wenn der Schlafmodus deaktiviert wird"
-    mode: single
-    trigger:
-      platform: state
-      entity_id: input_boolean.sleep_mode
-      from: 'on'
-      to: 'off'
-    action:
-      service: alarm_control_panel.alarm_disarm
       entity_id: alarm_control_panel.home_alarm
       data:
         code: !secret alarm_code
