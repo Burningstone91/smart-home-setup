@@ -10,6 +10,12 @@ media_player:
     host: 192.168.0.30
     port: 6681
 
+input_boolean:
+  # Do not Disturb Boolean
+  dnd_bedroom:
+    name: DnD Schlafzimmer
+    icon: mdi:cancel
+
 binary_sensor:
   - platform: template
     sensors:

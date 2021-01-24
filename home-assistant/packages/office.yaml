@@ -14,6 +14,12 @@ media_player:
     host: 192.168.0.30
     port: 6683
 
+input_boolean:
+  # Do not Disturb Boolean
+  dnd_office:
+    name: DnD Büro
+    icon: mdi:cancel
+
 binary_sensor:
   - platform: template
     sensors:

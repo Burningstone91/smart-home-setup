@@ -10,6 +10,12 @@ light:
     name: balcony_ceiling
     entity_id: switch.light_balcony
 
+input_boolean:
+  # Do not Disturb Boolean
+  dnd_balcony:
+    name: DnD Balkon
+    icon: mdi:cancel
+  
 # Entity Customization
 homeassistant:
   customize:
@@ -17,7 +23,7 @@ homeassistant:
     light.balcony_ceiling:
       friendly_name: Lichterkette
       icon: mdi:string-lights
-     # Media Players
+    # Media Players
     media_player.mpd_balcony:
       friendly_name: MPD Balkon
     media_player.snapclient_balcony:
