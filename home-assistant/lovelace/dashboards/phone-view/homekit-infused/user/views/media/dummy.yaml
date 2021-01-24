@@ -1,162 +1,284 @@
-# Livingroom
-- type: custom:vertical-stack-in-card
-  style: |
-      ha-card {
-        border-radius: 20px;
-      }
+- type: vertical-stack
   cards:
-    # Media Player
-    - type: custom:mini-media-player
-      entity: media_player.mpd_livingroom
-      tap_action:
-        action: navigate
-        navigation_path: /phone-view/music-livingroom
-      hide:
-        progress: true
-        volume: true
-        source: true
-        prev: true
-        next: true
-        power: true
-    # Multiroom Snapclients
-    - type: custom:mod-card
-      style: |
-        ha-card {
-          width: 90%;
-          margin-left: 5%;
-        }
-      card:
-        type: custom:fold-entity-row
-        head:
-          type: section
-          label: Multiroom
-        entities:
-          # Office
-          - type: custom:hui-element
-            card_type: custom:mini-media-player
-            entity: media_player.snapclient_livingroom
-            name: Wohnzimmer
-            icon: mdi:speaker
-            hide:
-              progress: true
-              source: true
-              power: true
-              #mute: true
-              icon: true
-            style: |
-              ha-card {
-                box-shadow: none;
-                margin-left: -5%;
-                width: 105%;
-              }
     - type: horizontal-stack
       cards:
-        - type: markdown
-          content: >
-            <ha-icon icon="mdi:volume-medium"></ha-icon>
-        - type: custom:mini-media-player
-          entity: media_player.mpd_livingroom
-          hide:
-            progress: true
-            source: true
-            power: true
-            info: true
-            name: true
-            icon: true
-            controls: true
-            mute: true
+        - !include ../../../base/includes/gap.yaml
+        # Livingroom
+        - type: custom:vertical-stack-in-card
           style: |
             ha-card {
-              width: 250%;
-              margin-left: -75%;
-              margin-top: -2%;
+              border-radius: 20px;
             }
-        - type: markdown
-          content: >
-            <ha-icon icon="mdi:volume-high"></ha-icon>
-          style: |
-            ha-card {
-              margin-left: 48%;
-            }
+          cards:
+            # Main Media Player
+            - type: custom:mini-media-player
+              entity: media_player.mpd_livingroom
+              name: Wohnzimmer
+              tap_action:
+                action: navigate
+                navigation_path: /phone-view/music-livingroom
+              hide:
+                progress: true
+                volume: true
+                source: true
+                prev: true
+                next: true
+                power: true
+              style: |
+                ha-card {
+                  box-shadow: none;
+                }
+            # Multiroom Snapclients
+            - type: entities
+              style: |
+                ha-card {
+                  margin-top: -7%;
+                  margin-left: -2%;
+                  background: transparent !important;
+                }
+              entities:
+                - type: custom:fold-entity-row
+                  head:
+                    type: section
+                    label: Multiroom
+                    style: |
+                      .divider {
+                        display: none;
+                      }
+                      .label {
+                        color: white !important;
+                      }
+                  entities:
+                    # Livingroom
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:sofa-outline"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -1%;
+                            }
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_livingroom
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -5%;
+                            }
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              if (source == 'Wohnzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.spotify_dimitri
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                            }
+                    # Bedroom
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:bed-outline"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -35%;
+                            }
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_livingroom
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              if (source == 'Wohnzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.spotify_dimitri
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -33%;
+                            }
+                    # Office
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:desk"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -35%;
+                            }
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_livingroom
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              if (source == 'Wohnzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.spotify_dimitri
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -35%;
+                            }
+                    # Balcony
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:grill"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -33%;
+                            }
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_livingroom
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              if (source == 'Wohnzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.spotify_dimitri
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -33%;
+                            }
+            # Main Media Player Controls
+            - type: horizontal-stack
+              cards:
+                - type: markdown
+                  content: >
+                    <ha-icon icon="mdi:volume-medium"></ha-icon>
+                  style: |
+                    ha-card {
+                      margin-top: -23%;
+                    }
+                - type: custom:mini-media-player
+                  entity: media_player.mpd_livingroom
+                  hide:
+                    progress: true
+                    source: true
+                    power: true
+                    info: true
+                    name: true
+                    icon: true
+                    controls: true
+                    mute: true
+                  style: |
+                    ha-card {
+                      width: 230%;
+                      margin-left: -70%;
+                      margin-top: -27%;
+                      box-shadow: none;
+                    }
+                - type: markdown
+                  content: >
+                    <ha-icon icon="mdi:volume-high"></ha-icon>
+                  style: |
+                    ha-card {
+                      margin-left: 48%;
+                      margin-top: -25%;
+                    }
+        - !include ../../../base/includes/gap.yaml
 
-# Bedroom
-- type: custom:vertical-stack-in-card
-  style: |
-      ha-card {
-        border-radius: 20px;
-      }
-  cards:
-    # Media Player
-    - type: custom:mini-media-player
-      entity: media_player.mpd_bedroom
-      tap_action:
-        action: navigate
-        navigation_path: /phone-view/music-bedroom
-      hide:
-        progress: true
-        volume: true
-        source: true
-        prev: true
-        next: true
-        power: true
-    # Multiroom Snapclients
-    - type: custom:mod-card
-      style: |
-        ha-card {
-          width: 90%;
-          margin-left: 5%;
-        }
-      card:
-        type: custom:fold-entity-row
-        head:
-          type: section
-          label: Multiroom
-        entities:
-          # Office
-          - type: custom:hui-element
-            card_type: custom:mini-media-player
-            entity: media_player.snapclient_livingroom
-            name: Wohnzimmer
-            icon: mdi:speaker
-            hide:
-              progress: true
-              source: true
-              power: true
-              #mute: true
-              icon: true
-            style: |
-              ha-card {
-                box-shadow: none;
-                margin-left: -5%;
-                width: 105%;
-              }
-    - type: horizontal-stack
-      cards:
-        - type: markdown
-          content: >
-            <ha-icon icon="mdi:volume-medium"></ha-icon>
-        - type: custom:mini-media-player
-          entity: media_player.mpd_bedroom
-          hide:
-            progress: true
-            source: true
-            power: true
-            info: true
-            name: true
-            icon: true
-            controls: true
-            mute: true
-          style: |
-            ha-card {
-              width: 250%;
-              margin-left: -75%;
-              margin-top: -2%;
-            }
-        - type: markdown
-          content: >
-            <ha-icon icon="mdi:volume-high"></ha-icon>
-          style: |
-            ha-card {
-              margin-left: 48%;
-            }
-  
