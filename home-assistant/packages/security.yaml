@@ -50,7 +50,7 @@ automation:
 
   # Disarm when someone arrives or sleep mode deactivated
   - id: disarm_when_someone_arrives_or_sleep_mode_deactivated
-    alias: "Alarm ausschalten wenn jemand ankommt"
+    alias: "Alarm ausschalten wenn jemand ankommt oder Schlafmodus deaktiviert"
     mode: single
     trigger:
       - platform: state

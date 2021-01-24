@@ -1082,7 +1082,10 @@ automation:
           - device_tracker.pi_zigbee_zwave
           - device_tracker.pi_network
           - device_tracker.plug_dishwasher
-          #- device_tracker.receiver_bedroom
+          - device_tracker.kodi_livingroom
+          #- device_tracker.music_bedroom
+          #- device_tracker.music_office
+          #- device_tracker.music_balcony
           - device_tracker.receiver_livingroom
           #- device_tracker.receiver_office
           - device_tracker.remote_livingroom
