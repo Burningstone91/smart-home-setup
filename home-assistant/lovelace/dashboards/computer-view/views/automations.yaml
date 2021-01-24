@@ -61,15 +61,17 @@ cards:
               type: section
               label: Alarmanlage
             entities:
-              - entity: automation.alarm_ausschalten_wenn_der_schlafmodus_deaktiviert_wird
               - entity: automation.alarm_scharf_stellen_wenn_der_schlafmodus_aktiviert_wird
-              - entity: automation.alarm_ausschalten_wenn_jemand_ankommt
-              - entity: automation.alarm_scharf_stellen_wenn_alle_geganen_sind
+              - entity: automation.alarm_ausschalten_wenn_jemand_ankommt_oder_schlafmodus_deaktiviert
+              - entity: automation.alarm_scharf_stellen_wenn_alle_gegangen_sind
               - entity: automation.benachrichtigung_bei_anderung_des_alarm_status
               - entity: automation.alarm_auslosen_when_jemand_zu_hause_ist
               - entity: automation.alarm_auslosen_when_niemand_zu_hause_ist
               - entity: automation.alarm_abschalten_aus_handy_benachrichtigungsbestatigung
               - entity: automation.alarm_einschalten_aus_handy_benachrichtigungsbestatigung
+              - entity: alert.water_leak_detected
+              - entity: alert.alarm_triggered
+              - entity: alert.nobody_home_and_alarm_disarmed
       - type: entities
         # style: |
         #     ha-card {
@@ -85,13 +87,19 @@ cards:
             entities:
               - entity: automation.licht_an_bei_bewegung_buro
               - entity: automation.licht_aus_buro_nicht_besetzt
+              - entity: automation.licht_schalter_buro
               - entity: automation.licht_an_bei_bewegung_wohnzimmer
               - entity: automation.licht_aus_wohnzimmer_nicht_besetzt
+              - entity: automation.licht_schalter_wohnzimmer
               - entity: automation.licht_an_bei_bewegung_schlafzimmer
               - entity: automation.licht_aus_schlafzimmer_nicht_besetzt
+              - entity: automation.licht_schalter_schlafzimmer
               - entity: automation.schlafmodus_fur_adaptive_beleuchtung_schlafzimmer
               - entity: automation.licht_an_bei_bewegung_ankleidezimmer
               - entity: automation.licht_aus_ankleidezimmer_nicht_besetzt
+              - entity: automation.licht_schalter_ankleidzimmer
+              - entity: automation.fernbedienung_dimitri
+              - entity: automation.fernbedienung_sabrina
       - type: entities
         # style: |
         #     ha-card {
@@ -144,3 +152,33 @@ cards:
             entities:
               - entity: automation.benachrichtigung_wenn_eine_haushaltsaufgabe_bald_fallig_ist
               - entity: automation.markiere_aufgabe_als_erledigt_und_bedanke_bei_benutzer
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Heimkino
+            entities:
+              - entity: automation.licht_hell_dunkel_bei_pause_play
+              - entity: automation.pause_play_bei_anruf
+              - entity: automation.licht_szenen_heimkino
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Multiroom Audio
+            entities:
+              - entity: automation.verstarker_wohnzimmer_fur_musik
