@@ -33,8 +33,6 @@ monitor_docker:
       - unifi-poller
       - swag
       - snapserver
-      - nextcloud
-      - nextcloud-db
     rename:
       appdaemon: AppDaemon
       esphome-dashboard: "ESPHome-Dashboard"
@@ -47,8 +45,6 @@ monitor_docker:
       unifi-poller: "Unifi-Poller"
       swag: NGINX
       snapserver: Snapserver
-      nextcloud: Nextcloud
-      nextcloud-db: Nextcloud DB
     monitored_conditions:
       - version
       - status
@@ -113,25 +109,6 @@ sensor:
     command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.40.6 cat /sys/class/thermal/thermal_zone3/temp'
     value_template: "{{ value | int / 1000 }}"
     unit_of_measurement: "°C"
-  #################
-  # Home Assistant
-  #################
-  # Uptime
-  - platform: uptime
-    name: uptime_home_assistant_minutes
-  - platform: template
-    sensors:
-      uptime_home_assistant:
-        value_template: >
-          {%- set value = states('sensor.uptime_home_assistant_minutes') | float %}
-          {%- set time = (value * 60) | int %}
-          {%- set minutes = ((time % 3600) // 60) %}
-          {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
-          {%- set hours = ((time % 86400) // 3600) %}
-          {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
-          {%- set days = (time // 86400) %}
-          {%- set days = '{}d '.format(days) if days > 0 else '' %}
-          {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
   ###################
   # Home Assitant DB Size
   ###################
@@ -140,16 +117,6 @@ sensor:
     queries:
       - name: DB size Hass
         query: "SELECT (pg_database_size('smart_home')/1024/1024) as db_size;"
-        column: "db_size"
-        unit_of_measurement: MB
-  ###################
-  # Nextcloud DB Size
-  ###################
-  - platform: sql
-    db_url: !secret nextcloud_db_url
-    queries:
-      - name: DB size Nextcloud
-        query: "SELECT (pg_database_size('nextcloud')/1024/1024) as db_size;"
         column: "db_size"
         unit_of_measurement: MB
   ####################
@@ -228,10 +195,6 @@ sensor:
   - platform: mqtt
     state_topic: "docker-image-updates/swag"
     name: Update Swag
-  # Nextcloud
-  - platform: mqtt
-    state_topic: "docker-image-updates/nextcloud"
-    name: Update Nextcloud
   # Proxmox
   - platform: command_line
     name: Version Proxmox VE 
@@ -854,7 +817,6 @@ automation:
           - sensor.update_portainer
           - sensor.update_unifi_poller
           - sensor.update_swag
-          - sensor.update_nextcloud
           - sensor.firmware_upgrade_usg_router
           - sensor.firmware_upgrade_ap_livingroom
           - sensor.firmware_upgrade_switch_livingroom
@@ -1089,7 +1051,9 @@ automation:
           - device_tracker.receiver_livingroom
           #- device_tracker.receiver_office
           - device_tracker.remote_livingroom
-          - device_tracker.server_nuc
+          #- device_tracker.server_nuc
+          - device_tracker.investment_vm
+          - device_tracker.nextcloud_vm
           - device_tracker.switch_livingroom
           - device_tracker.switch_storageroom
           - device_tracker.unifi_controller
