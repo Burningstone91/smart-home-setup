@@ -230,78 +230,56 @@ Create sub directories, that will contain the configuration, persistence storage
 ```
 cd mosquitto
 mkdir config
-mkdir data
-mkdir log
 ```
 
 Create a file called mosquitto.conf inside the config directory:
 
 ```
-cd config
-touch mosquitto.conf
+nano config/mosquitto.conf
 ```
 
 and add the following to the file:
 
 
 ```
-pid_file /var/run/mosquitto.pid
+listener 1883
 
-persistence true
-persistence_location /mosquitto/data/
-
-log_dest file /mosquitto/log/mosquitto.log
 log_dest stdout
 
 password_file /mosquitto/config/passwd
 allow_anonymous false
 ```
 
-Stop the docker stack:
-
-```
-docker-compose down
-```
-
 Add the following to the docker-compose.yml to configure the Mosquitto docker container:
-
+git 
 ```yaml
   mqtt:
     container_name: mqtt
     image: eclipse-mosquitto
     ports:
       - "1883:1883"
+      - "9001:9001"
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/log:/mosquitto/log
-      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/config/passwd:/mosquitto/config/passwd
 ```
 
-Start the docker stack again:
+Enter the following command to create a password file (replace USERNAME and PASSWORD with your respective details):
 
 ```
-docker-compose up -d
-```
+docker-compose run mqtt /bin/sh -c "touch /tmp/passwd && mosquitto_passwd -b /tmp/passwd USERNAME PASSWORD && cat /tmp/passwd && rm /tmp/passwd" > /mosquittoconfig/passwd
 
-Bash into the mosquitto container:
-
-```
-docker exec -it mqtt /bin/sh
-```
-
-Enter the following command to create a password file:
-
-```
-mosquitto_passwd -c /mosquitto/config/passwd [username]
 ```
 
 You will be promted to enter your password twice.
 Restart the mqtt broker with:
 
+Download the image and run the container:
+
 ```
-docker restart mqtt
+docker-compose up -d mqtt
 ```
 
 To test the MQTT broker, install mosquitto-clients on any other machine:
@@ -3107,8 +3085,12 @@ These two automations (one for armed home, one for armed away) trigger the alarm
 [Trigger Alarm Armed Away](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L178)
 
 ### Alert When House is Insecure
-For important repeating notifications we use the [alert integration](https://www.home-assistant.io/integrations/alert/), this way we get notified until the issue has been resolved (e.g. a notification is sent every 5 minutes until the configured binary_sensor is off). This alert sends a repeating, actionable notification when nobody is home and the alarm panel is not armed. The alarm can be activated by pressing the button in the actionable notifation. 
+For important repeating notifications we use the [alert integration](https://www.home-assistant.io/integrations/alert/), this way we get notified until the issue has been resolved (e.g. a notification is sent every 5 minutes until the configured binary_sensor is off). This alert sends a repeating, actionable notification when nobody is home and the alarm panel is not armed. The alarm can be activated by pressing the button in the actionable notifation.
+The binary_sensor that indicates when nobody is home and the alarm is disarmed for more than 1 minute:
+[Binary Sensor Nobody Home Alarm Disarmed](https://github.com/Burningstone91/smart-home-setup/blob/9d3b0c314f7d686e709fd94936dca02677282eef/home-assistant/packages/security.yaml#L17)
+
 [Nobody Home And Alarm Disarmed](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L214)
+
 The corresponding automation for the actionable notification action:
 [Arm Alarm When Confirmed By Mobile](https://github.com/Burningstone91/smart-home-setup/blob/a3ca6a1a2546a5bb87ec3fb4c8807926559d3e0f/home-assistant/packages/security.yaml#L95)
 
@@ -3577,9 +3559,103 @@ After all these steps you should now be able to pause a video in one room and th
 </p>
 </details>
 
-### HACS
+
+## Applicances <a name="applicances" href="https://github.com/Burningstone91/smart-home-setup#applicances"></a>
+### Basic Explanation of Setup
 
 
+
+### Hardware used
+<table align="center" border="0">
+<tr>
+<td align="center" style="width:100%;">
+1x myStrom Plug
+</td>
+</tr>
+
+<tr>
+<td align="center" style="width:100%;">
+<img src="git-pictures/device_pictures/mystrom_plug.png" raw=true height="100" alt="Plug" />
+</td>
+</tr>
+
+<tr><td colspan="2">
+We use the myStrom plug to measure the energy consumption of our dishwasher in order to determine the state of the dishwasher.
+
+</td></tr>
+</table>
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Integrate myStrom plug to Home Assistant
+We use the [myStrom integration](https://www.home-assistant.io/integrations/mystrom/) to add the plug to Home Assistant.
+Place the following in your configuration, where host is the IP of the myStrom plug:
+
+```yaml
+switch:
+  # Power Metering Plug Dishwaser
+  - platform: mystrom
+    host: 10.10.70.13
+    name: Plug Dishwasher
+```
+
+And restart Home Assistant. This will give you a switch called `switch.plug_dishwasher`.
+
+### Measuring and Monitoring Power and Energy consumption
+The switch has an attribute that shows the current power consumption, we can use a template sensor to extract the attribute into a separate sensor, which can then be used to calculate energy consumption over time etc.
+
+```yaml
+sensor:
+  # Extract power attribute from dishwasher plug
+  - platform: template
+    sensors:
+      power_dishwasher:
+        friendly_name: Strom Geschirrspüler
+        unit_of_measurement: "W"
+        device_class: power
+        value_template: "{{ state_attr('switch.plug_dishwasher', 'current_power_w') }}"
+```
+
+To show the power consumption over time, we can use the [integration integration](https://www.home-assistant.io/integrations/integration/)(no, it's not a typo :D).
+
+
+```yaml
+sensor:
+  # Convert power (W) to energy (kWh)
+  - platform: integration
+    source: sensor.power_dishwasher
+    name: energy_dishwasher
+    unit_prefix: k
+    round: 2
+```
+
+### Determine state of Dishwasher
+To determine the state of the dishwasher (cleaning, drying etc.) we create an input_select that holds the possible states:
+
+```yaml
+input_select:
+  status_dishwasher:
+  name: Status Geschirrspüler
+  options:
+    - Sauber #Clean
+    - Dreckig #Dirty
+    - Läuft #Running
+    - Trocknung #Drying
+```
+
+Then the automation that changes the input_select.
+
+The logic is as follows:
+* Power Consumption > x kWh (I monitoried a few cycles to get the values) for 5 minutes -> Running
+* Power Consumption < x kWh for 5 minutes -> Drying
+* Drying for 30 minutes -> Clean
+* Clean for 4 hours -> Dirty
+
+[Determine Dishwasher State]()
+
+</p>
+</details>
 
 
 

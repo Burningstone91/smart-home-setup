@@ -39,7 +39,7 @@ services:
 
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:2021.1.5
+    image: homeassistant/home-assistant:2021.2.0
     network_mode: host
     restart: unless-stopped
     volumes:
@@ -178,37 +178,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - ./portainer:/data
-
-  nextcloud:
-    container_name: nextcloud
-    depends_on:
-      - nextcloud-db
-    environment:
-      POSTGRES_DB: "nextcloud"
-      POSTGRES_PASSWORD: secretusername
-      POSTGRES_USER: supersecretusername
-      POSTGRES_HOST: nextcloud-db
-    image: nextcloud
-    ports:
-      - "9001:80"
-    restart: always
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./nextcloud/config:/var/www/html
-
-  nextcloud-db:
-    container_name: nextcloud-db
-    environment:
-      POSTGRES_DB: "nextcloud"
-      POSTGRES_USER: secretusername
-      POSTGRES_PASSWORD: supersecretpassword
-    image: "postgres:9.6.19-alpine"
-    ports:
-      - "5433:5432"
-    restart: always
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./nextcloud/data:/var/lib/postgresql/data
 
   snapserver:
     build: 
