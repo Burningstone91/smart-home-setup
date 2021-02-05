@@ -3,7 +3,7 @@
 # Proxmox for VM running on NUC
 ################################
 proxmoxve:
-  host: 10.10.40.6
+  host: 10.10.5.10
   username: !secret pve_user
   password: !secret pve_pass
   realm: pve
@@ -106,7 +106,7 @@ sensor:
   ##################
   - platform: command_line
     name: temperature_cpu_nuc
-    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.40.6 cat /sys/class/thermal/thermal_zone3/temp'
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.5.10 cat /sys/class/thermal/thermal_zone3/temp'
     value_template: "{{ value | int / 1000 }}"
     unit_of_measurement: "°C"
   ###################
@@ -198,7 +198,7 @@ sensor:
   # Proxmox
   - platform: command_line
     name: Version Proxmox VE 
-    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.40.6 pveversion | cut -f2 -d/'
+    command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.5.10 pveversion | cut -f2 -d/'
     scan_interval: 3600
   ###############
   # Synology NAS
@@ -1052,7 +1052,7 @@ automation:
           #- device_tracker.receiver_office
           - device_tracker.remote_livingroom
           #- device_tracker.server_nuc
-          - device_tracker.investment_vm
+          #- device_tracker.investment_vm
           - device_tracker.nextcloud_vm
           - device_tracker.switch_livingroom
           - device_tracker.switch_storageroom

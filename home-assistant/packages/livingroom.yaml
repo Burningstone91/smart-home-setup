@@ -1,20 +1,14 @@
-# media_player:
-#   - platform: mpd
-#     name: MPD Livingroom
-#     host: 192.168.0.30
-#     port: 6602
-
 media_player:
   - platform: mopidy
     name: MPD Livingroom
-    host: 192.168.0.30
+    host: 10.10.40.6
     port: 6682
 
 emulated_roku:
   servers:
     - name: Roku
       listen_port: 8060
-      host_ip: 192.168.0.30
+      host_ip: 10.10.40.6
       advertise_ip: 10.10.40.6
       advertise_port: 8060
 

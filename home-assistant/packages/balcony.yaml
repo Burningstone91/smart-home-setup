@@ -1,7 +1,7 @@
 media_player:
   - platform: mopidy
     name: MPD Balcony
-    host: 192.168.0.30
+    host: 10.10.40.6
     port: 6684
 
 # Light switch template to transform switch. into light. entity

@@ -1,13 +1,7 @@
-# media_player:
-#   - platform: mpd
-#     name: MPD Bedroom
-#     host: 192.168.0.30
-#     port: 6601
-
 media_player:
   - platform: mopidy
     name: MPD Bedroom
-    host: 192.168.0.30
+    host: 10.10.40.6
     port: 6681
 
 input_boolean:
