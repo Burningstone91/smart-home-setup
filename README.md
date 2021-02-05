@@ -273,9 +273,6 @@ docker-compose run mqtt /bin/sh -c "touch /tmp/passwd && mosquitto_passwd -b /tm
 
 ```
 
-You will be promted to enter your password twice.
-Restart the mqtt broker with:
-
 Download the image and run the container:
 
 ```
