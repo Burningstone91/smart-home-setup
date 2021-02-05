@@ -62,7 +62,6 @@ cards:
           left: 25%
           width: 50%
           height: 100%
-          #'--ha-card-border-radius': '20px'
           '--ha-card-box-shadow': 'none'
         cards:
           # Media Browser
@@ -178,7 +177,7 @@ cards:
                 width: 55%; 
                 box-shadow: none;
               }
-           # Volume
+          # Volume
           - type: horizontal-stack
             cards:
               - type: markdown

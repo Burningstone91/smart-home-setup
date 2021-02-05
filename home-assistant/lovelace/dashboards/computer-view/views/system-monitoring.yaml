@@ -305,7 +305,7 @@ cards:
                     width: 80%
                     icon: mdi:speedometer
                     entities:
-                      - entity: sensor.cpu_load_pi_office
+                      - entity: sensor.cpu_load_pi_zigbee_zwave
                         name: CPU
                         severity:
                           - color: rgb(26,204,147,0.33)
@@ -353,7 +353,7 @@ cards:
                     height: 15px
                     width: 80%
                     entities:
-                      - entity: sensor.temperature_pi_office
+                      - entity: sensor.temperature_pi_zigbee_zwave
                         name: Temp
                         severity:
                           - color: rgb(26,204,147,0.33)
@@ -401,7 +401,7 @@ cards:
                     height: 15px
                     width: 80%
                     entities:
-                      - entity: sensor.ram_use_pct_pi_office
+                      - entity: sensor.ram_use_pct_pi_zigbee_zwave
                         name: RAM
                         severity:
                           - color: rgb(26,204,147,0.33)
@@ -449,7 +449,7 @@ cards:
                     height: 15px
                     width: 80%
                     entities:
-                      - entity: sensor.disk_use_pct_pi_office
+                      - entity: sensor.disk_use_pct_pi_zigbee_zwave
                         name: Disk
                         severity:
                           - color: rgb(26,204,147,0.33)
