@@ -3106,7 +3106,7 @@ This alert sends a repeating notification when a water leak has been detected.
 
 ## Home Cinema <a name="home-cinema" href="https://github.com/Burningstone91/smart-home-setup#home-cinema"></a>
 ### Basic Explanation of Setup
-We have a little "Home Cinema" in the living room with an Epson projector, a 107" fixed screen, a Denon AVR and a pair of Dynaudio stand speakers. To play media there's a Raspberry Pi 4 running Libreelec, a Nintendo Switch and a Box from our cable provider for TV.  Home Assistant is used to set the lights based on the current activity of the Logitech Harmony Remote, brighten/dim the lights on pause/play and pause/play on a phone call.
+We have a small "Home Cinema" in the living room with an Epson projector, a 107" fixed screen, a Denon AVR and a pair of Dynaudio stand speakers. To play media there's a Raspberry Pi 4 running Libreelec, a Nintendo Switch and a Box from our cable provider for TV.  Home Assistant is used to set the lights based on the current activity of the Logitech Harmony Remote, brighten/dim the lights on pause/play and pause/play on a phone call.
 
 ### Hardware Used
 <table align="center" border="0">
@@ -3144,7 +3144,7 @@ Enter the name of your Hub set in the Logitech app in the field "Hub name" and p
 You should now have an entity `remote.name_of_your_hub` and a file `harmony_XXXX.conf` should be created in the same directory as configuration.yaml. It contains the configuration of the Logitech Harmony Remote such as the commands for the different devices.
 
 ### Setup Emulated Roku
-Because Home Assistant can not detect when a button has been pressed on the Harmony Remote, we can use the [Emulated Roku integration ](https://www.home-assistant.io/integrations/emulated_roku/) as a workaround. The emulated Roku can be added to the Logitech Harmony Remote and then you add the Roku to the activity you want to know button presses for. Now you assign an action on the Roku to any of the buttons for this activity and then Home Assistant will see an event when this button has been pressed, as you can see below. 
+Because Home Assistant can not detect when a button has been pressed on the Harmony Remote, we can use the [Emulated Roku integration ](https://www.home-assistant.io/integrations/emulated_roku/) as a workaround. The emulated Roku can be added to the Logitech Harmony Remote and then you add the Roku to the activity you want to know button presses for. Now you assign an action on the Roku to any of the buttons for this activity and then Home Assistant will see an event when this button has been pressed, as you can see in the below automations. 
 
 #####################################################################3
 
@@ -3638,19 +3638,18 @@ input_select:
     - Sauber #Clean
     - Dreckig #Dirty
     - Läuft #Running
-    - Trocknung #Drying
 ```
 
 Then the automation that changes the input_select.
 
 The logic is as follows:
-* Power Consumption > x kWh (I monitoried a few cycles to get the values) for 5 minutes -> Running
-* Power Consumption < x kWh for 5 minutes -> Drying
-* Drying for 30 minutes -> Clean
+* Power Consumption > 30 W (I monitoried a few cycles to get the values) for 2 minutes AND dishwasher state NOT Running-> Running
+* Power Consumption < 5 W for 20 minutes AND dishwasher state is Running -> Clean
 * Clean for 4 hours -> Dirty
 
-[Determine Dishwasher State]()
+[Determine Dishwasher State](https://github.com/Burningstone91/smart-home-setup/blob/master/home-assistant/packages/kitchen.yaml#L43)
 
+I don't have an automation (yet) to detected the dishwasher has been emptied, as there is no place to put a door sensor that is not disturbing to look at.
 </p>
 </details>
 
