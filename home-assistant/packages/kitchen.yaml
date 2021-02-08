@@ -1,3 +1,103 @@
+switch:
+  # Power Metering Plug Dishwaser
+  - platform: mystrom
+    host: 10.10.70.13
+    name: Plug Dishwasher
+
+sensor:
+  # Extract power attribute from dishwasher plug
+  - platform: template
+    sensors:
+      power_dishwasher:
+        friendly_name: Strom Geschirrspüler
+        unit_of_measurement: "W"
+        device_class: power
+        value_template: "{{ state_attr('switch.plug_dishwasher', 'current_power_w') }}"
+  # Convert power (W) to energy (kWh)
+  - platform: integration
+    source: sensor.power_dishwasher
+    name: energy_dishwasher
+    unit_prefix: k
+    round: 2
+
+input_select:
+  # Dishwasher state
+  status_dishwasher:
+    name: Status Geschirrspüler
+    options:
+      - Sauber
+      - Dreckig
+      - Läuft
+
+# Utility Meter Dishwasher
+utility_meter:
+  energy_daily_dishwasher:
+    source: sensor.energy_dishwasher
+    cycle: daily
+  energy_quarterly_dishwasher:
+    source: sensor.energy_dishwasher
+    cycle: quarterly
+
+automation:
+  # Determine Dishwasher State
+  - id: determine_dishwasher_state
+    alias: Status Geschirrspüler
+    mode: single
+    trigger:
+      # -> Running
+      - platform: numeric_state
+        entity_id: sensor.power_dishwasher
+        above: 30
+        for:
+          minutes: 2
+      # -> Clean
+      - platform: numeric_state
+        entity_id: sensor.power_dishwasher
+        below: 5
+        for:
+          minutes: 20
+      # -> Dirty
+      - platform: state
+        entity_id: input_select.status_dishwasher
+        to: 'Sauber'
+        for:
+          hours: 4
+    action:
+      - variables:
+          new_state: "{{ trigger.to_state.state }}"
+      - choose:
+          # -> Running
+          - conditions:
+              - "{{ new_state | float > 30 }}"
+              - "{{ not is_state('input_select.status_dishwasher', 'Läuft') }}"
+            sequence:
+              - service: input_select.select_option
+                data:
+                  entity_id: input_select.status_dishwasher
+                  option: 'Läuft'
+          # -> Clean
+          - conditions:
+              - "{{ new_state | float < 5 }}"
+              - "{{ is_state('input_select.status_dishwasher', 'Läuft') }}"
+            sequence:
+              - service: input_select.select_option
+                data:
+                  entity_id: input_select.status_dishwasher
+                  option: 'Sauber'
+              - service: notify.mobile_app_phone_dimitri
+                data:
+                  title: "Geschirrspüler fertig!"
+                  message: >
+                    Der Geschirrspüler ist fertig. Zeit zum ausräumen.
+          # -> Dirty
+          - conditions:
+              - "{{ new_state == 'Sauber' }}"
+            sequence:
+              - service: input_select.select_option
+                data:
+                  entity_id: input_select.status_dishwasher
+                  option: 'Dreckig'
+
 # Entity Customization
 homeassistant:
   customize:
@@ -19,3 +119,11 @@ homeassistant:
       friendly_name: Fenster Sensor Küche
     sensor.battery_level_water_leak_kitchen:
       friendly_name: Wasserleck Sensor Küche
+    # Smart Plugs
+    switch.plug_dishwasher:
+      friendly_name: Plug Geschirrspüler
+      icon: mdi:dishwasher
+    sensor.energy_dishwasher:
+      friendly_name: Konsum Geschirrspüler
+      device_class: energy
+    
