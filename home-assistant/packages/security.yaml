@@ -140,7 +140,11 @@ automation:
           {% else %}
             Alarm aus
           {% endif %}
-
+        data:
+          channel: Notfall
+          priority: high
+          ttl: 0
+          
   # Trigger Alarm armed home
   - id: trigger_alarm_armed_home
     alias: "Alarm auslösen when jemand zu Hause ist"
@@ -216,6 +220,9 @@ alert:
       - mobile_app_phone_dimitri
     data:
       channel: Notfall
+      priority: high
+      ttl: 0
+      color: red
       actions:
         - action: arm_alarm
           title: "Alarm einschalten"
@@ -233,6 +240,9 @@ alert:
       - mobile_app_phone_dimitri
     data:
       channel: Notfall
+      priority: high
+      ttl: 0
+      color: red
       actions:
         - action: wrong_alarm
           title: "Fehlalarm"
@@ -250,4 +260,7 @@ alert:
       - mobile_app_phone_dimitri
     data:
       channel: Notfall
+      priority: high
+      ttl: 0
+      color: red
 
