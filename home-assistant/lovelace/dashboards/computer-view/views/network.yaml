@@ -642,7 +642,7 @@ cards:
                           }
       ####################################################
       #                                                  #
-      #                      NAS                         #
+      #                  Backup NAS                      #
       #                                                  #
       ####################################################
       - type: custom:stack-in-card
@@ -675,15 +675,15 @@ cards:
                     content: >
                       **NAS**<br>
                       **Model:**
-                      Synology {{ states('sensor.model_nas') }}<br>
+                      Synology {{ states('sensor.model__backup_nas') }}<br>
                       **IP:**
                       {{ state_attr('device_tracker.nas', 'ip') }}<br>
                       **Firmware:**
-                      {{ states('sensor.firmware_nas') }}<br>
+                      {{ states('sensor.firmware_backup_nas') }}<br>
                       **Updates:**
                       {{ 'Update available' if states('binary_sensor.nas_update_available') == 'on' else 'Up-to-date' }}<br>
                       **Uptime:**
-                      {{ states('sensor.uptime_nas') }}
+                      {{ states('sensor.uptime_backup_nas') }}
                     style: |
                       ha-card {
                         color: teal;
@@ -726,11 +726,11 @@ cards:
                           type: section
                           label: Status
                         entities:
-                          - entity: sensor.status_nas_drive_1
+                          - entity: sensor.status_backup_nas_drive_1
                             name: Status
-                          - entity: binary_sensor.exceeded_max_bad_sectors_nas_drive_1
+                          - entity: binary_sensor.exceeded_max_bad_sectors_backup_nas_drive_1
                             name: Sektoren
-                          - entity: binary_sensor.below_min_remaining_lifenas_drive_1
+                          - entity: binary_sensor.below_min_remaining_life_backup_nas_drive_1
                             name: Alter                   
               ####################################################
               #                   Column 2                       #
@@ -747,7 +747,7 @@ cards:
                     width: 80%
                     icon: mdi:speedometer
                     entities:
-                      - entity: sensor.cpu_load_nas
+                      - entity: sensor.cpu_load_backup_nas
                         name: CPU
                         severity:
                           - color: rgb(26,204,147,0.33)
@@ -796,7 +796,7 @@ cards:
                     width: 80%
                     icon: mdi:thermometer
                     entities:
-                      - entity: sensor.temperature_nas_average
+                      - entity: sensor.temperature_backup_nas_average
                         name: Temp
                         severity:
                           - color: rgb(26,204,147,0.33)
@@ -844,7 +844,7 @@ cards:
                     height: 15px
                     width: 80%
                     entities:
-                      - entity: sensor.ram_use_pct_nas
+                      - entity: sensor.ram_use_pct_backup_nas
                         name: RAM
                         severity:
                           - color: rgb(26,204,147,0.33)
@@ -890,7 +890,7 @@ cards:
                     height: 15px
                     width: 80%
                     entities:
-                      - entity: sensor.disk_use_pct_nas
+                      - entity: sensor.disk_use_pct_backup_nas
                         name: Disk
                         severity:
                           - color: rgb(26,204,147,0.33)
@@ -936,7 +936,7 @@ cards:
                         name: Temperatur - Disk 1
                         icon: mdi:thermometer
                         entities:
-                          - sensor.temperature_nas_drive_1
+                          - sensor.temperature_backup_nas_drive_1
                         height: 60
                         line_width: 2
                         font_size: 70
@@ -966,9 +966,9 @@ cards:
                     name: Network Throughput
                     icon: mdi:network
                     entities:
-                      - entity: sensor.network_down_nas
+                      - entity: sensor.network_down_backup_nas
                         name: Down
-                      - entity: sensor.network_up_nas
+                      - entity: sensor.network_up_backup_nas
                         name: Up
                     height: 30
                     line_width: 2
@@ -1026,11 +1026,11 @@ cards:
                           type: section
                           label: Status
                         entities:
-                          - entity: sensor.status_nas_drive_2
+                          - entity: sensor.status_backup_nas_drive_2
                             name: Status
-                          - entity: binary_sensor.exceeded_max_bad_sectors_nas_drive_2
+                          - entity: binary_sensor.exceeded_max_bad_sectors_backup_nas_drive_2
                             name: Sektoren
-                          - entity: binary_sensor.below_min_remaining_lifenas_drive_2
+                          - entity: binary_sensor.below_min_remaining_life_backup_nas_drive_2
                             name: Alter  
               ####################################################
               #                     Column 4                     #
@@ -1045,7 +1045,7 @@ cards:
                     name: Temperatur - Disk 2
                     icon: mdi:thermometer
                     entities:
-                      - sensor.temperature_nas_drive_2
+                      - sensor.temperature_backup_nas_drive_2
                     height: 50
                     line_width: 2
                     font_size: 70
