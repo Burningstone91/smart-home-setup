@@ -950,12 +950,14 @@ automation:
     trigger:
       - platform: numeric_state
         entity_id:
-          - sensor.temperature_backup_nas_drive_1
-          - sensor.temperature_backup_nas_drive_2
-          - sensor.temperature_nas_drive_1
-          - sensor.temperature_nas_drive_2
-          - sensor.temperature_nas_drive_3
-          - sensor.temperature_nas_drive_4
+          - sensor.temperature_cpu_nuc
+          - sensor.temperature_pi_bathroomsmall
+          - sensor.temperature_pi_livingroom
+          - sensor.temperature_pi_dressroom
+          - sensor.temperature_pi_office
+          - sensor.temperature_pi_zigbee_zwave
+          - sensor.temperature_pi_network
+          - sensor.temperature_switch_livingroom
         above: 70
         for:
           hours: 2
