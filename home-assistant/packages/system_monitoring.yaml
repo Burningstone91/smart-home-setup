@@ -950,14 +950,6 @@ automation:
     trigger:
       - platform: numeric_state
         entity_id:
-          - sensor.temperature_cpu_nuc
-          - sensor.temperature_pi_bathroomsmall
-          - sensor.temperature_pi_livingroom
-          - sensor.temperature_pi_dressroom
-          - sensor.temperature_pi_office
-          - sensor.temperature_pi_zigbee_zwave
-          - sensor.temperature_pi_network
-          - sensor.temperature_switch_livingroom
           - sensor.temperature_backup_nas_drive_1
           - sensor.temperature_backup_nas_drive_2
           - sensor.temperature_nas_drive_1
@@ -978,7 +970,7 @@ automation:
             priority: high
             ttl: 0
             color: red
-  
+
   # Notify on undervoltage
   - id: notify_on_undervoltage
     alias: "Benachrichtigung bei Unterspannung"
@@ -1021,6 +1013,35 @@ automation:
           title: "NAS unsicher!"
           message: >
             Das {{ 'Backup-' if 'backup' in trigger.to_state.entity_id else ''}}NAS ist unsicher!
+          data:
+            channel: Notfall
+            priority: high
+            ttl: 0
+            color: red
+
+  # Notify on high Disk Temp
+  - id: notify_on_high_disk_temp
+    alias: "Benachrichtigung wenn Festplatten Temperatur hoch ist"
+    mode: parallel
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.temperature_backup_nas_drive_1
+          - sensor.temperature_backup_nas_drive_2
+          - sensor.temperature_nas_drive_1
+          - sensor.temperature_nas_drive_2
+          - sensor.temperature_nas_drive_3
+          - sensor.temperature_nas_drive_4
+        above: 50
+        for:
+          hours: 2
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Hohe Festplatten Temperatur!"
+          message: >
+            🌡️Die Festplatte {{ trigger.to_state.entity_id[-1] }} im
+            {{ 'Backup-' if 'backup' in trigger.to_state.entity_id else ''}}NAS ist seit 2 Stunden über 50°!
           data:
             channel: Notfall
             priority: high
