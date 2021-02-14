@@ -71,6 +71,9 @@ I will explain here the different parts of my home automation system and how I s
 * <a href="https://github.com/Burningstone91/smart-home-setup#multiroom-audio">
       Multiroom Audio
   </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#applicances">
+      Appliances
+  </a>
 
 ## Start of my Jouney and Basic Setup <a name="start" href="https://github.com/Burningstone91/smart-home-setup#start"></a>
 
@@ -2479,16 +2482,22 @@ I use an automation to notify me when a device went offline. For network clients
 [Notify on device offline](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L1017)
 
 ### Notification on high usage/temperature of devices
-I use automations to notify me about high CPU load, high CPU temperature, high disk usage and under Voltage detected for the Pis.
+I use automations to notify me about high CPU load, high CPU/Disk temperature, high disk usage and under Voltage detected for the Pis.
 
 [High CPU Load](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L903)
 
 [High CPU Temperature](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L949)
 
+[High Disk Temperature](https://github.com/Burningstone91/smart-home-setup/blob/eacd482ef61c7074f3bb49123ecbeefc1c74c96b/home-assistant/packages/system_monitoring.yaml#L1023)
+
 [High Disk Usage](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L930)
 
-
 [Undervoltage](https://github.com/Burningstone91/smart-home-setup/blob/309ba38ed9797f3849d91597a8be7b4bf9643d8a/home-assistant/packages/system_monitoring.yaml#L977)
+
+### Notification on high usage/temperature of devices
+I use automations to notify me about one of the NAS being insecure, the sensor for this comes from the Synology DSM integration. Synology has a so called "Security Advisor" that you can configure, which performs certain security checks such as strong passwords, non-default port for SSH etc. If the Security Advisor is unsafe, the sensor in Home Assistant changes to `on`.
+
+[Insecure NAS](https://github.com/Burningstone91/smart-home-setup/blob/eacd482ef61c7074f3bb49123ecbeefc1c74c96b/home-assistant/packages/system_monitoring.yaml#L1001)
 
 </p>
 </details>
@@ -3557,10 +3566,8 @@ After all these steps you should now be able to pause a video in one room and th
 </details>
 
 
-## Applicances <a name="applicances" href="https://github.com/Burningstone91/smart-home-setup#applicances"></a>
+## Appliances <a name="appliances" href="https://github.com/Burningstone91/smart-home-setup#appliances"></a>
 ### Basic Explanation of Setup
-
-
 
 ### Hardware used
 <table align="center" border="0">
@@ -3643,8 +3650,8 @@ input_select:
 Then the automation that changes the input_select.
 
 The logic is as follows:
-* Power Consumption > 30 W (I monitoried a few cycles to get the values) for 2 minutes AND dishwasher state NOT Running-> Running
-* Power Consumption < 5 W for 20 minutes AND dishwasher state is Running -> Clean
+* Power > 30 W (I monitoried a few cycles to get the values) for 2 minutes AND dishwasher state NOT Running-> Running
+* Power < 5 W for 20 minutes AND dishwasher state is Running -> Clean
 * Clean for 4 hours -> Dirty
 
 [Determine Dishwasher State](https://github.com/Burningstone91/smart-home-setup/blob/master/home-assistant/packages/kitchen.yaml#L43)
