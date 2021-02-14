@@ -55,7 +55,7 @@ automation:
         entity_id: sensor.power_dishwasher
         below: 5
         for:
-          minutes: 20
+          minutes: 35
       # -> Dirty
       - platform: state
         entity_id: input_select.status_dishwasher
@@ -86,7 +86,7 @@ automation:
                   option: 'Sauber'
               - service: notify.mobile_app_phone_dimitri
                 data:
-                  title: "Geschirrspüler fertig!"
+                  title: "🍽️ Geschirrspüler fertig!"
                   message: >
                     Der Geschirrspüler ist fertig. Zeit zum ausräumen.
           # -> Dirty

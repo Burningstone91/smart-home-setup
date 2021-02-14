@@ -207,7 +207,7 @@ automation:
 alert:
   # Notify nobody home and alarm not armed
   nobody_home_and_alarm_disarmed:
-    name: "Niemand ist zu Hause und der Alarm ist ausgeschaltet!"
+    name: "👮 Niemand ist zu Hause und der Alarm ist ausgeschaltet!"
     done_message: "Die Alarmanlage ist jetzt scharf."
     title: "Haus unsicher!"
     entity_id: binary_sensor.nobody_home_alarm_disarmed
@@ -229,7 +229,7 @@ alert:
 
   # Notify when alarm is triggered
   alarm_triggered:
-    name: "Der Alarm wurde ausgelöst!"
+    name: "🚨 Der Alarm wurde ausgelöst!"
     done_message: "Der Alarm wurde ausgeschaltet."
     title: "ALARM!"
     entity_id: alarm_control_panel.home_alarm
@@ -249,7 +249,7 @@ alert:
 
   # Notify on water leak
   water_leak_detected:
-    name: "Wasserleck wurde entdeckt!"
+    name: "🌊 Wasserleck wurde entdeckt!"
     done_message: "Das Wasserleck wurde behoben."
     title: "Wasserleck!"
     entity_id: group.water_leak_sensors

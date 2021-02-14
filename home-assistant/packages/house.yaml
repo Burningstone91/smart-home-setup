@@ -18,6 +18,7 @@ script:
         entity_id: light.all_lights
       - service: remote.turn_off
         entity_id: remote.wohnzimmer
+    mode: restart
       
 # Entity Customization
 homeassistant:

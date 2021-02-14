@@ -5,6 +5,7 @@ recorder:
     domains:
       - person
       - automation
+      - utility_meter
     entity_globs:
       - sensor.temperature*
       - sensor.humidity*
@@ -22,6 +23,8 @@ recorder:
       - device_tracker.phone*
       - input_select.sleep_state_*
       - sensor.db_size*
+      - sensor.power*
+      - sensor.energy*
     entities:
       - sensor.location_phone_dimitri
       - sensor.network_throughput_in_ha
@@ -32,6 +35,8 @@ recorder:
       - sensor.network_out_ha
       - sensor.network_down_nas
       - sensor.network_up_nas
+      - sensor.network_down_backup_nas
+      - sensor.network_up_backup_nas
       - light.balcony_ceiling
       - light.bedroom
       - light.bedroom_bed
@@ -78,6 +83,7 @@ influxdb:
   include:
     domains:
       - person
+      - utility_meter
     entity_globs:
       - sensor.temperature*
       - sensor.humidity*
@@ -85,6 +91,7 @@ influxdb:
       - sensor.ram_use_pct*
       - sensor.cpu_load*
       - sensor.db_size*
+      - sensor.energy*
     entities:
       - sensor.network_throughput_in_ha
       - sensor.network_throughput_out_ha
@@ -94,6 +101,8 @@ influxdb:
       - sensor.network_out_ha
       - sensor.network_down_nas
       - sensor.network_up_nas
+      - sensor.network_down_backup_nas
+      - sensor.network_up_backup_nas
       - light.balcony_ceiling
       - light.bedroom
       - light.bedroom_bed

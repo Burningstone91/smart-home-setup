@@ -201,24 +201,54 @@ sensor:
     command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.5.10 pveversion | cut -f2 -d/'
     scan_interval: 3600
   ###############
-  # Synology NAS
+  # Backup Synology NAS
   ###############
   # Model
   - platform: snmp
-    name: Model NAS
+    name: Model Backup NAS
     host: 10.10.40.15
     community: 'public'
     baseoid: 1.3.6.1.4.1.6574.1.5.1.0
   # Firmware
   - platform: snmp
-    name: Firmware NAS
+    name: Firmware Backup NAS
     host: 10.10.40.15
     community: 'public'
     baseoid: 1.3.6.1.4.1.6574.1.5.3.0
   # Uptime
   - platform: snmp
-    name: Uptime NAS
+    name: Uptime Backup NAS
     host: 10.10.40.15
+    community: 'public'
+    baseoid: 1.3.6.1.2.1.25.1.1.0
+    value_template: >
+      {%- set time = value | int // 100 %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ###############
+  # Main Synology NAS
+  ###############
+  # Model
+  - platform: snmp
+    name: Model NAS
+    host: 10.10.40.80
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.6574.1.5.1.0
+  # Firmware
+  - platform: snmp
+    name: Firmware NAS
+    host: 10.10.40.80
+    community: 'public'
+    baseoid: 1.3.6.1.4.1.6574.1.5.3.0
+  # Uptime
+  - platform: snmp
+    name: Uptime NAS
+    host: 10.10.40.80
     community: 'public'
     baseoid: 1.3.6.1.2.1.25.1.1.0
     value_template: >
@@ -625,7 +655,7 @@ sensor:
             {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
           {%- endif %}
   #####################
-  # Healthcheck.io
+  # Healthchecks.io
   #####################  
   # Home Assistant Heartbeat
   - platform: rest
@@ -780,7 +810,9 @@ automation:
           - sensor.hacs
         above: 1
       - platform: state
-        entity_id: binary_sensor.nas_update_available
+        entity_id: 
+          - binary_sensor.backup_nas_update_available
+          - binary_sensor.nas_update_available
         to: 'on'
       - platform: template
         value_template: >
@@ -803,7 +835,7 @@ automation:
               - service: notify.mobile_app_phone_dimitri
                 data:
                   title: "{{ name }}"
-                  message: "Update verfügbar"
+                  message: "📥 Update verfügbar"
         # ELSE create a task in Evernote
         default:
           - service: notify.evernote
@@ -854,10 +886,14 @@ automation:
           - sensor.battery_level_water_leak_storageroom
         below: 20
     action:
-      - service: notify.evernote
+      - service: notify.mobile_app_phone_dimitri
         data:
-          title: "{{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} Batterien wechseln  @1 Next #!Heute #@computer"
-          message: "Batteriestand: {{ trigger.to_state.state }}"
+          title: "Batterien wechseln"
+          message: >
+            🔋 Batterien für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} fast leer
+            Batteriestand: {{ trigger.to_state.state }}
+          data:
+            channel: System
 
   # Notify on high CPU usage
   - id: notify_on_high_cpu_usage
@@ -868,6 +904,7 @@ automation:
         entity_id:
           - sensor.cpu_load_ha
           - sensor.cpu_load_nas
+          - sensor.cpu_load_backup_nas
           - sensor.cpu_load_pi_bathroomsmall
           - sensor.cpu_load_pi_livingroom
           - sensor.cpu_load_pi_office
@@ -895,13 +932,14 @@ automation:
         entity_id:
           - sensor.disk_use_pct_ha
           - sensor.disk_use_pct_nas
+          - sensor.disk_use_pct_backup_nas
         above: 95
     action:
       - service: notify.mobile_app_phone_dimitri
         data:
           title: "Speicher fast voll!"
           message: >
-            Der Speicher für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist 95% voll!
+            💽 Der Speicher für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist 95% voll!
           data:
             channel: System
     
@@ -912,7 +950,6 @@ automation:
     trigger:
       - platform: numeric_state
         entity_id:
-          - sensor.nas_temperature
           - sensor.temperature_cpu_nuc
           - sensor.temperature_pi_bathroomsmall
           - sensor.temperature_pi_livingroom
@@ -921,6 +958,12 @@ automation:
           - sensor.temperature_pi_zigbee_zwave
           - sensor.temperature_pi_network
           - sensor.temperature_switch_livingroom
+          - sensor.temperature_backup_nas_drive_1
+          - sensor.temperature_backup_nas_drive_2
+          - sensor.temperature_nas_drive_1
+          - sensor.temperature_nas_drive_2
+          - sensor.temperature_nas_drive_3
+          - sensor.temperature_nas_drive_4
         above: 70
         for:
           hours: 2
@@ -929,7 +972,7 @@ automation:
         data:
           title: "Hohe CPU Temperatur!"
           message: >
-            Die CPU Temperatur für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist seit 2 Stunden über 70°!
+            🌡️Die CPU Temperatur für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist seit 2 Stunden über 70°!
           data:
             channel: Notfall
             priority: high
@@ -955,7 +998,56 @@ automation:
         data:
           title: "Unterspannung!"
           message: >
-            Unterspannung für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} entdeckt!
+            ⚡ Unterspannung für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} entdeckt!
+          data:
+            channel: Notfall
+            priority: high
+            ttl: 0
+            color: red
+
+  # Notify on insecure NAS
+  - id: notify_on_insecure_nas
+    alias: "Benachrichtigung bei unsicherem NAS"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.security_status_backup_nas
+          - binary_sensor.security_status_nas
+        to: 'on'
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "NAS unsicher!"
+          message: >
+            Das {{ 'Backup-' if 'backup' in trigger.to_state.entity_id else ''}}NAS ist unsicher!
+          data:
+            channel: Notfall
+            priority: high
+            ttl: 0
+            color: red
+
+  # Notify on HDD crash in NAS
+  - id: notify_on_hdd_crash_nas
+    alias: "Benachrichtigung bei NAS Festplatten Crash"
+    mode: parallel
+    trigger:
+      - platform: state
+        entity_id:
+          - sensor.status_backup_nas_drive_1
+          - sensor.status_backup_nas_drive_2
+          - sensor.status_nas_drive_1
+          - sensor.status_nas_drive_2
+          - sensor.status_nas_drive_3
+          - sensor.status_nas_drive_4
+        to: 'crashed'
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Festplatten Crash!"
+          message: >
+            💥 Festplatte {{ trigger.to_state.entity_id[-1] }} im
+            {{ 'Backup-' if 'backup' in trigger.to_state.entity_id else ''}}NAS ist ausgefallen!
           data:
             channel: Notfall
             priority: high
@@ -975,7 +1067,7 @@ automation:
         data:
           title: "Falscher Loginversuch!"
           message: >
-            {{ state_attr('persistent_notification.http_login', 'message') }}
+            👮 {{ state_attr('persistent_notification.http_login', 'message') }}
           data:
             channel: Notfall
             priority: high
@@ -992,6 +1084,7 @@ automation:
           - device_tracker.ap_livingroom
           - device_tracker.bed_sensor_bedroom
           - device_tracker.media_player_livingroom
+          - device_tracker.backup_nas
           - device_tracker.nas
           - device_tracker.pi_bathroomsmall
           - device_tracker.pi_dressroom
@@ -1063,7 +1156,7 @@ automation:
         data:
           title: "Gerät offline!"
           message: >
-            {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist seit 5 Minuten offline!
+            📵 {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist seit 5 Minuten offline!
           data:
             channel: Notfall
             priority: high

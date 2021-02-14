@@ -109,7 +109,7 @@ automation:
     # Thank person who did the task
     - service: "notify.mobile_app_phone_{{ executor }}"
       data:
-        title: "Danke!"
+        title: "💪 Danke!"
         message: "Herzlichen Dank dafür, dass du die Aufgabe '{{ task_name }}' erledigt hast!"
     # Clear notification from other person's phone
     - service: "notify.mobile_app_phone_{{ other_person }}"
@@ -120,7 +120,7 @@ automation:
     # Notify other person that task has been done already
     - service: "notify.mobile_app_phone_{{ other_person }}"
       data:
-        title: "Erledigt!"
+        title: "🙏 Erledigt!"
         message: "{{ executor.title() }} hat die Aufgabe '{{ task_name }}' bereits erledigt!"
 
 

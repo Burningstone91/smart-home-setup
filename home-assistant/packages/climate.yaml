@@ -108,6 +108,7 @@ automation:
         message: >
           {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} 
           ist seit {{ (trigger.for.seconds / 60) | int }} Minuten geöffnet. Bitte schliessen.
+
 # Notify on door/window left open when it's raining
 - id: notify_on_window_left_open_when_rain
   alias: "Benachrichtigung wenn ein Fenster oder eine Türe offen ist bei Regen"
@@ -128,10 +129,11 @@ automation:
       data:
         title: "Regen und Fenster geöffnet!"
         message: >
-          Es regnet und es sind noch folgende Türen/Fenster geöffnet:
+          🌧️ Es regnet und es sind noch folgende Türen/Fenster geöffnet:
           {{ expand('group.windows_doors_outside')|selectattr('state','eq','on')|map(attribute='name')|list|join(',') }}
         data:
           channel: Notfall
+
 # Turn on/off dehumidifer when window in the same room is opened/closed
 - id: turn_on_off_dehumidifer_on_window_open_close
   alias: "Entfeucher aus-/einschalten wenn das Fenster geöffnet/geschlossen wird"
