@@ -824,9 +824,9 @@ Setup Nabu Casa by following the official instructions [here](https://www.nabuca
 #### Remote Access Setup (NGINX Reverse Proxy)
 I use a reverse proxy for Home Assistant, mainly because I also want to expose other services to the outside world without exposing any additional ports on my router. 
 
-First you need to forward ports 80 (HTTP) and Port 443 (HTTPS) from your router to the machine running NGINX (we're going to install NGINX as a docker container on the same host as Home Assistant). How you do this depends on your router.
+First you need to forward port 443 (HTTPS) (depending on the challenge you use for the SSL certificates, you may also need to temporarily forward port 80 to generate the certificates) from your router to the machine running NGINX (we're going to install NGINX as a docker container on the same host as Home Assistant). How you do this depends on your router.
 
-Next install the [SWAG](https://hub.docker.com/r/linuxserver/swag) docker container, it includes NGINX (Reverse Proxy), Let's Encrypt (for SSL) and Fail2Ban (to ban IP-addresses). 
+Next install the [SWAG](https://hub.docker.com/r/linuxserver/swag) docker container, it includes NGINX (Reverse Proxy), Let's Encrypt (for SSL) and Fail2Ban. 
 
 Create a folder called "swag", which later holds the configuration data for the container.
 Get your GID and UID by issuing the following command on the host:
@@ -926,7 +926,8 @@ http:
 ```
 This is needed in order to show the correct IP-address when you get a notification about a failed login attempt. Without setting the reverse proxy as a trusted proxy, you'll always see the IP of the NGINX reverse proxy instead of the real IP address. 
 
-You should now be able to access your Home Assistant instance remotely by going to https://ha.youromain.com. Later we're going to add more services like Grafana to be accessible from outside.
+You should now be able to access your Home Assistant instance remotely by going to https://ha.youromain.com and locally with http://ip-of-ha:8123.
+
 
 #### Configure separate internal and external URL
 First enable "advanced mode" by clicking on your username in the sidebar. Toggle the setting "Advanced Mode".
@@ -3145,7 +3146,7 @@ Everything is controlled by a Logitech Harmony Remote (which I plan to replace w
 <p>
 
 ### Configure Logitech Harmony Remote in Home Assistant
-To use the Logitech Harmony Hub with Home Assistant, we can use the [Logitech Harmony Hub integration](https://www.home-assistant.io/integrations/harmony/).
+To use the Logitech Harmony Hub with Home Assistant, we can use the [Logitech Harmony Hub integration](https://www.home-assistant.io/integrations/harmony/)
 In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "Logitech Harmony Hub" and click on it.
 Enter the IP of your Harmony Hub in the field "Host".
 Enter the name of your Hub set in the Logitech app in the field "Hub name" and press "SUBMIT".
@@ -3153,9 +3154,40 @@ Enter the name of your Hub set in the Logitech app in the field "Hub name" and p
 You should now have an entity `remote.name_of_your_hub` and a file `harmony_XXXX.conf` should be created in the same directory as configuration.yaml. It contains the configuration of the Logitech Harmony Remote such as the commands for the different devices.
 
 ### Setup Emulated Roku
-Because Home Assistant can not detect when a button has been pressed on the Harmony Remote, we can use the [Emulated Roku integration ](https://www.home-assistant.io/integrations/emulated_roku/) as a workaround. The emulated Roku can be added to the Logitech Harmony Remote and then you add the Roku to the activity you want to know button presses for. Now you assign an action on the Roku to any of the buttons for this activity and then Home Assistant will see an event when this button has been pressed, as you can see in the below automations. 
+Because Home Assistant can not detect when a button has been pressed on the Harmony Remote, we can use the [Emulated Roku integration ](https://www.home-assistant.io/integrations/emulated_roku/) as a workaround. The emulated Roku can be added to the Logitech Harmony Remote and then you add the Roku to the activity you want to know button presses for. Now you assign an action on the Roku to any of the buttons for this activity. Home Assistant will see an event when this button has been pressed, as you can see in the below automations. 
 
-#####################################################################3
+#### Configure via UI
+In Home Assistant on the sidebar click on "Configuration" then on "Integrations". Click on "+ ADD INTEGRATION" in the bottom right corner, search for "Emulated Roku" and click on it.
+Enter a name and "8060" in the field "Port". Then hit Submit
+
+#### Configure via Configuration Files
+Add the following to your configuration:
+
+```yaml
+emulated_roku:
+  servers:
+    - name: Roku
+      listen_port: 8060
+      host_ip: ip-of-ha
+```
+
+Go to http://ip-of-ha:8060. If it was sucessful you should see a page with some details about the emulated Roku device.
+
+#### Harmony Hub can't see emulated Roku
+In some cases the Harmony Hub can't see the emulated Roku device due to different VLANs, multicast issues or similar. In my case the Harmony Hub and Home Assistant are in a separate VLAN. To overcome this issue you can use a Linux Laptop or Desktop, put it on the same VLAN as the Harmony Hub and advertise the emulated Roku from there, then the Harmony Hub is able to see the emulated Roku device.
+
+1. Install aiohttp.
+```bash
+pip3 install aiohttp
+```
+2. Copy the advertise script from [here](https://github.com/Burningstone91/smart-home-setup/emulated-roku-script).
+3. Navigate to the folder holding the advertise.py file.
+4. Execute the following command.
+```bash
+python3 advertise.py --api_ip=ip-of-home_assistant --api_port=8060 --name=name-defined-for-emulated-roku-device
+```
+5. Search for the Roku device on the Harmony Remote.
+6. You can delete the emulated roku script as it is no longer needed after sucessful pairing.
 
 
 ### Set Home Cinema Light based on Harmony Activity

@@ -9,8 +9,6 @@ emulated_roku:
     - name: Roku
       listen_port: 8060
       host_ip: 10.10.40.6
-      advertise_ip: 10.10.40.6
-      advertise_port: 8060
 
 input_boolean:
   # Do not Disturb Boolean
