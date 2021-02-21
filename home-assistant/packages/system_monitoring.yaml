@@ -795,6 +795,32 @@ sensor:
       {%- set days = (time // 86400) %}
       {%- set days = '{}d '.format(days) if days > 0 else '' %}
       {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
+  ## NAS to USB Backup Status
+  - platform: rest
+    resource: !secret healthcheck_monthly_backup_nas_to_usb
+    name: Monthly Backup NAS to USB
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: "{{ value_json.status }}"
+  ## NAS to USB Last Backup
+  - platform: rest
+    resource: !secret healthcheck_monthly_backup_nas_to_usb
+    name: Last Backup NAS to USB
+    headers:
+      X-Api-Key: !secret healthcheck_api_key
+    scan_interval: 1800
+    value_template: >
+      {%- set last_boot = value_json.last_ping %}
+      {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
+      {%- set time = uptime | int %}
+      {%- set minutes = ((time % 3600) // 60) %}
+      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
+      {%- set hours = ((time % 86400) // 3600) %}
+      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
+      {%- set days = (time // 86400) %}
+      {%- set days = '{}d '.format(days) if days > 0 else '' %}
+      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
 
 #####################
 # Logger integration
@@ -1001,6 +1027,24 @@ automation:
           data:
             channel: System
 
+  # Reminder for NAS to USB Backup
+  - id: remind_nas_to_usb_backups
+    alias: "NAS USB Backup Erinnerung"
+    mode: single
+    trigger:
+      - platform: time
+        at: "20:00:00"
+    condition:
+      - "{{ now().day == 1 }}"
+    action:
+      - service: notify.mobile_app_phone_dimitri
+        data:
+          title: "Backup NAS zu USB"
+          message: >
+            💽 Es ist Zeit die USB Festplatte ins Haupt NAS zu stecken.
+          data:
+            channel: System
+
   # Notify on high CPU Temp
   - id: notify_on_high_cpu_temp
     alias: "Benachrichtigung wenn CPU Temperatur hoch ist"
@@ -1069,6 +1113,7 @@ automation:
           - sensor.weekly_backup_nas_to_nas
           - sensor.monthly_backup_network_pi
           - sensor.monthly_backup_zigbee_zwave_pi
+          - sensor.monthly_backup_nas_to_usb
         to: 'down'
     action:
       - service: notify.mobile_app_phone_dimitri
