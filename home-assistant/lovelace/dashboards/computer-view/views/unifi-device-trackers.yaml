@@ -73,16 +73,16 @@ cards:
                       size: 58%
               - type: vertical-stack
                 cards:
-                  # Unifi Controller
+                  # Network VM
                   - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml
                   - !include
                     - ../../../templates/button_network.yaml
-                    - name: UniFi Controller
+                    - name: Network VM
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
-                      entity: device_tracker.unifi_controller
-                      entity_picture: /local/system_monitoring/pi3.png
-                      size: 34%
+                      entity: device_tracker.network_vm
+                      entity_picture: /local/system_monitoring/network.png
+                      size: 25%
               - type: vertical-stack
                 cards:
                   # Unifi Switch Storageroom
@@ -170,18 +170,16 @@ cards:
                 cards:
                   # Nextcloud VM
                   - !include ../../../templates/gap-height.yaml
-                  - !include ../../../templates/gap-height.yaml
                   - !include
                     - ../../../templates/button_network.yaml
                     - name: Cloud VM
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
                       entity: device_tracker.nextcloud_vm
                       entity_picture: /local/system_monitoring/nextcloud.png
-                      size: 35%
+                      size: 37%
               - type: vertical-stack
                 cards:
                   # Investment VM
-                  - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml
                   - !include
@@ -190,7 +188,7 @@ cards:
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
                       entity: device_tracker.investment_vm
                       entity_picture: /local/system_monitoring/investment.png
-                      size: 20%
+                      size: 22%
               - type: vertical-stack
                 cards:
                   - !include ../../../templates/empty-button.yaml
@@ -698,11 +696,11 @@ cards:
                   - !include ../../../templates/gap-height.yaml
                   - !include
                     - ../../../templates/button_network.yaml
-                    - name: Musik Schlafzimmer
+                    - name: Volumio Schlafzimmer
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
-                      entity: device_tracker.receiver_bedroom
-                      entity_picture: /local/system_monitoring/heos.png
-                      size: 30%
+                      entity: device_tracker.music_bedroom
+                      entity_picture: /local/system_monitoring/pi_zero_w_dac.png
+                      size: 35%
               - type: vertical-stack
                 cards:
                   # Nintendo Switch

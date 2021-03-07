@@ -97,7 +97,7 @@ cards:
               - entity: automation.schlafmodus_fur_adaptive_beleuchtung_schlafzimmer
               - entity: automation.licht_an_bei_bewegung_ankleidezimmer
               - entity: automation.licht_aus_ankleidezimmer_nicht_besetzt
-              - entity: automation.licht_schalter_ankleidzimmer
+              - entity: automation.licht_schalter_ankleidezimmer
               - entity: automation.fernbedienung_dimitri
               - entity: automation.fernbedienung_sabrina
       - type: entities
@@ -114,13 +114,19 @@ cards:
               label: Systeme
             entities:
               - entity: automation.benachrichtigung_bei_unterspannung
-              - entity: automation.benachrichtigung_wenn_batterien_bald_leer_sind_2
+              - entity: automation.benachrichtigung_wenn_batterien_bald_leer_sind
               - entity: automation.benachrichtigung_wenn_cpu_load_hoch_ist
               - entity: automation.benachrichtigung_wenn_cpu_temperatur_hoch_ist
               - entity: automation.benachrichtigung_wenn_ein_update_verfugbar_ist
               - entity: automation.benachrichtigung_wenn_speicher_fast_voll_ist
               - entity: automation.benachrichtigung_bei_gerat_offline
               - entity: automation.benachrichtigung_bei_falschem_loginversuch
+              - entity: automation.workstation_backup_erinnerung
+              - entity: automation.nas_usb_backup_erinnerung
+              - entity: automation.benachrichtigung_bei_backup_fehler
+              - entity: automation.benachrichtigung_bei_unsicherem_nas
+              - entity: automation.benachrichtigung_wenn_festplatten_temperatur_hoch_ist
+              - entity: automation.benachrichtigung_bei_nas_festplatten_crash
       - type: entities
         # style: |
         #     ha-card {
@@ -168,6 +174,7 @@ cards:
               - entity: automation.licht_hell_dunkel_bei_pause_play
               - entity: automation.pause_play_bei_anruf
               - entity: automation.licht_szenen_heimkino
+              - entity: script.set_home_cinema_lights
       - type: entities
         # style: |
         #     ha-card {
@@ -182,3 +189,17 @@ cards:
               label: Multiroom Audio
             entities:
               - entity: automation.verstarker_wohnzimmer_fur_musik
+      - type: entities
+        # style: |
+        #     ha-card {
+        #       color: teal;
+        #       width: 200px;
+        #       margin-left: 105px;
+        #     }
+        entities:
+          - type: custom:fold-entity-row
+            head: 
+              type: section
+              label: Geschirrspüler
+            entities:
+              - entity: automation.status_geschirrspuler
