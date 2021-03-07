@@ -1,4 +1,3 @@
-hello_world:
-  module: hello
-  class: HelloWorld
-
+latest_conbee_firmware:
+  class: LatestConBeeFirmware
+  module: system-monitoring

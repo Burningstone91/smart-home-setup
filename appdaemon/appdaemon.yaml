@@ -12,9 +12,6 @@ appdaemon:
   latitude: !secret latitude
   longitude: !secret longitude
   missing_app_warnings: 1
-  # namespaces:
-  #   default:
-  #     writeback: safe
   production_mode: False
   time_zone: 'Europe/Zurich'
   plugins:
@@ -22,16 +19,9 @@ appdaemon:
       type: hass
       namespace: hass
       token: !secret appdaemon_token
-      ha_url: http://192.168.0.30:3123
-    MQTT:
-      type: mqtt
-      namespace: mqtt
-      client_id: AD_4
-      client_host: 192.168.0.30
-      client_user: !secret mqtt_user
-      client_password: !secret mqtt_password
+      ha_url: http://10.10.40.6:3123
 http:
-  url: http://192.168.0.30:5050
+  url: http://10.10.40.6:5050
 api:
 admin:
   title: AppDaemon

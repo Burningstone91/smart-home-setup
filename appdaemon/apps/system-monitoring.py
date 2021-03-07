@@ -5,36 +5,15 @@ from datetime import datetime
 from urllib.request import urlopen
 from packaging import version
 
-from appbase import AppBase
+import adbase as ad
 
-# class NotifyAppDaemonError(AppBase):
-#     """Define a base class for notification on AppDaemon errors."""
-
-#     APP_SCHEMA = APP_SCHEMA.extend({vol.Required("targets"): cv.ensure_list})
-
-#     def configure(self) -> None:
-#         """Configure."""
-#         # Listen for errors in the appdaemon log files
-#         self.targets = self.args["targets"]
-#         self.adbase.listen_log(self.on_log_error, log="error_log")
-
-#     def on_log_error(
-#         self, name: str, ts: str, level: str, type: str, message: str, kwargs: dict
-#     ) -> None:
-#         self.adbase.log(f"Send notification about AppDaemon Error to {self.targets}.")
-#         """Notify on Error."""
-#         self.notification_manager.notify(
-#             channel="smart_home",
-#             message=f"Es gab einen Fehler in AppDaemon!",
-#             title=f"AppDaemon Fehler",
-#             targets=self.targets,
-#         )
-
-
-class LatestConBeeFirmware(AppBase):
+class LatestConBeeFirmware(ad.ADBase):
     """Define a base class for getting the latest ConBee firmeware version."""
 
-    def configure(self) -> None:
+    def initialize(self) -> None:
+        """Initialize."""
+        self.adbase = self.get_ad_api()
+        self.hass = self.get_plugin_api("HASS")
         self.url = "http://deconz.dresden-elektronik.de/deconz-firmware/"
         self.adbase.run_every(self.update_latest_version_sensor, "now", 60 * 60)
 

@@ -1,9 +1,0 @@
-# appdaemon_error:
-#   class: NotifyAppDaemonError
-#   module: system-monitoring
-#   dependencies: notification_manager
-#   targets: dimitri
-
-latest_conbee_firmware:
-  class: LatestConBeeFirmware
-  module: system-monitoring
