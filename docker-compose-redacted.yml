@@ -39,7 +39,7 @@ services:
 
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:2021.2.0
+    image: homeassistant/home-assistant:2021.3.0
     network_mode: host
     restart: unless-stopped
     volumes:
@@ -69,25 +69,13 @@ services:
       - INFLUXDB_DB=smart_home
       - INFLUXDB_ADMIN_USER=secretusername
       - INFLUXDB_ADMIN_PASSWORD=supersecretpassword
-    image: influxdb:latest
+    image: influxdb:1.8.4
     ports:
       - "8086:8086"
     restart: unless-stopped
     volumes:
       - ./influxdb:/var/lib/influxdb
       - /etc/localtime:/etc/localtime:ro
-
-  mqtt:
-    container_name: mqtt
-    image: eclipse-mosquitto
-    ports:
-      - "1883:1883"
-    restart: unless-stopped
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/log:/mosquitto/log
-      - ./mosquitto/data:/mosquitto/data
 
   mopidy_balcony:
     build:
@@ -166,6 +154,20 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./snapserver/snapfifo:/run/snapserver/
       - ./mopidy/tts/mopidy.conf:/config/mopidy.conf
+
+  mqtt:
+    container_name: mqtt
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/config/passwd:/mosquitto/config/passwd
+      - ./mosquitto/log:/mosquitto/log
+      - ./mosquitto/data:/mosquitto/data
 
   portainer:
     container_name: portainer
