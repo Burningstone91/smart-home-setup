@@ -15,6 +15,7 @@ proxmoxve:
         - 103
         - 110
         - 120
+        - 130
 
 ###############################
 # Monitoring Docker Containers
@@ -142,29 +143,29 @@ sensor:
   # Pi-hole
   ## Pi-hole Core
   - platform: rest
-    resource: http://10.10.0.8/admin/api.php?versions
+    resource: http://10.10.0.19/admin/api.php?versions
     name: latest_version_pihole_core
     value_template: "{{ value_json.core_latest[1:] }}"
   - platform: rest
-    resource: http://10.10.0.8/admin/api.php?versions
+    resource: http://10.10.0.19/admin/api.php?versions
     name: current_version_pihole_core
     value_template: "{{ value_json.core_current[1:] }}"
   ## Pi-hole Web
   - platform: rest
-    resource: http://10.10.0.8/admin/api.php?versions
+    resource: http://10.10.0.19/admin/api.php?versions
     name: latest_version_pihole_web
     value_template: "{{ value_json.web_latest[1:] }}"
   - platform: rest
-    resource: http://10.10.0.8/admin/api.php?versions
+    resource: http://10.10.0.19/admin/api.php?versions
     name: current_version_pihole_web
     value_template: "{{ value_json.web_current[1:] }}"
   ## Pi-hole FTL
   - platform: rest
-    resource: http://10.10.0.8/admin/api.php?versions
+    resource: http://10.10.0.19/admin/api.php?versions
     name: latest_version_pihole_ftl
     value_template: "{{ value_json.FTL_latest[1:] }}"
   - platform: rest
-    resource: http://10.10.0.8/admin/api.php?versions
+    resource: http://10.10.0.19/admin/api.php?versions
     name: current_version_pihole_ftl
     value_template: "{{ value_json.FTL_current[1:] }}"
   # Mosquitto
@@ -534,26 +535,6 @@ sensor:
             {%- set days = '{}d '.format(days) if days > 0 else '' %}
             {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
           {%- endif %}
-  # Network Pi
-  - platform: template
-    sensors:
-      uptime_pi_network:
-        friendly_name: Uptime Pi Netzwerk
-        value_template: >
-          {%- set last_boot = states('sensor.last_boot_pi_network') %}
-          {%- if last_boot in ['unavailable', 'unknown'] or last_boot is none %}
-            unknown
-          {%- else %}
-            {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
-            {%- set time = uptime | int %}
-            {%- set minutes = ((time % 3600) // 60) %}
-            {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
-            {%- set hours = ((time % 86400) // 3600) %}
-            {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
-            {%- set days = (time // 86400) %}
-            {%- set days = '{}d '.format(days) if days > 0 else '' %}
-            {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
-          {%- endif %}
   # ZigBee/Z-Wave Pi
   - platform: template
     sensors:
@@ -594,7 +575,7 @@ sensor:
             {%- set days = '{}d '.format(days) if days > 0 else '' %}
             {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
           {%- endif %}
-  # Pi Livingroom
+  # Livingroom Pi
   - platform: template
     sensors:
       uptime_pi_livingroom:
@@ -662,8 +643,6 @@ sensor:
     resource: !secret healthcheck_heartbeat
     name: Home Assistant Heartbeat
     scan_interval: 300
-  # Healthcheck.io Status
-
   # Backups
   ## Home Assistant VM Backup Status
   - platform: rest
@@ -743,18 +722,18 @@ sensor:
       {%- set days = (time // 86400) %}
       {%- set days = '{}d '.format(days) if days > 0 else '' %}
       {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
-  ## Network Pi Backup Status
+  ## Network VM Backup Status
   - platform: rest
-    resource: !secret healthcheck_monthly_backup_network_pi
-    name: Monthly Backup Network Pi
+    resource: !secret healthcheck_monthly_backup_network_vm
+    name: Daily Backup Network VM
     headers:
       X-Api-Key: !secret healthcheck_api_key
     scan_interval: 1800
     value_template: "{{ value_json.status }}"
-  ## Network Pi Last Backup
+  ## Network VM Last Backup
   - platform: rest
-    resource: !secret healthcheck_monthly_backup_network_pi
-    name: Last Backup Network Pi
+    resource: !secret healthcheck_monthly_backup_network_vm
+    name: Last Backup Network VM
     headers:
       X-Api-Key: !secret healthcheck_api_key
     scan_interval: 1800
@@ -781,32 +760,6 @@ sensor:
   - platform: rest
     resource: !secret healthcheck_monthly_backup_zigbeezwave_pi
     name: Last Backup  ZigBee Zwave Pi
-    headers:
-      X-Api-Key: !secret healthcheck_api_key
-    scan_interval: 1800
-    value_template: >
-      {%- set last_boot = value_json.last_ping %}
-      {%- set uptime = now().timestamp() - as_timestamp(last_boot) %}
-      {%- set time = uptime | int %}
-      {%- set minutes = ((time % 3600) // 60) %}
-      {%- set minutes = '{}min'.format(minutes) if minutes > 0 else '' %}
-      {%- set hours = ((time % 86400) // 3600) %}
-      {%- set hours = '{}hr '.format(hours) if hours > 0 else '' %}
-      {%- set days = (time // 86400) %}
-      {%- set days = '{}d '.format(days) if days > 0 else '' %}
-      {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
-  ## NAS to USB Backup Status
-  - platform: rest
-    resource: !secret healthcheck_monthly_backup_nas_to_usb
-    name: Monthly Backup NAS to USB
-    headers:
-      X-Api-Key: !secret healthcheck_api_key
-    scan_interval: 1800
-    value_template: "{{ value_json.status }}"
-  ## NAS to USB Last Backup
-  - platform: rest
-    resource: !secret healthcheck_monthly_backup_nas_to_usb
-    name: Last Backup NAS to USB
     headers:
       X-Api-Key: !secret healthcheck_api_key
     scan_interval: 1800
@@ -1017,7 +970,7 @@ automation:
       - platform: time
         at: "20:00:00"
     condition:
-      - "{{ now().day == 1 and now().month in [3, 6, 9, 12] }}"
+      - "{{ now().day == 1 and now().month in [1, 4, 7, 10] }}"
     action:
       - service: notify.mobile_app_phone_dimitri
         data:
@@ -1033,7 +986,7 @@ automation:
     mode: single
     trigger:
       - platform: time
-        at: "20:00:00"
+        at: "19:30:00"
     condition:
       - "{{ now().day == 1 }}"
     action:
@@ -1110,10 +1063,9 @@ automation:
         entity_id:
           - sensor.daily_backup_home_assistant_vm
           - sensor.daily_backup_cloud_vm
+          - sensor.daily_backup_network_vm
           - sensor.weekly_backup_nas_to_nas
-          - sensor.monthly_backup_network_pi
           - sensor.monthly_backup_zigbee_zwave_pi
-          - sensor.monthly_backup_nas_to_usb
         to: 'down'
     action:
       - service: notify.mobile_app_phone_dimitri
@@ -1231,7 +1183,6 @@ automation:
         entity_id:
           - device_tracker.ap_livingroom
           - device_tracker.bed_sensor_bedroom
-          - device_tracker.media_player_livingroom
           - device_tracker.backup_nas
           - device_tracker.nas
           - device_tracker.pi_bathroomsmall
@@ -1242,19 +1193,20 @@ automation:
           - device_tracker.pi_network
           - device_tracker.plug_dishwasher
           - device_tracker.kodi_livingroom
-          #- device_tracker.music_bedroom
+          - device_tracker.music_bedroom
           #- device_tracker.music_office
           #- device_tracker.music_balcony
           - device_tracker.receiver_livingroom
           #- device_tracker.receiver_office
           - device_tracker.remote_livingroom
           #- device_tracker.server_nuc
+          - device_tracker.smart_home_vm
           - device_tracker.investment_vm
           - device_tracker.nextcloud_vm
+          - device_tracker.network_vm
           - device_tracker.switch_livingroom
           - device_tracker.switch_storageroom
-          - device_tracker.unifi_controller
-          #- device_tracker.usg_router
+          - device_tracker.usg_router
           - device_tracker.vacuum_livingroom
         from: "home"
         to: "not_home"
@@ -1321,5 +1273,7 @@ homeassistant:
       friendly_name: Cloud VM
     binary_sensor.pve_investment_running:
       friendly_name: Investment VM
+    binary_sensor.pve_network_running:
+      friendly_name: Network VM
     binary_sensor.pve_hass_dev_running:
       friendly_name: HA Dev VM
