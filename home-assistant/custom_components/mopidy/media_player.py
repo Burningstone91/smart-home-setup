@@ -1,4 +1,5 @@
 """Support to interact with a MopidyMusic Server."""
+import re
 import logging
 from mopidyapi import MopidyAPI
 from requests.exceptions import ConnectionError as reConnectionError
@@ -54,6 +55,7 @@ from homeassistant.components.media_player.const import (
 )
 from homeassistant.const import (
     CONF_HOST,
+    CONF_ID,
     CONF_PORT,
     CONF_NAME,
     STATE_IDLE,
@@ -64,10 +66,7 @@ from homeassistant.const import (
     STATE_UNKNOWN,
 )
 
-from .const import (
-    DOMAIN,
-    ICON,
-)
+from .const import DOMAIN, ICON, DEFAULT_NAME, DEFAULT_PORT
 
 SUPPORT_MOPIDY = (
     SUPPORT_BROWSE_MEDIA
@@ -84,9 +83,6 @@ SUPPORT_MOPIDY = (
     | SUPPORT_TURN_OFF
     | SUPPORT_TURN_ON
     | SUPPORT_SELECT_SOURCE
-    | SUPPORT_VOLUME_MUTE
-    | SUPPORT_VOLUME_SET
-    | SUPPORT_VOLUME_STEP
 )
 
 MEDIA_TYPE_SHOW = "show"
@@ -101,8 +97,6 @@ PLAYABLE_MEDIA_TYPES = [
 ]
 
 _LOGGER = logging.getLogger(__name__)
-DEFAULT_NAME = "Mopidy"
-DEFAULT_PORT = 6680
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -117,6 +111,19 @@ CACHE_ROSETTA = {}
 
 class MissingMediaInformation(BrowseError):
     """Missing media required information."""
+
+
+async def async_setup_entry(
+    hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities
+):
+    """Set up the Mopidy platform."""
+    uid = config_entry.data[CONF_ID]
+    name = config_entry.data[CONF_NAME]
+    host = config_entry.data[CONF_HOST]
+    port = config_entry.data[CONF_PORT]
+
+    entity = MopidyMediaPlayerEntity(host, port, name, uid)
+    async_add_entities([entity])
 
 
 async def async_setup_platform(
@@ -134,14 +141,19 @@ async def async_setup_platform(
 class MopidyMediaPlayerEntity(MediaPlayerEntity):
     """Representation of the Mopidy server."""
 
-    def __init__(self, hostname, port, name):
+    def __init__(self, hostname, port, name, uuid=None):
         """Initialize the Mopidy device."""
         self.hostname = hostname
         self.port = port
         self.device_name = name
+        if uuid is None:
+            self.uuid = re.sub("[._-]+", "_", hostname)
+        else:
+            self.uuid = uuid
 
         self.server_version = None
         self.player_currenttrack = None
+        self.player_streamttile = None
         self.player_currenttrach_source = None
 
         self._media_position = None
@@ -158,10 +170,14 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
         self.client = None
         self._available = None
 
+        self._has_support_volume = None
+
     def _fetch_status(self):
         """Fetch status from Mopidy."""
-        _LOGGER.debug("Fetching Mopidy Server status for %s" % self.device_name)
+        _LOGGER.debug("Fetching Mopidy Server status for %s", self.device_name)
         self.player_currenttrack = self.client.playback.get_current_track()
+        self.player_streamttile = self.client.playback.get_stream_title()
+
         if hasattr(self.player_currenttrack, "uri"):
             self.player_currenttrach_source = self.player_currenttrack.uri.partition(
                 ":"
@@ -186,7 +202,13 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
         else:
             self._state = STATE_UNKNOWN
 
-        self._volume = float(self.client.mixer.get_volume() / 100)
+        v = self.client.mixer.get_volume()
+        self._volume = None
+        self._has_support_volume = False
+        if v is not None:
+            self._volume = float(v / 100)
+            self._has_support_volume = True
+
         self._muted = self.client.mixer.get_mute()
 
         if hasattr(self.player_currenttrack, "uri"):
@@ -198,10 +220,8 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
             ):
                 self._media_image_url = res[self.player_currenttrack.uri][0].uri
                 if self.player_currenttrach_source == "local":
-                    self._media_image_url = "http://%s:%s%s" % (
-                        self.hostname,
-                        self.port,
-                        self._media_image_url,
+                    self._media_image_url = (
+                        f"http://{self.hostname}:{self.port}{self._media_image_url}"
                     )
         else:
             self._media_image_url = None
@@ -217,6 +237,11 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
             self._repeat_mode = REPEAT_MODE_ALL
         else:
             self._repeat_mode = REPEAT_MODE_OFF
+
+    @property
+    def unique_id(self):
+        """Return the unique id for the entity."""
+        return self.uuid
 
     @property
     def name(self) -> str:
@@ -290,6 +315,9 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
     @property
     def media_title(self):
         """Return the title of current playing media."""
+        if self.player_streamttile is not None:
+            return self.player_streamttile
+
         if hasattr(self.player_currenttrack, "name"):
             return self.player_currenttrack.name
         return None
@@ -297,6 +325,10 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
     @property
     def media_artist(self):
         """Artist of current playing media, music track only."""
+        if self.player_streamttile is not None:
+            if hasattr(self.player_currenttrack, "name"):
+                return self.player_currenttrack.name
+
         if hasattr(self.player_currenttrack, "artists"):
             return ", ".join([a.name for a in self.player_currenttrack.artists])
         return None
@@ -350,7 +382,12 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
     @property
     def supported_features(self):
         """Flag media player features that are supported."""
-        return SUPPORT_MOPIDY
+        support = SUPPORT_MOPIDY
+        if self._has_support_volume:
+            support = (
+                support | SUPPORT_VOLUME_MUTE | SUPPORT_VOLUME_SET | SUPPORT_VOLUME_STEP
+            )
+        return support
 
     @property
     def source(self):
@@ -405,6 +442,7 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
     def play_media(self, media_type, media_id, **kwargs):
         """Play a piece of media."""
         self._currentplaylist = None
+
         if media_type == MEDIA_TYPE_PLAYLIST:
             p = self.client.playlists.lookup(media_id)
             self._currentplaylist = p.name
@@ -415,14 +453,27 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
         else:
             media_uris = [media_id]
 
+        t_uris = []
+        schemes = self.client.rpc_call("core.get_uri_schemes")
+        for uri in media_uris:
+            if "yt" in schemes and (
+                uri.startswith("https://www.youtube.com/")
+                or uri.startswith("https://youtube.com/")
+                or uri.startswith("https://youtu.be/")
+            ):
+                t_uris.append(f"yt:{uri}")
+            else:
+                t_uris.append(uri)
+
+        media_uris = t_uris
+
         if len(media_uris) > 0:
             self.client.tracklist.clear()
             self.client.tracklist.add(uris=media_uris)
             self.client.playback.play()
+
         else:
-            _LOGGER.error(
-                "No media for %s (%s) could be found." % (media_id, media_type)
-            )
+            _LOGGER.error("No media for %s (%s) could be found.", media_id, media_type)
             raise MissingMediaInformation
 
     def select_source(self, source):
@@ -431,7 +482,7 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
             if el.name == source:
                 self.play_media(MEDIA_TYPE_PLAYLIST, el.uri)
                 return el.uri
-        raise ValueError("Could not find %s" % source)
+        raise ValueError(f"Could not find {source}")
 
     def clear_playlist(self):
         """Clear players playlist."""
@@ -480,7 +531,7 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
         return {
             "indentifiers": {(DOMAIN, self.device_name)},
             "manufacturer": "Mopidy",
-            "model": "Mopidy server %s" % self.server_version,
+            "model": f"Mopidy server {self.server_version}",
             "name": self.device_name,
             "sw_version": self.server_version,
         }
@@ -492,13 +543,17 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
             )
             self.server_version = self.client.rpc_call("core.get_version")
             _LOGGER.debug(
-                "Connection to Mopidy server %s (%s:%s) established"
-                % (self.device_name, self.hostname, self.port)
+                "Connection to Mopidy server %s (%s:%s) established",
+                self.device_name,
+                self.hostname,
+                self.port,
             )
         except reConnectionError as error:
             _LOGGER.error(
-                "Cannot connect to %s @ %s:%s"
-                % (self.device_name, self.hostname, self.port)
+                "Cannot connect to %s @ %s:%s",
+                self.device_name,
+                self.hostname,
+                self.port,
             )
             _LOGGER.error(error)
             self._available = False
@@ -532,13 +587,9 @@ class MopidyMediaPlayerEntity(MediaPlayerEntity):
         """Return the correct url to the item's thumbnail."""
 
         if source == "local":
-            url = "http://%s:%d%s" % (
-                self.hostname,
-                self.port,
-                url,
-            )
+            url = f"http://{self.hostname}:{self.port}{url}"
 
-        url = "%s?t=x" % url
+        url = f"{url}?t=x"
         return url
 
     def _media_library_payload(self, payload):
@@ -673,10 +724,10 @@ def fetch_media_info(
     uri = media_uri.partition(":")[2]
 
     if False:
-        _LOGGER.debug("media_type: %s" % media_type)
-        _LOGGER.debug("media_uri: %s" % media_uri)
-        _LOGGER.debug("source: %s" % source)
-        _LOGGER.debug("uri: %s" % uri)
+        _LOGGER.debug(f"media_type: {media_type}")
+        _LOGGER.debug(f"media_uri: {media_uri}")
+        _LOGGER.debug(f"source: {source}")
+        _LOGGER.debug(f"uri: {uri}")
 
     if media_type == "directory":
         res["media_class"] = MEDIA_CLASS_DIRECTORY
@@ -820,5 +871,4 @@ def fetch_media_info(
             res["media_class"] = MEDIA_CLASS_PODCAST
             res["children_media_class"] = MEDIA_CLASS_PODCAST
 
-    # _LOGGER.debug("res: %s" % res)
     return res

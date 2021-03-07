@@ -42,6 +42,7 @@ from .const import (
     CONTAINER_STATS_NETWORK_TOTAL_DOWN,
     DOCKER_INFO_IMAGES,
     CONTAINER_INFO_STATE,
+    CONTAINER_INFO_HEALTH,
     CONTAINER_INFO_STATUS,
     CONTAINER_INFO_UPTIME,
     DOCKER_INFO_CONTAINER_RUNNING,
@@ -404,7 +405,7 @@ class DockerAPI:
                 # Calculate memory percentage
                 if (
                     self._info[ATTR_MEMORY_LIMIT] is not None
-                    and self._info[ATTR_MEMORY_LIMIT] is not 0
+                    and self._info[ATTR_MEMORY_LIMIT] != 0
                 ):
                     self._info[DOCKER_STATS_MEMORY_PERCENTAGE] = round(
                         self._info[DOCKER_STATS_MEMORY]
@@ -588,11 +589,16 @@ class DockerContainerAPI:
 
         raw = await self._container.show()
 
-        self._info[CONTAINER_INFO_STATE] = raw["State"]["Status"]
-        self._info[CONTAINER_INFO_IMAGE] = raw["Config"]["Image"]
+        self._info[CONTAINER_INFO_STATE]  = raw["State"]["Status"]
+        self._info[CONTAINER_INFO_IMAGE]  = raw["Config"]["Image"]
         self._info[CONTAINER_INFO_NETWORK_AVAILABLE] = (
             False if raw["HostConfig"]["NetworkMode"] in ["host", "none"] else True
         )
+
+        try:
+            self._info[CONTAINER_INFO_HEALTH] = raw["State"]["Health"]["Status"]
+        except:
+            self._info[CONTAINER_INFO_HEALTH] = "unknown"
 
         # We only do a calculation of startedAt, because we use it twice
         startedAt = parser.parse(raw["State"]["StartedAt"])
@@ -736,7 +742,7 @@ class DockerContainerAPI:
                 )
                 if "memory_stats" in raw:
                     _LOGGER.error(
-                        "%s: Raw 'memory_stats' %s", raw["memory_stats"], self._name
+                        "%s: Raw 'memory_stats' %s", self._name, raw["memory_stats"]
                     )
                 else:
                     _LOGGER.error(
@@ -803,7 +809,8 @@ class DockerContainerAPI:
                 self._network_error += 1
                 if self._network_error > 5:
                     _LOGGER.error(
-                        "%s: Too many errors on 'networks' stats, disabling monitoring"
+                        "%s: Too many errors on 'networks' stats, disabling monitoring",
+                        self._name,
                     )
                     self._info[CONTAINER_INFO_NETWORK_AVAILABLE] = False
 
@@ -854,7 +861,7 @@ class DockerContainerAPI:
         try:
             await self._container.start()
         except Exception as err:
-            _LOGGER.error("%s: Can not start containner (%s)", self._name, str(err))
+            _LOGGER.error("%s: Can not start container (%s)", self._name, str(err))
         finally:
             self._busy = False
 
@@ -872,7 +879,7 @@ class DockerContainerAPI:
         try:
             await self._container.stop(t=10)
         except Exception as err:
-            _LOGGER.error("%s: Can not stop containner (%s)", self._name, str(err))
+            _LOGGER.error("%s: Can not stop container (%s)", self._name, str(err))
         finally:
             self._busy = False
 
@@ -883,6 +890,24 @@ class DockerContainerAPI:
 
         self._busy = True
         self._loop.create_task(self._stop())
+
+    #############################################################
+    async def _restart(self):
+        """Separate loop to stop container, because HA loop can't be used."""
+        try:
+            await self._container.restart()
+        except Exception as err:
+            _LOGGER.error("%s: Can not restart container (%s)", self._name, str(err))
+        finally:
+            self._busy = False
+
+    #############################################################
+    async def restart(self):
+        """Called from service call."""
+        _LOGGER.info("%s: Restart container", self._name)
+
+        self._busy = True
+        self._loop.create_task(self._restart())
 
     #############################################################
     def get_name(self):

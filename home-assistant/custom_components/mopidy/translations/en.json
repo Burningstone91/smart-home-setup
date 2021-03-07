@@ -1,0 +1,22 @@
+{
+    "config": {
+        "abort": {
+            "cannot_connect": "Cannot connect to discovered Volumio"
+        },
+        "step": {
+            "user": {
+                "title": "Add Mopidy Server",
+                "description": "Set up your Mopidy Server host. Make sure to specify the correct FQDN or IP Addres. Do not use 'localhost', '127.0.0.1', or '::1'.",
+                "data": {
+                    "host": "Hostname",
+                    "name": "Name",
+                    "port": "Port"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Cannot Connect to Mopidy host",
+            "unknown": "Unknown Error"
+        }
+    }
+}

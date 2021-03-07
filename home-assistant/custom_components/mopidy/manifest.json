@@ -1,8 +1,9 @@
 {
-  "domain": "mopidy",
-  "name": "Mopidy",
-  "documentation": "https://www.home-assistant.io/integrations/mopidy",
-  "requirements": ["mopidyapi==1.0.0"],
-  "codeowners": ["@bushvin"]
+    "config_flow": true,
+    "codeowners": ["@bushvin"],
+    "domain": "mopidy",
+    "documentation": "https://github.com/bushvin/hass-integrations#mopidy",
+    "name": "Mopidy",
+    "requirements": ["mopidyapi==1.0.0"],
+    "version": "1.1.2"
 }
-

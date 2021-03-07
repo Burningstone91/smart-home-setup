@@ -27,6 +27,7 @@ from .const import (
     CONTAINER_INFO_IMAGE,
     CONTAINER_INFO_NETWORK_AVAILABLE,
     CONTAINER_INFO_STATE,
+    CONTAINER_INFO_HEALTH,
     CONTAINER_INFO_STATUS,
     CONTAINER_INFO_UPTIME,
     CONTAINER_MONITOR_LIST,
@@ -362,6 +363,7 @@ class DockerContainerSensor(Entity):
                     if cond in [
                         CONTAINER_INFO_STATUS,
                         CONTAINER_INFO_IMAGE,
+                        CONTAINER_INFO_HEALTH,
                         CONTAINER_INFO_UPTIME,
                     ]:
                         self._attributes[cond] = info.get(cond, None)
@@ -370,7 +372,7 @@ class DockerContainerSensor(Entity):
             elif self._var_id == CONTAINER_INFO_STATUS:
                 state = info.get(CONTAINER_INFO_STATUS)
                 self._state_extra = info.get(CONTAINER_INFO_STATE)
-            elif self._var_id in [CONTAINER_INFO_STATE, CONTAINER_INFO_IMAGE]:
+            elif self._var_id in [CONTAINER_INFO_STATE, CONTAINER_INFO_IMAGE, CONTAINER_INFO_HEALTH]:
                 state = info.get(self._var_id)
             elif info.get(CONTAINER_INFO_STATE) == "running":
                 if self._var_id in CONTAINER_MONITOR_LIST:

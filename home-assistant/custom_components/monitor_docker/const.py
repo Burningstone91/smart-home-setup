@@ -18,6 +18,8 @@ DEFAULT_SWITCHNAME = "{name}"
 
 COMPONENTS = ["sensor", "switch"]
 
+SERVICE_RESTART = "restart"
+
 PRECISION = 2
 
 DOCKER_INFO_VERSION = "version"
@@ -33,6 +35,7 @@ DOCKER_STATS_MEMORY_PERCENTAGE = "containers_memory_percentage"
 
 CONTAINER_INFO_ALLINONE = "allinone"
 CONTAINER_INFO_STATE = "state"
+CONTAINER_INFO_HEALTH = "health"
 CONTAINER_INFO_STATUS = "status"
 CONTAINER_INFO_NETWORK_AVAILABLE = "network_available"
 CONTAINER_INFO_UPTIME = "uptime"
@@ -61,6 +64,7 @@ DOCKER_MONITOR_LIST = {
 
 CONTAINER_MONITOR_LIST = {
     CONTAINER_INFO_STATE: ["State", None, "mdi:checkbox-marked-circle-outline", None],
+    CONTAINER_INFO_HEALTH: ["Health", None, "mdi:heart-pulse", None],
     CONTAINER_INFO_STATUS: ["Status", None, "mdi:checkbox-marked-circle-outline", None],
     CONTAINER_INFO_UPTIME: ["Up Time", "", "mdi:clock", "timestamp"],
     CONTAINER_INFO_IMAGE: ["Image", None, "mdi:information-outline", None],
@@ -95,7 +99,7 @@ MONITORED_CONDITIONS_LIST = list(DOCKER_MONITOR_LIST.keys()) + list(
     CONTAINER_MONITOR_LIST.keys()
 )
 
-
+ATTR_NAME = "name"
 ATTR_MEMORY_LIMIT = "Memory_limit"
 ATTR_ONLINE_CPUS = "Online_CPUs"
 ATTR_VERSION_ARCH = "Architecture"

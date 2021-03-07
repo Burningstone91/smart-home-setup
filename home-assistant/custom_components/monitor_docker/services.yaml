@@ -1,0 +1,6 @@
+restart:
+  description: "Restart a container, the container must be configured in monitor_docker."
+  fields:
+    name:
+      description: Name of the container
+      example: "nodered"

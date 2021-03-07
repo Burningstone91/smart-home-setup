@@ -2,28 +2,45 @@
 
 import asyncio
 import logging
+import voluptuous as vol
 
 from homeassistant.components.switch import ENTITY_ID_FORMAT, SwitchEntity
 from homeassistant.const import CONF_NAME
+from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.util import slugify
 
 from .const import (
-    DOMAIN,
     API,
-    CONFIG,
+    ATTR_NAME,
     CONF_CONTAINERS,
     CONF_RENAME,
     CONF_SWITCHENABLED,
     CONF_SWITCHNAME,
+    CONFIG,
     CONTAINER,
     CONTAINER_INFO_STATE,
+    DOMAIN,
+    SERVICE_RESTART,
 )
+
+SERVICE_RESTART_SCHEMA = vol.Schema({ATTR_NAME: cv.string})
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the Monitor Docker Switch."""
+
+    async def async_restart(parm):
+
+        cname = parm.data[ATTR_NAME]
+        if cname in config[CONF_CONTAINERS]:
+            _LOGGER.debug("Trying to restart container '%s'", cname)
+
+            api = hass.data[DOMAIN][name][API]
+            await api.get_container(cname).restart()
+        else:
+            _LOGGER.error("Service restart failed, container '%s' is not configured", cname)
 
     if discovery_info is None:
         return
@@ -68,8 +85,11 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
     async_add_entities(switches, True)
 
-    return True
+    #platform = entity_platform.current_platform.get()
+    #platform.async_register_entity_service(SERVICE_RESTART, {}, "async_restart")
+    hass.services.async_register(DOMAIN, SERVICE_RESTART, async_restart, schema=SERVICE_RESTART_SCHEMA)
 
+    return True
 
 class DockerContainerSwitch(SwitchEntity):
     def __init__(self, container, prefix, cname, alias, name_format):
