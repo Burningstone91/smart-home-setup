@@ -1,9 +1,3 @@
-media_player:
-  - platform: mopidy
-    name: MPD Bedroom
-    host: 10.10.40.6
-    port: 6681
-
 input_boolean:
   # Do not Disturb Boolean
   dnd_bedroom:
@@ -85,7 +79,7 @@ automation:
 
   # Remote Sabrina
   - id: 'remote_sabrina'
-    alias: "Fernbedieung Sabrina"
+    alias: "Fernbedienung Sabrina"
     use_blueprint:
       path: custom/hue_dimmer_general.yaml
       input:

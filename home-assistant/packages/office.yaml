@@ -3,12 +3,6 @@
 #   platform: yamaha_musiccast
 #   host: 10.10.80.7
 
-media_player:
-  - platform: mopidy
-    name: MPD Office
-    host: 10.10.40.6
-    port: 6683
-
 input_boolean:
   # Do not Disturb Boolean
   dnd_office:
