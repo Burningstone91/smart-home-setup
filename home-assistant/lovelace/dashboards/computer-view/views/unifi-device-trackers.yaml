@@ -107,6 +107,83 @@ cards:
                       size: 30%
       ####################################################
       #                                                  #
+      #                   Server VLAN                    #
+      #                                                  #
+      ####################################################
+      - type: custom:stack-in-card
+        cards:
+          ####################################################
+          #                 VLAN Logo and Info               #
+          ####################################################
+          - type: horizontal-stack
+            cards:
+              - type: vertical-stack
+                cards:
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="50" src="/local/system_monitoring/nas_logo.png">
+                      </center>
+                  - type: markdown
+                    content: >
+                      <center>
+                        <b>Network:</b> Server<br>
+                        <b>Subnet:</b> 10.10.5.0/24<br>
+                        <b>VLAN ID:</b> 5<br>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -30px;
+                      }
+              ####################################################
+              #                      Devices                     #        
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Main Server
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include
+                    - ../../../templates/button_network.yaml
+                    - name: Main Server
+                      label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                      entity: device_tracker.server_nuc
+                      entity_picture: /local/system_monitoring/nuc.png
+                      size: 30%
+              - type: vertical-stack
+                cards:
+                  # NAS
+                  - !include ../../../templates/gap-height.yaml
+                  - !include
+                    - ../../../templates/button_network.yaml
+                    - name: NAS
+                      label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                      entity: device_tracker.nas
+                      entity_picture: /local/system_monitoring/main_nas.png
+                      size: 47%
+              - type: vertical-stack
+                cards:
+                  # Backup NAS
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include
+                    - ../../../templates/button_network.yaml
+                    - name: Backup NAS
+                      label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                      entity: device_tracker.backup_nas
+                      entity_picture: /local/system_monitoring/nas.png
+                      size: 25%
+              - type: vertical-stack
+                cards:
+                  - !include ../../../templates/empty-button.yaml
+              - type: vertical-stack
+                cards:
+                  - !include ../../../templates/empty-button.yaml
+      ####################################################
+      #                                                  #
       #               Private Wired VLAN                 #
       #                                                  #
       ####################################################
@@ -277,18 +354,16 @@ cards:
                 cards:
                   # Laptop
                   - !include ../../../templates/gap-height.yaml
-                  - !include ../../../templates/gap-height.yaml
                   - !include
                     - ../../../templates/button_network.yaml
                     - name: Laptop
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
                       entity: device_tracker.laptop_dimitri
                       entity_picture: /local/system_monitoring/laptop_dimitri.png
-                      size: 30%
+                      size: 27%
               - type: vertical-stack
                 cards:
                   # Laptop Work
-                  - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml
                   - !include
                     - ../../../templates/button_network.yaml
@@ -296,84 +371,7 @@ cards:
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
                       entity: device_tracker.laptop_work
                       entity_picture: /local/system_monitoring/laptop_dimitri.png
-                      size: 30%
-      ####################################################
-      #                                                  #
-      #                     NAS VLAN                     #
-      #                                                  #
-      ####################################################
-      - type: custom:stack-in-card
-        cards:
-          ####################################################
-          #                 VLAN Logo and Info               #
-          ####################################################
-          - type: horizontal-stack
-            cards:
-              - type: vertical-stack
-                cards:
-                  # Image
-                  - type: markdown
-                    content: >
-                      <center>
-                        <img width="50" src="/local/system_monitoring/nas_logo.png">
-                      </center>
-                  - type: markdown
-                    content: >
-                      <center>
-                        <b>Network:</b> NAS<br>
-                        <b>Subnet:</b> 10.10.30.0/24<br>
-                        <b>VLAN ID:</b> 30<br>
-                      </center>
-                    style: |
-                      ha-card {
-                        color: teal;
-                        margin-top: -30px;
-                      }
-              ####################################################
-              #                      Devices                     #        
-              ####################################################
-              - type: vertical-stack
-                cards:
-                  # Main Server
-                  - !include ../../../templates/gap-height.yaml
-                  - !include ../../../templates/gap-height.yaml
-                  - !include ../../../templates/gap-height.yaml
-                  - !include
-                    - ../../../templates/button_network.yaml
-                    - name: Main Server
-                      label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
-                      entity: device_tracker.server_nuc
-                      entity_picture: /local/system_monitoring/nuc.png
-                      size: 30%
-              - type: vertical-stack
-                cards:
-                  # NAS
-                  - !include ../../../templates/gap-height.yaml
-                  - !include
-                    - ../../../templates/button_network.yaml
-                    - name: NAS
-                      label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
-                      entity: device_tracker.nas
-                      entity_picture: /local/system_monitoring/main_nas.png
-                      size: 47%
-              - type: vertical-stack
-                cards:
-                  # Backup NAS
-                  - !include ../../../templates/gap-height.yaml
-                  - !include ../../../templates/gap-height.yaml
-                  - !include
-                    - ../../../templates/button_network.yaml
-                    - name: Backup NAS
-                      label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
-                      entity: device_tracker.backup_nas
-                      entity_picture: /local/system_monitoring/nas.png
-                      size: 25%
-              - type: vertical-stack
-                cards:
-                  - !include ../../../templates/empty-button.yaml
-              - type: vertical-stack
-                cards:
-                  - !include ../../../templates/empty-button.yaml
+                      size: 27%
       ####################################################
       #                                                  #
       #                  IoT Wired VLAN                  #
@@ -464,7 +462,7 @@ cards:
                       </center>
                     style: |
                       ha-card {
-                        margin-top: 20px;
+                        margin-top: 40px;
                         margin-bottom: 10px;
                       }
                   - type: markdown
@@ -585,7 +583,7 @@ cards:
                       </center>
                     style: |
                       ha-card {
-                        margin-top: 10px;
+                        margin-top: 5px;
                       }
                   - type: markdown
                     content: >
@@ -606,9 +604,8 @@ cards:
                 cards:
                   # Receiver Livingroom
                   - !include ../../../templates/gap-height.yaml
-                  - !include ../../../templates/gap-height.yaml
-                  - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml 
+                  - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml
                   - !include
                     - ../../../templates/button_network.yaml
@@ -622,11 +619,13 @@ cards:
                   # Receiver Office
                   - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
                   - !include
                     - ../../../templates/button_network.yaml
                     - name: Verstärker Büro
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
-                      entity: device_tracker.receiver_office
+                      entity: device_tracker.receiver_livingroom
                       entity_picture: /local/system_monitoring/yamaha_stereo.png
                       size: 45%
               
@@ -636,14 +635,13 @@ cards:
                   - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml
-                  - !include ../../../templates/gap-height.yaml
                   - !include
                     - ../../../templates/button_network.yaml
                     - name: Kodi Wohnzimmer
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
                       entity: device_tracker.kodi_livingroom
                       entity_picture: /local/system_monitoring/pi4.png
-                      size: 40%
+                      size: 37%
               - type: vertical-stack
                 cards:
                   - !include ../../../templates/empty-button.yaml

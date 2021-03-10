@@ -30,14 +30,27 @@ state:
       icon:
         - color: var(--paper-item-icon-active-color)
   - value: "not_home"
+    label: Disconnected
     styles:
       card:
         - opacity: 0.5
+      label:
+        - color: gray
       state:
-        - color: "Gray"
+        - color: gray
       name:
-        - color: "Gray"
+        - color: gray
   - value: "unavailable"
+    label: Nicht verfügbar
+    styles:
+      card:
+        - opacity: 0.4
+      name:
+        - color: red
+      label:
+        - color: red
+  - value: "unknown"
+    label: Nicht verfügbar
     styles:
       card:
         - opacity: 0.4

@@ -6,7 +6,7 @@
 title: system-monitoring
 path: system-monitoring
 panel: true
-icon: mdi:cog-outline
+icon: mdi:zigbee
 badges: []
 cards:
   - type: vertical-stack
