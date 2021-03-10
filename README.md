@@ -1829,6 +1829,10 @@ The Network View:
 
 ![Alt text](/git-pictures/lovelace_views/network.png?raw=true "Network View")
 
+The Backup View:
+
+![Alt text](/git-pictures/lovelace_views/backup_view.png?raw=true "Backup View")
+
 The Unifi Device Tracker View:
 
 ![Alt text](/git-pictures/lovelace_views/unifi_devices.png?raw=true "Device Tracker")

@@ -1,0 +1,36 @@
+# lovelace_gen
+
+# card
+type: custom:button-card
+entity: "{{ entity }}"
+size: "{{ size }}"
+name: "{{ name }}"
+label: "{{ label }}"
+show_name: true
+show_state: false
+show_label: true
+styles:
+  name:
+    - font-size: 12px
+    - color: teal
+  label:
+    - font-size: 12px
+    - color: teal
+  entity_picture:
+    - margin-bottom: 7px
+state:
+  - value: "up" 
+    color: green
+    icon: mdi:shield-check
+  - value: "down"
+    color: red
+    label: Backup down
+    icon: mdi:alert
+    styles:
+      card:
+        - animation: blink 4s ease infinite
+  - value: "unavailable"
+    color: gray
+    styles:
+      card:
+        - opacity: 0.4

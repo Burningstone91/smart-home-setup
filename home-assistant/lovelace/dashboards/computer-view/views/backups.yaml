@@ -13,6 +13,89 @@ cards:
     cards:
       ####################################################
       #                                                  #
+      #                  Status Backups                  #
+      #                                                  #
+      ####################################################
+      - type: custom:stack-in-card
+        cards:
+          - type: horizontal-stack
+            cards:
+              ####################################################
+              #                       Image                      #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="250" src="/local/system_monitoring/healthchecks.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: 5px;
+                        margin-left: 2.5px;
+                      }
+              ####################################################
+              #                      Backups                     #
+              ####################################################
+              - type: vertical-stack
+                cards:
+                  # Smart Home VM
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include
+                    - ../../../templates/button_healthcheck.yaml
+                    - name: Smart Home VM
+                      label: "[[[ return 'Last Backup: ' + states['sensor.last_backup_home_assistant_vm'].state; ]]]"
+                      entity: sensor.daily_backup_home_assistant_vm
+                      size: 25%
+              - type: vertical-stack
+                cards:
+                  # Network VM
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include
+                    - ../../../templates/button_healthcheck.yaml
+                    - name: Network VM
+                      label: "[[[ return 'Last Backup: ' + states['sensor.last_backup_network_vm'].state; ]]]"
+                      entity: sensor.daily_backup_network_vm
+                      size: 25%
+              - type: vertical-stack
+                cards:
+                  # Cloud VM
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include
+                    - ../../../templates/button_healthcheck.yaml
+                    - name: Cloud VM
+                      label: "[[[ return 'Last Backup: ' + states['sensor.last_backup_cloud_vm'].state; ]]]"
+                      entity: sensor.daily_backup_cloud_vm
+                      size: 25%
+              - type: vertical-stack
+                cards:
+                  # ZigBee/Z-Wave Pi
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include
+                    - ../../../templates/button_healthcheck.yaml
+                    - name: ZigBee/Z-Wave Pi
+                      label: "[[[ return 'Last Backup: ' + states['sensor.last_backup_zigbee_zwave_pi'].state; ]]]"
+                      entity: sensor.monthly_backup_zigbee_zwave_pi
+                      size: 25%
+              - type: vertical-stack
+                cards:
+                  # Nas to NAS
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include
+                    - ../../../templates/button_healthcheck.yaml
+                    - name: NAS to NAS
+                      label: "[[[ return 'Last Backup: ' + states['sensor.last_backup_nas_to_nas'].state; ]]]"
+                      entity: sensor.weekly_backup_nas_to_nas
+                      size: 25%
+      ####################################################
+      #                                                  #
       #                    Main NAS                      #
       #                                                  #
       ####################################################
@@ -33,7 +116,7 @@ cards:
                       </center>
                     style: |
                       ha-card {
-                        margin-top: 100px;
+                        margin-top: 180px;
                         margin-left: 2.5px;
                       }
               ####################################################
@@ -65,7 +148,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Drive 1</h3>
+                        <h3>Drive 1 - 4TB</h3>
                       </center>
                     style: |
                       ha-card {
@@ -107,7 +190,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Drive 3</h3>
+                        <h3>Drive 3 - 4TB</h3>
                       </center>
                     style: |
                       ha-card {
@@ -433,7 +516,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Drive 2</h3>
+                        <h3>Drive 2 - 4TB</h3>
                       </center>
                     style: |
                       ha-card {
@@ -476,7 +559,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Drive 4</h3>
+                        <h3>Drive 4 - 4TB</h3>
                       </center>
                     style: |
                       ha-card {
@@ -628,7 +711,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Drive 1</h3>
+                        <h3>Drive 1 - 6TB</h3>
                       </center>
                     style: |
                       ha-card {
@@ -927,7 +1010,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Drive 2</h3>
+                        <h3>Drive 2 - 6TB</h3>
                       </center>
                     style: |
                       ha-card {
