@@ -31,13 +31,13 @@
           - name: Boden nass reinigen
             sensor_name: chore_clean_floor_wet
             warning_before: 1
-            cycle_days: 14
+            cycle_days: 30
         - !include
           - ../../templates/household_task.yaml
           - name: Boden einölen
             sensor_name: chore_oil_floor
             warning_before: 5
-            cycle_days: 90
+            cycle_days: 180
         - !include
           - ../../templates/household_task.yaml
           - name: Entkalken

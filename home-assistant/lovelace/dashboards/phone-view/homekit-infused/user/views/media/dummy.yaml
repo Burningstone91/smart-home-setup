@@ -1,9 +1,11 @@
 - type: vertical-stack
   cards:
+    ##########################
+    #       Livingroom       #
+    ########################## 
     - type: horizontal-stack
       cards:
         - !include ../../../base/includes/gap.yaml
-        # Livingroom
         - type: custom:vertical-stack-in-card
           style: |
             ha-card {
@@ -55,6 +57,7 @@
                       layout: horizontal
                       column_width: [20%, 60%, 20%]
                       cards:
+                        # Icon
                         - type: markdown
                           content: >
                             <ha-icon icon="mdi:sofa-outline"></ha-icon>
@@ -64,6 +67,7 @@
                               margin-left: -40%;
                               margin-top: -1%;
                             }
+                        # Volume Control
                         - type: custom:mini-media-player
                           entity: media_player.snapclient_livingroom
                           name: Wohnzimmer
@@ -82,6 +86,7 @@
                               margin-left: -65%;
                               margin-top: -5%;
                             }
+                        # Link/unlink Button
                         - type: 'custom:button-card'
                           aspect_ratio: 1/1
                           show_name: false
@@ -91,7 +96,13 @@
                               var source = states['media_player.snapclient_livingroom'].attributes.source;
                               if (source == 'Wohnzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
                             ]]]  
-                          entity: media_player.spotify_dimitri
+                          entity: media_player.snapclient_livingroom
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_livingroom
+                              source: Wohnzimmer
                           style: |
                             ha-card {
                               box-shadow: none;
@@ -103,6 +114,7 @@
                       layout: horizontal
                       column_width: [20%, 60%, 20%]
                       cards:
+                        # Icon
                         - type: markdown
                           content: >
                             <ha-icon icon="mdi:bed-outline"></ha-icon>
@@ -112,9 +124,10 @@
                               margin-left: -40%;
                               margin-top: -35%;
                             }
+                        # Volume Control
                         - type: custom:mini-media-player
-                          entity: media_player.snapclient_livingroom
-                          name: Wohnzimmer
+                          entity: media_player.snapclient_bedroom
+                          name: Schlafzimmer
                           icon: 'mdi:speaker'
                           hide:
                             progress: true
@@ -130,16 +143,23 @@
                               margin-left: -65%;
                               margin-top: -15%;
                             }
+                        # Link/unlink Button
                         - type: 'custom:button-card'
                           aspect_ratio: 1/1
                           show_name: false
                           show_icon: true
                           icon: >
                             [[[
-                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              var source = states['media_player.snapclient_bedroom'].attributes.source;
                               if (source == 'Wohnzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
                             ]]]  
-                          entity: media_player.spotify_dimitri
+                          entity: media_player.snapclient_bedroom
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_bedroom
+                              source: Wohnzimmer
                           style: |
                             ha-card {
                               box-shadow: none;
@@ -152,6 +172,7 @@
                       layout: horizontal
                       column_width: [20%, 60%, 20%]
                       cards:
+                        # Icon
                         - type: markdown
                           content: >
                             <ha-icon icon="mdi:desk"></ha-icon>
@@ -161,9 +182,10 @@
                               margin-left: -40%;
                               margin-top: -35%;
                             }
+                        # Volume Control
                         - type: custom:mini-media-player
-                          entity: media_player.snapclient_livingroom
-                          name: Wohnzimmer
+                          entity: media_player.snapclient_office
+                          name: Büro
                           icon: 'mdi:speaker'
                           hide:
                             progress: true
@@ -179,16 +201,23 @@
                               margin-left: -65%;
                               margin-top: -15%;
                             }
+                        # Link/unlink Button
                         - type: 'custom:button-card'
                           aspect_ratio: 1/1
                           show_name: false
                           show_icon: true
                           icon: >
                             [[[
-                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              var source = states['media_player.snapclient_office'].attributes.source;
                               if (source == 'Wohnzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
                             ]]]  
-                          entity: media_player.spotify_dimitri
+                          entity: media_player.snapclient_office
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_office
+                              source: Wohnzimmer
                           style: |
                             ha-card {
                               box-shadow: none;
@@ -201,6 +230,7 @@
                       layout: horizontal
                       column_width: [20%, 60%, 20%]
                       cards:
+                        # Icon
                         - type: markdown
                           content: >
                             <ha-icon icon="mdi:grill"></ha-icon>
@@ -210,8 +240,9 @@
                               margin-left: -40%;
                               margin-top: -33%;
                             }
+                        # Volume Control
                         - type: custom:mini-media-player
-                          entity: media_player.snapclient_livingroom
+                          entity: media_player.snapclient_balcony
                           name: Wohnzimmer
                           icon: 'mdi:speaker'
                           hide:
@@ -228,16 +259,23 @@
                               margin-left: -65%;
                               margin-top: -15%;
                             }
+                        # Link/unlink Button
                         - type: 'custom:button-card'
                           aspect_ratio: 1/1
                           show_name: false
                           show_icon: true
                           icon: >
                             [[[
-                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              var source = states['media_player.snapclient_balcony'].attributes.source;
                               if (source == 'Wohnzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
                             ]]]  
-                          entity: media_player.spotify_dimitri
+                          entity: media_player.snapclient_balcony
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_balcony
+                              source: Wohnzimmer
                           style: |
                             ha-card {
                               box-shadow: none;
@@ -281,4 +319,963 @@
                       margin-top: -25%;
                     }
         - !include ../../../base/includes/gap.yaml
+    ##########################
+    #        Bedroom         #
+    ##########################                
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: custom:vertical-stack-in-card
+          style: |
+            ha-card {
+              border-radius: 20px;
+            }
+          cards:
+            # Main Media Player
+            - type: custom:mini-media-player
+              entity: media_player.mpd_bedroom
+              name: Schlafzimmer
+              tap_action:
+                action: navigate
+                navigation_path: /phone-view/music-bedroom
+              hide:
+                progress: true
+                volume: true
+                source: true
+                prev: true
+                next: true
+                power: true
+              style: |
+                ha-card {
+                  box-shadow: none;
+                }
+            # Multiroom Snapclients
+            - type: entities
+              style: |
+                ha-card {
+                  margin-top: -7%;
+                  margin-left: -2%;
+                  background: transparent !important;
+                }
+              entities:
+                - type: custom:fold-entity-row
+                  head:
+                    type: section
+                    label: Multiroom
+                    style: |
+                      .divider {
+                        display: none;
+                      }
+                      .label {
+                        color: white !important;
+                      }
+                  entities:
+                    # Livingroom
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:sofa-outline"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -1%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_livingroom
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -5%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              if (source == 'Schlafzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_livingroom
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_livingroom
+                              source: Schlafzimmer
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                            }
+                    # Bedroom
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:bed-outline"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -35%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_bedroom
+                          name: Schlafzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_bedroom'].attributes.source;
+                              if (source == 'Schlafzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_bedroom
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_bedroom
+                              source: Schlafzimmer
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -33%;
+                            }
+                    # Office
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:desk"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -35%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_office
+                          name: Büro
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_office'].attributes.source;
+                              if (source == 'Schlafzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_office
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_office  
+                              source: Schlafzimmer
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -35%;
+                            }
+                    # Balcony
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:grill"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -33%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_balcony
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_balcony'].attributes.source;
+                              if (source == 'Schlafzimmer') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_balcony
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_balcony
+                              source: Schlafzimmer
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -33%;
+                            }
+            # Main Media Player Controls
+            - type: horizontal-stack
+              cards:
+                - type: markdown
+                  content: >
+                    <ha-icon icon="mdi:volume-medium"></ha-icon>
+                  style: |
+                    ha-card {
+                      margin-top: -23%;
+                    }
+                - type: custom:mini-media-player
+                  entity: media_player.mpd_bedroom
+                  hide:
+                    progress: true
+                    source: true
+                    power: true
+                    info: true
+                    name: true
+                    icon: true
+                    controls: true
+                    mute: true
+                  style: |
+                    ha-card {
+                      width: 230%;
+                      margin-left: -70%;
+                      margin-top: -27%;
+                      box-shadow: none;
+                    }
+                - type: markdown
+                  content: >
+                    <ha-icon icon="mdi:volume-high"></ha-icon>
+                  style: |
+                    ha-card {
+                      margin-left: 48%;
+                      margin-top: -25%;
+                    }
+        - !include ../../../base/includes/gap.yaml
+    ##########################
+    #        Office         #
+    ##########################                
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: custom:vertical-stack-in-card
+          style: |
+            ha-card {
+              border-radius: 20px;
+            }
+          cards:
+            # Main Media Player
+            - type: custom:mini-media-player
+              entity: media_player.mpd_office
+              name: Büro
+              tap_action:
+                action: navigate
+                navigation_path: /phone-view/music-office
+              hide:
+                progress: true
+                volume: true
+                source: true
+                prev: true
+                next: true
+                power: true
+              style: |
+                ha-card {
+                  box-shadow: none;
+                }
+            # Multiroom Snapclients
+            - type: entities
+              style: |
+                ha-card {
+                  margin-top: -7%;
+                  margin-left: -2%;
+                  background: transparent !important;
+                }
+              entities:
+                - type: custom:fold-entity-row
+                  head:
+                    type: section
+                    label: Multiroom
+                    style: |
+                      .divider {
+                        display: none;
+                      }
+                      .label {
+                        color: white !important;
+                      }
+                  entities:
+                    # Livingroom
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:sofa-outline"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -1%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_livingroom
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -5%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              if (source == 'Büro') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_livingroom
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_livingroom
+                              source: Büro
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                            }
+                    # Bedroom
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:bed-outline"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -35%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_bedroom
+                          name: Schlafzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_bedroom'].attributes.source;
+                              if (source == 'Büro') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_bedroom
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_bedroom
+                              source: Büro
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -33%;
+                            }
+                    # Office
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:desk"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -35%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_office
+                          name: Büro
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_office'].attributes.source;
+                              if (source == 'Büro') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_office
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_office  
+                              source: Büro
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -35%;
+                            }
+                    # Balcony
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:grill"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -33%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_balcony
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_balcony'].attributes.source;
+                              if (source == 'Büro') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_balcony
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_balcony
+                              source: Büro
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -33%;
+                            }
+            # Main Media Player Controls
+            - type: horizontal-stack
+              cards:
+                - type: markdown
+                  content: >
+                    <ha-icon icon="mdi:volume-medium"></ha-icon>
+                  style: |
+                    ha-card {
+                      margin-top: -23%;
+                    }
+                - type: custom:mini-media-player
+                  entity: media_player.mpd_office
+                  hide:
+                    progress: true
+                    source: true
+                    power: true
+                    info: true
+                    name: true
+                    icon: true
+                    controls: true
+                    mute: true
+                  style: |
+                    ha-card {
+                      width: 230%;
+                      margin-left: -70%;
+                      margin-top: -27%;
+                      box-shadow: none;
+                    }
+                - type: markdown
+                  content: >
+                    <ha-icon icon="mdi:volume-high"></ha-icon>
+                  style: |
+                    ha-card {
+                      margin-left: 48%;
+                      margin-top: -25%;
+                    }
+        - !include ../../../base/includes/gap.yaml
+    ##########################
+    #        Balcony         #
+    ##########################                
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: custom:vertical-stack-in-card
+          style: |
+            ha-card {
+              border-radius: 20px;
+            }
+          cards:
+            # Main Media Player
+            - type: custom:mini-media-player
+              entity: media_player.mpd_balcony
+              name: Balkon
+              tap_action:
+                action: navigate
+                navigation_path: /phone-view/music-balcony
+              hide:
+                progress: true
+                volume: true
+                source: true
+                prev: true
+                next: true
+                power: true
+              style: |
+                ha-card {
+                  box-shadow: none;
+                }
+            # Multiroom Snapclients
+            - type: entities
+              style: |
+                ha-card {
+                  margin-top: -7%;
+                  margin-left: -2%;
+                  background: transparent !important;
+                }
+              entities:
+                - type: custom:fold-entity-row
+                  head:
+                    type: section
+                    label: Multiroom
+                    style: |
+                      .divider {
+                        display: none;
+                      }
+                      .label {
+                        color: white !important;
+                      }
+                  entities:
+                    # Livingroom
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:sofa-outline"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -1%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_livingroom
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -5%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_livingroom'].attributes.source;
+                              if (source == 'Balkon') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_livingroom
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_livingroom
+                              source: Balkon
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                            }
+                    # Bedroom
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:bed-outline"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -35%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_bedroom
+                          name: Schlafzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_bedroom'].attributes.source;
+                              if (source == 'Balkon') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_bedroom
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_bedroom
+                              source: Balkon
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -33%;
+                            }
+                    # Office
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:desk"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -35%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_office
+                          name: Büro
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_office'].attributes.source;
+                              if (source == 'Balkon') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_office
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_office  
+                              source: Balkon
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -35%;
+                            }
+                    # Balcony
+                    - type: custom:hui-element
+                      card_type: custom:layout-card
+                      layout: horizontal
+                      column_width: [20%, 60%, 20%]
+                      cards:
+                        # Icon
+                        - type: markdown
+                          content: >
+                            <ha-icon icon="mdi:grill"></ha-icon>
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              margin-left: -40%;
+                              margin-top: -33%;
+                            }
+                        # Volume Control
+                        - type: custom:mini-media-player
+                          entity: media_player.snapclient_balcony
+                          name: Wohnzimmer
+                          icon: 'mdi:speaker'
+                          hide:
+                            progress: true
+                            source: true
+                            power: true
+                            name: true
+                            mute: true
+                            controls: true
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              width: 180%;
+                              margin-left: -65%;
+                              margin-top: -15%;
+                            }
+                        # Link/unlink Button
+                        - type: 'custom:button-card'
+                          aspect_ratio: 1/1
+                          show_name: false
+                          show_icon: true
+                          icon: >
+                            [[[
+                              var source = states['media_player.snapclient_balcony'].attributes.source;
+                              if (source == 'Balkon') return 'mdi:check-circle'; else return 'mdi:circle-outline';
+                            ]]]  
+                          entity: media_player.snapclient_balcony
+                          tap_action:
+                            action: call-service
+                            service: script.link_players_multiroom
+                            service_data:
+                              entity: media_player.snapclient_balcony
+                              source: Balkon
+                          style: |
+                            ha-card {
+                              box-shadow: none;
+                              background: transparent;
+                              margin-top: -33%;
+                            }
+            # Main Media Player Controls
+            - type: horizontal-stack
+              cards:
+                - type: markdown
+                  content: >
+                    <ha-icon icon="mdi:volume-medium"></ha-icon>
+                  style: |
+                    ha-card {
+                      margin-top: -23%;
+                    }
+                - type: custom:mini-media-player
+                  entity: media_player.mpd_balcony
+                  hide:
+                    progress: true
+                    source: true
+                    power: true
+                    info: true
+                    name: true
+                    icon: true
+                    controls: true
+                    mute: true
+                  style: |
+                    ha-card {
+                      width: 230%;
+                      margin-left: -70%;
+                      margin-top: -27%;
+                      box-shadow: none;
+                    }
+                - type: markdown
+                  content: >
+                    <ha-icon icon="mdi:volume-high"></ha-icon>
+                  style: |
+                    ha-card {
+                      margin-left: 48%;
+                      margin-top: -25%;
+                    }
+        - !include ../../../base/includes/gap.yaml
+
+
 

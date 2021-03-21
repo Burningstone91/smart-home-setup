@@ -26,6 +26,7 @@ index-1.html
 ha-dockermon/
 grafana/
 influxdb/
+influxdb2/
 unifi-poller/
 portainer/
 home-assistant-db/

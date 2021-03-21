@@ -4,10 +4,157 @@ spotify:
 
 media_player:
   - platform: snapcast
-    host: 192.168.0.30
-  - platform: mpd
-    name: TTS
-    host: 192.168.0.30
+    host: 10.10.40.6
+
+input_select:
+  current_media_player:
+    name: Selected Media Player
+    options:
+      - Wohnzimmer
+      - Büro
+      - Schlafzimmer
+      - Balkon
+    initial: Wohnzimmer
+    icon: mdi:speaker
+
+group:
+  media_players:
+    name: Media Players
+    entities:
+      - media_player.kodi_livingroom
+      - media_player.music_bedroom
+      # - media_player.music_office
+      # - media_player.music_balcony
+  mpd_players:
+    name: MPD Players
+    entities:
+      - media_player.mpd_livingroom
+      - media_player.mpd_bedroom
+      - media_player.mpd_office
+      - media_player.mpd_balcony
+  snapclients:
+    name: Snapcast Clients
+    entities:
+      - media_player.snapclient_livingroom
+      - media_player.snapclient_bedroom
+      # - media_player.snapclient_office
+      # - media_player.snapclient_balcony
+
+automation:
+  # Turn on Amplifier Office for music
+  # - id: turn_on_amp_office_music
+  #   alias: "Verstärker Büro für Musik"
+  #   mode: queued
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - media_player.spotify_dimitri
+  #         - media_player.spotify_sabrina
+  #         - media_player.spotify_house
+  #       attribute: source
+  #       to: 'Büro'
+  #     - platform: state
+  #       entity_id: media_player.music_office
+  #       to: 'playing'
+  #     - platform: state
+  #       entity_id: media_player.mpd_office
+  #       to: 'playing'
+  #   condition:
+  #     - "{{ not is_state_attr('media_player.receiver_office', 'source', 'XXXXXXX') }}"
+  #   action:
+  #     - service: media_player.turn_on
+  #       entity_id: media_player.receiver_office
+  #     - service: media_player.select_source
+  #       data:
+  #         entity_id: media_player.receiver_office
+  #         source: XXXXXXXXXXX
+
+  # Turn on Amplifier Livingroom for music
+  - id: turn_on_amp_livingroom_music
+    alias: "Verstärker Wohnzimmer für Musik"
+    mode: queued
+    trigger:
+      - platform: state
+        entity_id:
+          - media_player.spotify_dimitri
+          - media_player.spotify_sabrina
+          - media_player.spotify_house
+        attribute: source
+        to: 'Wohnzimmer'
+      # - platform: state
+      #   entity_id: media_player.mpd_livingroom
+      #   to: 'playing'
+    condition:
+      - "{{ not is_state_attr('remote.wohnzimmer', 'current_activity', 'Musik') }}"
+    action:
+      - service: remote.turn_on
+        entity_id: remote.wohnzimmer
+        data:
+          activity: "Musik"
+
+  # Turn on Amplifiers/AV Receivers for Multiroom Spotify
+  # - id: turn_on_amps_multiroom_spotify
+  #   alias: "Verstärker Multiroom für Spotify"
+  #   mode: queued
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - media_player.spotify_dimitri
+  #         - media_player.spotify_sabrina
+  #         - media_player.spotify_house
+  #       attribute: source
+  #       to: 'Multiroom'
+  #   action:
+  #     - variables:
+  #         player: "{{ trigger.entity_id.split('.')[1] }}"
+  #     - service: script.turn_on
+  #       entity_id: script.multiroom_audio
+  #     - service: media_player.select_source
+  #       data:
+  #         entity_id: group.snapclients
+  #         source: >
+  #           {% set map = {
+  #             'spotify_dimitri': 'Dimitri',
+  #             'spotify_sabrina': 'Sabrina',
+  #             'spotify_house': 'Überall'
+  #           } %}
+  #           {{ map[player] }}
+
+script:
+  # Link/Unlink players
+  link_players_multiroom:
+    sequence:
+      - service: media_player.select_source
+        data:
+          entity_id: "{{ entity }}"
+          source: "{{ 'TTS' if state_attr(entity, 'source') == source else source }}"
+  # multiroom_audio:
+  #   sequence:
+  #     # Set Volume Snapclients
+  #     - service: media_player.volume_set
+  #       data:
+  #         entity_id: group.snapclients
+  #         volume_level: 0.5
+  #     # Office
+  #     - service: media_player.turn_on
+  #       entity_id: media_player.receiver_office
+  #     - service: media_player.select_source
+  #       data:
+  #         entity_id: media_player.receiver_office
+  #         source: XXXXXXXXXXX
+  #     # Livingroom
+  #     - service: remote.turn_on
+  #       entity_id: remote.wohnzimmer
+  #       data:
+  #         activity: "Musik"
+  # multiroom_tts:
+  #   - variables:
+  #       targets: >
+  #         {% set livroom = is_state('binary_sensor.occupancy_livingroom', 'on') and is_state('input_boolean.dnd_livingroom', 'on') %}
+  #         {% set office = is_state('binary_sensor.occupancy_livingroom', 'on') and is_state('input_boolean.dnd_livingroom', 'on') %}
+  #         {% set balcony = is_state('binary_sensor.occupancy_livingroom', 'on') and is_state('input_boolean.dnd_livingroom', 'on') %}
+  #         {% set bedroom = is_state('binary_sensor.occupancy_livingroom', 'on') and is_state('input_boolean.dnd_livingroom', 'on') %}
+
 
 # Entity Customization
 homeassistant:
@@ -19,3 +166,5 @@ homeassistant:
       friendly_name: Spotify Dimitri
     media_player.spotify_sabrina:
       friendly_name: Spotify Sabrina
+    media_player.spotify_house:
+      friendly_name: Spotify Haus
