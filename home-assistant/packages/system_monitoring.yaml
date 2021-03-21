@@ -836,7 +836,6 @@ automation:
           - sensor.updates_pi_livingroom
           - sensor.updates_pi_dressroom
           - sensor.updates_pi_zigbee_zwave
-          - sensor.updates_pi_network
           - sensor.updates_pi_office
           - sensor.hacs
         above: 1
@@ -928,7 +927,6 @@ automation:
           - sensor.cpu_load_pi_livingroom
           - sensor.cpu_load_pi_office
           - sensor.cpu_load_pi_dressroom
-          - sensor.cpu_load_pi_network
           - sensor.cpu_load_pi_zigbee_zwave
         above: 60
         for:
@@ -1011,7 +1009,6 @@ automation:
           - sensor.temperature_pi_dressroom
           - sensor.temperature_pi_office
           - sensor.temperature_pi_zigbee_zwave
-          - sensor.temperature_pi_network
           - sensor.temperature_switch_livingroom
         above: 70
         for:
@@ -1039,7 +1036,6 @@ automation:
           - binary_sensor.undervoltage_pi_livingroom
           - binary_sensor.undervoltage_pi_dressroom
           - binary_sensor.undervoltage_pi_office
-          - binary_sensor.undervoltage_pi_network
           - binary_sensor.undervoltage_pi_zigbee_zwave
         to: 'on'
     action:
@@ -1190,7 +1186,6 @@ automation:
           - device_tracker.pi_livingroom
           - device_tracker.pi_office
           - device_tracker.pi_zigbee_zwave
-          - device_tracker.pi_network
           - device_tracker.plug_dishwasher
           - device_tracker.kodi_livingroom
           - device_tracker.music_bedroom
