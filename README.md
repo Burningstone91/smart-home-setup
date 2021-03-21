@@ -29,6 +29,9 @@ I will explain here the different parts of my home automation system and how I s
 * <a href="https://github.com/Burningstone91/smart-home-setup#start">
       Start of my Journey and Basic Setup
   </a>
+* <a href="https://github.com/Burningstone91/smart-home-setup#network-setup">
+      Network Setup
+  </a>
 * <a href="https://github.com/Burningstone91/smart-home-setup#mqtt">
       Setup MQTT Broker
   </a>
@@ -212,6 +215,209 @@ docker restart hass
 ```
 
 Now the initial configuration is done and Home Assistant is up and running.
+
+</p>
+</details>
+
+## Network Setup <a name="mqtt" href="https://github.com/Burningstone91/smart-home-setup#network-setup"></a>
+
+Below I explain how I use the Unifi Controller to configure VLANs to separate devices and firewall rules to control the traffic between the VLANs. 
+
+![Alt text](/git-pictures/lovelace_views/network_diagram.png?raw=true "Network Diagram View")
+
+<details><summary>Step-by-step Guide</summary>
+<p>
+
+### Install Unifi Controller
+
+The Unifi Controller is used to configure the Unifi devices, to setup VLANs, configure firewall rules, etc.
+The software can be installed on a variety of operating systems. There's also the Unifi Cloud Key which includes the software and can be attached directly to a switch. I installed the Unifi Controller on a VM running Ubuntu Server (which is also used for all my other networking stuff) following the below procedure.
+
+1. Install required packages
+```shell
+sudo apt-get update && sudo apt-get install ca-certificates apt-transport-https
+```
+
+2. Add new source list
+```shell
+echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/100-ubnt-unifi.list
+```
+
+3. Add trusted key
+```shell
+sudo wget -O /etc/apt/trusted.gpg.d/unifi-repo.gpg https://dl.ui.com/unifi/unifi-repo.gpg 
+```
+
+4. Install Java 8
+```shell
+sudo apt-get install openjdk-8-jre
+```
+
+5. Switch to Java 8
+```shell
+sudo update-alternatives --config java
+```
+
+choose number of java 8 and confirm with 
+```shell
+java -version
+```
+
+6. Install UniFi Controller
+```shell
+sudo apt-get update && sudo apt-get install unifi -y
+```
+
+7. Start UniFi Controller
+```shell
+sudo service unifi start
+```
+
+### VLANs what are they and why use them?
+
+To separate devices into separate LANs, one can buy multiple switches etc. to physically separate the devices into different networks. However, this can become quite expensive and is also impractical for home use. The solution is Virtual Local Area Networks (VLANs). A VLAN can also separate devices into different networks, but it does so virtually, meaning you don't need to buy additional routers, switches, etc. to separate devices.
+
+There are many use cases for VLANs, personally I use them to put devices into separate networks to easily manage, which devices are allowed to communicate with which devices. E.g. I don't want my Roomba vacuum cleaner to phone home to China or my Harmony Remote to make automatic updates, so I completely restrict access to the internet for the VLAN I put them in. Another example is to allow guests to use your WiFi for internet access, but restrict access to your home network.
+
+### Setup VLANs in Unifi
+
+Create a separate network for each VLAN you need. E.g. one for IoT stuff, one for private devices and one for servers.
+
+1. In the Unifi Controller go to Settings -> Networks -> press "+ CREATE NEW NETWORK"
+2. Choose any name you want for the network.
+3. Choose "Corporate" (choose "Guest" for a guest network which doesn't have access to the other VLANs)
+4. Enter an ID (1-4095) for your VLAN.
+5. Define a Gateway IP/Subnet, I always use the VLAN ID to define the subnet. E.g. VLAN ID **80** -> Gateway IP/Subnet 10.10.**80**.1/24
+6. Press "SAVE"
+7. Repeat 1-6 for other VLANs.
+
+Create a Wireless Network for each SSID. I created two sets of wireless networks, one for each Access Point. I do this so that devices can stick to one Access Point, by connecting it to the respective SSID. Without the separation, devices would roam between the Access Points, and some devices have trouble with roaming or lose connectivity shortly, which is not a desired behaviour for Home Automation devices. I also created separate 2GHz and 5GHz wireless networks for some of the networks. Lots of IoT devices work with 2GHz and some of them have a hard time connecting to a Dualband (2GHz/5GHz) network.
+
+1. In the Unifi Controller go to Settings -> Wireless Networks -> press "+CREATE WIRELESS NETWORK"
+2. Choose any name. This will also be the SSID that you'll see when you want to connect from a wireless client.
+3. Choose a security level and enter a strong security key.
+4. Choose the VLAN (created in the previous step) that this WLAN should be part of.
+5. Choose which WiFi Band should be used.
+6. Choose the AP Group (you need to create a separate group for each AP if you want to separate networks by AP) that should broadcast this network.
+7. Press "SAVE"
+
+Now connect the devices to the respective networks.
+For wireless devices, connect to the SSID that is connected to the desired network.
+For wired devices, in the Unifi Controller go to Devices and choose the Switch that the device is connected to. A menu pops up on the right. Press on the port that the device is connected to, then edit the port by pressing the small pencil. Under "Switch Port Profile" choose the desired network, then press "Apply" in the bottom right.
+
+### Put NAS in multiple VLANs
+
+I put my Main NAS (Synology DS920+) that is used as a media server for multiple devices from different VLANs (private VLAN, entertainment VLAN, etc.) into multiple VLANs. If it would be only in one VLAN, then all the traffic from a device in a different VLAN would need to be routed through the USG 3 Router, put an unecessary burden on the little thing and reduce transfer speeds, which negatively effects media playback. I restrict access to the different data on the NAS side.
+
+Create VLAN interface on the Synology NAS:
+
+1. Configure first VLAN
+Login to the Synology UI -> Control Panel -> Network and edit the interface. Configure it for one of the needed VLANs (e.g. VLAN 10).
+2. Additional VLAN
+2.1. SSH into NAS then change to the network-scripts directory:
+	```shell
+	cd /etc/sysconfig/network-scripts
+	```
+	2.2. Copy one of the existing VLAN (e.g. VLAN 10) configs `ifcfg-bond0.x` or `ifcfg-eth0.x`, e.g. for VLAN 30
+	```shell
+	sudo cp ifcfg-bond0.10 ifcfg-bond0.30
+	```
+
+	2.3. Edit file and change DEVICE, VLAN_ID and IPADDR accordingly, e.g.
+	```shell
+	sudo vi ifcfg-eth0.30
+	```
+	```shell
+	DEVICE=eth0.30
+	VLAN_ROW_DEVICE=eth0
+	VLAN_ID=30
+	ONBOOT=yes
+	BOOTPROTO=static
+	IPADDR=10.10.30.15
+	NETMASK=255.255.255.0
+	IPV6INIT=off
+	```
+3. Reboot the NAS
+
+On the Unifi side you need to set up a new port profile group under Settings -> Profiles and then choose SWITCH PORTS at the top and press "+ADD NEW PORT PROFILE".
+
+Choose a name for this profile, e.g. NAS VLANs. Choose "None" for the Native Network and choose all the VLANs that the NAS should be part of. Press "SAVE". Now go to Devices and choose the Switch that the device is connected to. A menu pops up on the right. Press on the port that the device is connected to, then edit the port by pressing the small pencil. Under "Switch Port Profile" choose the newly created port profile, then press "Apply" in the bottom right.
+
+### DNS Server (Pi-hole)
+
+I use [Pi-hole](https://pi-hole.net/) as my DNS Server, this way I can block ads and also easily setup local DNS entries to e.g. not route the traffic from the internal network through the internet when accessing the services I exposed remotely (e.g. Home Assistant or my Book Library) with their remote address from a device that is connected to the home network currently. I run it on the same Ubuntu Server VM that also hosts the Unifi Controller.
+
+1. Install Pi-hole
+```shell
+curl -sSL https://install.pi-hole.net | bash
+```
+2. Configure Network to use PiHole as DNS
+In Unifi for each VLAN choose manual DHCP Name Server and enter the IP of the machine running Pi-hole.
+
+### Firewall Rules
+
+Unifi by default allows all VLANs to communicate with each other in both directions, except for networks configured as a "Guest" network. Guest networks are only allowed to connect to the Internet through your router, but not to other VLANs.
+
+To restrict communication betwenn certain VLANs, block Internet access for some VLANs, etc. we need to setup firewall rules in the Unifi Controller.
+
+Go to Settings -> Routing & Firewall -> Choose the "Firewall" tab at the top.
+
+The order of the firewall rules is important. They are evaluated from top to bottom. This means you need to put rules that allow access at the top and rules that block access at the bottom, otherwise the blocking rule will be evaluated first and the allow rule is ignored, because it has already been decided what happens with the traffic.
+
+#### Block access to the Internet for a VLAN
+I use this to block devices from automatically updating or trying to phone home to China.
+
+1. Choose the tab "WAN OUT" and press "+CREATE NEW RULE".
+2. Give the rule a name, e.g. `Drop NoT to Internet`
+3. Make sure Enabled is set to "ON".
+4. Choose "Drop" for the Action.
+5. Choose "All" for the IPv4 Protocol.
+6. Under SOURCE choose "Network" as Source Type.
+7. Under Network choose the VLAN for which access should be blocked.
+8. Press "SAVE".
+
+You should now not be able to access the Internet from a device connected to this VLAN.
+
+#### Allow all VLANs access to Pi-hole (DNS Server)
+All devices need to be able to make DNS requests to resolve IP addresses and I do this with Pi-hole, which has an Ad-Blocker built-in as well. To allow these requests create a rule as follows.
+
+1. Choose the tab "LAN IN" and press "+CREATE NEW RULE".
+2. Give the rule a name, e.g. `Allow all DNS requests to Pi-hole`
+3. Make sure Enabled is set to "ON".
+4. Choose "Accept" for the Action.
+5. Choose "TCP and UDP" for the IPv4 Protocol.
+6. Under Advanced choose "New", "Established" and "Related" in the States section.
+7. Under SOURCE choose "Address/Port Group" as Source Type.
+8. Under IPv4 Address Group press "CREATE IPV4 ADDRESS GROUP".
+8.1. Choose a name for the group containing all your local IP address ranges.
+8.2. Choose "Address IPv4" as Type.
+8.3. Add the IP ranges of your VLANs, e.g. 10.10.90.0/24
+9. Under DESTINATION choose "Address/Port Group" as Source Type.
+10. Repeat the steps from point 7 to create a group for the machine running the DNS Server.
+11. Under Port Group press "CREATE PORT GROUP".
+11.1. Repeat steps from point 7, but choose "Port" as Type.
+11.2. Enter 53 under Port.
+12. Press "SAVE".
+
+#### Block access for a VLAN to other VLANs
+I configured on of these rules for each VLAN. So that the devices can only communicate within their VLAN or through any of the allow rules defined. 
+
+1. Choose the tab "LAN IN" and press "+CREATE NEW RULE".
+2. Give the rule a name, e.g. `Drop NoT to other VLANs`
+3. Make sure Enabled is set to "ON".
+4. Choose "Drop" for the Action.
+5. Choose "All" for the IPv4 Protocol.
+6. Under Advanced choose "New" and "Invalid" in the States section.
+7. Under SOURCE choose "Network" as Source Type.
+8. Choose the VLAN for which access to other VLANs should be blocked under Network.
+9. Under DESTINATION choose "Address/Port Group" as Source Type.
+10. Under IPv4 Address Group press "CREATE IPV4 ADDRESS GROUP".
+10.1. Choose a name for the group containing all the IP address ranges of the VLANs to be blocked, e.g. `NoT Blocked VLAN`.
+10.2. Choose "Address IPv4" as Type.
+10.3. Add the IP ranges of the VLANs, e.g. 10.10.90.0/24
+13. Press "SAVE".
+
+These rules should explain the basic concept and you should be able to adapt them to your needs and add other rules.
 
 </p>
 </details>

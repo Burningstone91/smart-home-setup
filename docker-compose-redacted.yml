@@ -65,16 +65,12 @@ services:
 
   influxdb:
     container_name: influxdb
-    environment:
-      - INFLUXDB_DB=smart_home
-      - INFLUXDB_ADMIN_USER=secretusername
-      - INFLUXDB_ADMIN_PASSWORD=supersecretpassword
-    image: influxdb:1.8.4
+    image: influxdb:latest
     ports:
       - "8086:8086"
     restart: unless-stopped
     volumes:
-      - ./influxdb:/var/lib/influxdb
+      - ./influxdb2:/var/lib/influxdb2
       - /etc/localtime:/etc/localtime:ro
 
   mopidy_balcony:
