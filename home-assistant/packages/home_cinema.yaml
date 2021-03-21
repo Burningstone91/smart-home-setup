@@ -67,7 +67,7 @@ automation:
             sequence:
               - service: remote.send_command
                 data:
-                  entity_id: remote.livingroom
+                  entity_id: remote.wohnzimmer
                   device: "{{ device }}"
                   command: Pause
               - service: light.turn_on
@@ -80,7 +80,7 @@ automation:
             sequence:
               - service: remote.send_command
                 data:
-                  entity_id: remote.livingroom
+                  entity_id: remote.wohnzimmer
                   device: "{{ device }}"
                   command: Play
               - service: script.turn_on
