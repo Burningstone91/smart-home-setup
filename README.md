@@ -3437,6 +3437,8 @@ Enter your username and password and press "SUBMIT"
 ## Multiroom Media <a name="multiroom-audio" href="https://github.com/Burningstone91/smart-home-setup#multiroom-audio"></a>
 ### Basic Explanation of Setup
 
+![Alt text](/git-pictures/smart_home_diagram.png?raw=true "Smart Home Diagram")
+
 ### Mopidy/Snapcast
 
 <details><summary>Step-by-step Guide</summary>
