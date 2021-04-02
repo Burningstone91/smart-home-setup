@@ -146,7 +146,7 @@ homeassistant:
     sensor.chore_clean_windows:
       friendly_name: Fenster reinigen
     sensor.chore_clean_furniture:
-      friendly_name:  Möbel pflegen
+      friendly_name: Möbel pflegen
     sensor.chore_clean_cupboards:
       friendly_name: Schränke reinigen
     sensor.chore_clean_oven:
@@ -181,3 +181,11 @@ homeassistant:
       friendly_name: Waschmaschine reinigen
     sensor.chore_check_food_stock:
       friendly_name: Vorräte prüfen
+    sensor.chore_clean_fur:
+      friendly_name: Baghira Fell bürsten
+    sensor.chore_clean_ears:
+      friendly_name: Baghira Ohren putzen
+    sensor.chore_clean_food_bowl:
+      friendly_name: Napf reinigen
+    sensor.chore_cut_claws:
+      friendly_name: Baghira Krallen schneiden

@@ -1189,7 +1189,7 @@ automation:
           - device_tracker.plug_dishwasher
           - device_tracker.kodi_livingroom
           - device_tracker.music_bedroom
-          #- device_tracker.music_office
+          - device_tracker.music_office
           #- device_tracker.music_balcony
           - device_tracker.receiver_livingroom
           #- device_tracker.receiver_office
