@@ -61,9 +61,9 @@
         background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"  
     - !include
       - '../../../base/templates/button/button-badge.yaml'
-      - name: Medien
-        label: Center
-        icon: mdi:plex
+      - name: Musik
+        label: Multiroom
+        icon: mdi:music
         navigation_path: /phone-view/media
         notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
         background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"     

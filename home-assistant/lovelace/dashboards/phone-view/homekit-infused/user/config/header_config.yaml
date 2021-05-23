@@ -67,9 +67,9 @@ header:
   location_title: Standort
   location_subtitle: Karte
   
-  media_title: Medien
-  media_subtitle: Center
-  
+  media_title: Musik
+  media_subtitle: Multiroom
+
   floorplan_title: Grundriss
   floorplan_subtitle: Übersicht
   
@@ -111,7 +111,7 @@ header:
   calendar_icon: mdi:calendar
   light_icon: mdi:floor-lamp
   location_icon: mdi:map-marker
-  media_icon: mdi:plex
+  media_icon: mdi:music
   floorplan_icon: mdi:floor-plan
   scenes_icon: mdi:arrange-send-backward
   vacuum_icon: mdi:robot-vacuum

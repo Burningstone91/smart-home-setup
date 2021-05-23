@@ -13,9 +13,9 @@
     cards:
       - !include
         - '../../../base/templates/button/button-badge.yaml'
-        - name: Automations
-          label: Overview
-          icon: mdi:alpha-a-box
+        - name: Automationen
+          label: Übersicht
+          icon: mdi:robot
           navigation_path: /phone-view/automations
           notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
           background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"   
@@ -39,7 +39,7 @@
         - '../../../base/templates/button/button-badge.yaml'
         - name: Haushalt
           label: Aufgaben
-          icon: mdi:washing-machine
+          icon: mdi:broom
           navigation_path: /phone-view/cleaning
           notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
           background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"     
@@ -54,11 +54,19 @@
       - !include
         - '../../../base/templates/button/button-badge.yaml'
         - name: Geräte
-          label: Übersicht
+          label: Steuerung
           icon: mdi:power-plug
           navigation_path: /phone-view/devices
           notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
-          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"                       
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"    
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Haushalt
+          label: Geräte
+          icon: mdi:washing-machine
+          navigation_path: /phone-view/appliances
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"                    
       - !include
         - '../../../base/templates/button/button-badge.yaml'
         - name: Grundriss
@@ -70,16 +78,16 @@
       - !include
         - '../../../base/templates/button/button-badge.yaml'
         - name: Licht
-          label: Übersicht
+          label: Steuerung
           icon: mdi:floor-lamp
           navigation_path: /phone-view/lights
           notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
           background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"                       
       - !include
         - '../../../base/templates/button/button-badge.yaml'
-        - name: Medien
-          label: Center
-          icon: mdi:plex
+        - name: Musik
+          label: Multiroom
+          icon: mdi:music
           navigation_path: /phone-view/media
           notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
           background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"      
@@ -99,3 +107,27 @@
           navigation_path: /phone-view/weather
           notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
           background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"  
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Einkauf
+          label: Liste
+          icon: mdi:cart
+          navigation_path: /phone-view/custom_1
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Developer
+          label: Tools
+          icon: mdi:hammer
+          navigation_path: /developer-tools/state
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]"  
+      - !include
+        - '../../../base/templates/button/button-badge.yaml'
+        - name: Logs
+          label: Home Assistant
+          icon: mdi:math-log
+          navigation_path: /config/logs
+          notification: "[[[ if (states['input_number.empty'].state == 0) return '&nbsp'; else return `${states['input_number.empty'].state}`; ]]]"
+          background_color: "[[[ if (states['input_number.empty'].state == 0) return 'rgba(0,0,0,0.0)'; else return 'var(--paper-item-icon-color)'; ]]]" 

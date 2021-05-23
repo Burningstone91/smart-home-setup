@@ -1,0 +1,18 @@
+# - type: vertical-stack
+#   cards:
+- type: horizontal-stack
+  cards:
+    - !include ../../../base/includes/gap.yaml
+    - !include
+      - '../../../base/templates/other/title-text.yaml'
+      - name: Geschirrspüler
+- type: horizontal-stack
+  cards:
+    - !include ../../../base/includes/gap.yaml
+    - !include
+      - '../../../base/templates/picture-elements/appliances-card.yaml'
+      - image: /local/images/appliances/dishwasher.jpg
+        entity_status: input_select.status_dishwasher
+        entity_switch: switch.plug_dishwasher
+        entity_wattage: sensor.power_dishwasher
+    - !include ../../../base/includes/gap.yaml

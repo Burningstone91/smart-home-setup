@@ -29,7 +29,7 @@ entities:
           - !include
             - '../../templates/header/nav-icons.yaml'
             - icon: {{ nav_icon|default('mdi:chevron-left') }}
-              path: {{ nav_path|default('menu') }}
+              path: {{ nav_path|default('home') }}
               icon_size: {{ icon_size|default('100%') }}
           - type: markdown
             style: |

@@ -1,0 +1,279 @@
+- type: vertical-stack
+  cards:
+    # Hue Dimmer switches
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Hue Fernbedienung - CR2450
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_remote_light_livingroom
+            tap_action: more-info
+            name: Wohnzimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_remote_light_dressroom
+            tap_action: more-info
+            name: Ankleidezimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_remote_light_bedroom
+            tap_action: more-info
+            name: Schlafzimmer
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_remote_light_office
+            tap_action: more-info
+            name: Büro
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_remote_sabrina
+            tap_action: more-info
+            name: Sabrina
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_remote_dimitri
+            tap_action: more-info
+            name: Dimitri
+        - !include ../../../base/includes/gap.yaml
+    # Aeotec Multisensors
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Multisensor - CR123A (2x)
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_multisensor_dressroom
+            tap_action: more-info
+            name: Ankleidezimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_multisensor_bedroom
+            tap_action: more-info
+            name: Schlafzimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_multisensor_bathroomsmall
+            tap_action: more-info
+            name: Kleines Bad
+        - !include ../../../base/includes/gap.yaml
+    # Hue Motion sensors
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Hue Bewegungssensor - AAA (2x)
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_motion_livingroom
+            tap_action: more-info
+            name: Wohnzimmer
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    # Temp/Humidity sensors
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Temp-/Luftfeuchtigkeitsensor - CR2032 3V
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_temperature_bathroomsmall
+            tap_action: more-info
+            name: Kleines Bad
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_temperature_livingroom
+            tap_action: more-info
+            name: Wohnzimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_temperature_storageroom
+            tap_action: more-info
+            name: Reduit
+        - !include ../../../base/includes/gap.yaml
+    # Lux sensors
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Luxsensor - CR2032 3V
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_lux_office
+            tap_action: more-info
+            name: Büro
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_lux_outside
+            tap_action: more-info
+            name: Aussen
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    # Water leak sensors
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Wasserlecksensoren - CR2032 3V
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_water_leak_bathroomlarge
+            tap_action: more-info
+            name: Grosses Bad
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_water_leak_bathroomsmall
+            tap_action: more-info
+            name: Kleines Bad
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_water_leak_storageroom
+            tap_action: more-info
+            name: Reduit
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_water_leak_kitchen
+            tap_action: more-info
+            name: Küche
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/empty-button.yaml
+        - !include ../../../base/includes/gap.yaml
+    # Door/Window sensors
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Tür-/Fenstersensor- CR1632
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_door_livingroom
+            tap_action: more-info
+            name: Tür Wohnzimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_door_kitchen
+            tap_action: more-info
+            name: Tür Küche
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_door_storageroom
+            tap_action: more-info
+            name: Tür Reduit
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_door_dressroom
+            tap_action: more-info
+            name: Tür Ankleidezimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_door_bathroomsmall
+            tap_action: more-info
+            name: Tür kleines Bad
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_door_bathroomlarge
+            tap_action: more-info
+            name: Tür grosses Bad
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_door_main
+            tap_action: more-info
+            name: Eingangstür
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_door_bedroom
+            tap_action: more-info
+            name: Tür Schlafzimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_door_office
+            tap_action: more-info
+            name: Tür Büro
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_window_livingroom
+            tap_action: more-info
+            name: Fenster Wohnzimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_window_kitchen
+            tap_action: more-info
+            name: Fenster Küche
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_window_dressroom
+            tap_action: more-info
+            name: Fenster Ankleidezimmer
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_window_bedroom
+            tap_action: more-info
+            name: Fenster Schlafzimmer
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_window_office
+            tap_action: more-info
+            name: Fenster Büro
+        - !include
+          - '../../../base/templates/button/button.yaml'
+          - entity: sensor.battery_level_window_bathroomlarge
+            tap_action: more-info
+            name: Fenster grosses Bad
+        - !include ../../../base/includes/gap.yaml
+

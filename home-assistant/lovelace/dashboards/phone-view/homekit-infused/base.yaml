@@ -43,6 +43,23 @@
           cards:
             !include_dir_merge_list user/views/menu/
 
+# Appliances View
+- path: appliances
+  visible: false
+  panel: true
+  cards:
+    - type: vertical-stack
+      cards:
+        - !include
+          - base/templates/header/header-base-template.yaml
+          - title: {{ _global.header.automations_title|default('Appliances') }}
+            subtitle: "{{ _global.header.automations_subtitle|default('Overview') }}"
+            icon: {{ _global.header.automations_icon|default('mdi:alpha-a-box') }}
+            header-bottom: header-bottom.yaml
+        - type: vertical-stack
+          cards:
+            !include_dir_merge_list user/views/appliances/
+
 # Automations View
 - path: automations
   visible: false
@@ -727,7 +744,7 @@
                       - base/templates/button/input-select-button.yaml
                       - entity: input_select.person_1
                         option: Overview
-                        icon: mdi:account-heart
+                        icon: mdi:music
                     - !include
                       - base/templates/button/input-select-button.yaml
                       - entity: input_select.person_1
@@ -953,6 +970,7 @@
             subtitle: "{{ _global.header_user.custom_view_2_subtitle|default('Customize this in ../user/config/custom_views_header_config.yaml') }}"
             icon: {{ _global.header_user.custom_view_2_icon|default('mdi:account-alert') }}
             header-bottom: header-bottom.yaml
+            nav_path: media
         - type: vertical-stack
           cards:
             !include_dir_merge_list user/views/custom_2/
@@ -970,6 +988,7 @@
             subtitle: "{{ _global.header_user.custom_view_3_subtitle|default('Customize this in ../user/config/custom_views_header_config.yaml') }}"
             icon: {{ _global.header_user.custom_view_3_icon|default('mdi:account-alert') }}
             header-bottom: header-bottom.yaml
+            nav_path: media
         - type: vertical-stack
           cards:
             !include_dir_merge_list user/views/custom_3/
@@ -987,6 +1006,7 @@
             subtitle: "{{ _global.header_user.custom_view_4_subtitle|default('Customize this in ../user/config/custom_views_header_config.yaml') }}"
             icon: {{ _global.header_user.custom_view_4_icon|default('mdi:account-alert') }}
             header-bottom: header-bottom.yaml
+            nav_path: media
         - type: vertical-stack
           cards:
             !include_dir_merge_list user/views/custom_4/
@@ -1004,6 +1024,7 @@
             subtitle: "{{ _global.header_user.custom_view_5_subtitle|default('Customize this in ../user/config/custom_views_header_config.yaml') }}"
             icon: {{ _global.header_user.custom_view_5_icon|default('mdi:account-alert') }}
             header-bottom: header-bottom.yaml
+            nav_path: media
         - type: vertical-stack
           cards:
             !include_dir_merge_list user/views/custom_5/

@@ -1,76 +1,30 @@
-# - type: conditional
-#   conditions:
-#     - entity: input_select.person_1
-#       state: "Location"
-#   card:
-#     type: custom:mod-card
-#     style: |
-#       ha-card {
-#         margin-left: 7px;
-#         margin-right: 7px;
-#       }
-#     card:
-#       type: vertical-stack
-#       cards:
-#         - !include
-#           - '../../../base/templates/other/title-text.yaml'
-#           - name: Travel Times
-#         - type: custom:ha-card-waze-travel-time
-#           style: |
-#             ha-card { border-radius: var(--border-radius);
-#               box-shadow: var(--box-shadow);
-#               font-family:  var(--font-family);
-#               font-size: 12px;
-#               opacity: 0.8;
-#               overflow: hidden;
-#             }
-#             .ha-card-waze td {
-#               color: var(--primary-text-color) !important;
-#             }
-#           unit: km
-#           columns:
-#             - to
-#             - duration
-#             - distance
-#             - icon
-#           header: 'false'
-#           destinations:
-#             - entity: sensor.reistijd_stephanie
-#               to: "Home"
-#             - entity: sensor.reistijd_stephanie_work
-#               to: "Work"
-#             - entity: sensor.reistijd_jimsteph
-#               to: "Stephanie"
 
-              
+# Overview
 - type: conditional
   conditions:
     - entity: input_select.person_1
-      state: "Location"
+      state: "Overview"
   card:
-    type: vertical-stack
-    cards:
-      - !include
-        - '../../../base/templates/other/title-text.yaml'
-        - name: Aktueller Standort
-      - type: map                    
-        style: |
-          ha-card {
-            --paper-item-icon-color: black;
-            color: black;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            font-family: var(--font-family);
-            font-size: var(--name-font-size);
-            opacity: 0.8;
-            overflow: hidden;
-          }                      
-        default_zoom: 15
-        aspect_ratio: 4x6
-        entities:
-          - person.dimitri
-
-
+    type: custom:mod-card
+    style: |
+      ha-card {
+        margin-left: 7px;
+        margin-right: 7px;
+      }
+    card:
+      type: vertical-stack
+      cards:
+        - !include
+          - '../../../base/templates/other/title-text.yaml'
+          - name: Musik Büro
+        - type: media-control
+          style: |
+            ha-card {
+              border-radius: var(--border-radius);
+              box-shadow: var(--box-shadow);
+            }
+          entity: media_player.mpd_office
+# Calendar
 - type: conditional
   conditions:
     - entity: input_select.person_1
@@ -96,10 +50,43 @@
               }
             entities:
               - calendar.personlich
-              # - calendar.family
+              - calendar.geburtstage
           - !include ../../../base/includes/gap.yaml
-      
-
+# Location
+- type: conditional
+  conditions:
+    - entity: input_select.person_1
+      state: "Location"
+  card:
+    type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - !include ../../../base/includes/gap.yaml
+          - !include
+            - '../../../base/templates/other/title-text.yaml'
+            - name: Aktueller Standort
+      - type: horizontal-stack
+        cards:
+          - !include ../../../base/includes/gap.yaml
+          - type: map                    
+            style: |
+              ha-card {
+                --paper-item-icon-color: black;
+                color: black;
+                border-radius: var(--border-radius);
+                box-shadow: var(--box-shadow);
+                font-family: var(--font-family);
+                font-size: var(--name-font-size);
+                opacity: 0.8;
+                overflow: hidden;
+              }                      
+            default_zoom: 15
+            aspect_ratio: 6x9
+            entities:
+              - person.dimitri
+          - !include ../../../base/includes/gap.yaml
+# Train Connections
 # - type: conditional
 #   conditions:
 #     - entity: input_select.person_1
@@ -124,215 +111,6 @@
 #               box-shadow: var(--box-shadow);
 #             }
 #           image: /local/images/citroenc1.jpg
-# - type: conditional
-#   conditions:
-#     - entity: input_select.person_1
-#       state: "Vehicle"
-#   card:
-#     type: custom:mod-card
-#     style: |
-#       ha-card {
-#         margin-left: 7px;
-#         margin-right: 7px;
-#       }
-#     card:
-#       type: vertical-stack
-#       cards:
-#         - !include
-#           - '../../../base/templates/other/title-text.yaml'
-#           - name: General Information
-#         - type: entities
-#           style: |
-#             ha-card {
-#               border-radius: var(--border-radius);
-#               box-shadow: var(--box-shadow);
-#               font-family:  var(--font-family);
-#               font-size: 12px;
-#               opacity: 0.8;
-#             }
-#           entities:  
-#             - entity: sensor.kenteken_stephanie
-#               name: Kenteken
-#               icon: mdi:numeric  
-#             - entity: sensor.citroen_c1_expdate
-#               name: APK
-#               icon: mdi:tools
-#             - entity: sensor.citroen_c1_insured
-#               name: Verzekerd
-#               icon: mdi:shield-car
-# - type: conditional
-#   conditions:
-#     - entity: input_select.person_1
-#       state: "Vehicle"
-#   card:
-#     type: custom:mod-card
-#     style: |
-#       ha-card {
-#         margin-left: 7px;
-#         margin-right: 7px;
-#       }
-#     card:
-#       type: vertical-stack
-#       cards:
-#         - !include
-#           - '../../../base/templates/other/title-text.yaml'
-#           - name: Maintenance
-#         - type: 'custom:vertical-stack-in-card'
-#           cards:
-#             - !include
-#               - '../../../user/templates/check-button.yaml'
-#               - title: Olie
-#                 entity: sensor.citroen_olie
-#                 value_1: 3 months
-#                 value_2: 6 months
-#                 value_3: 9 months
-#             - !include
-#               - '../../../user/templates/check-button.yaml'
-#               - title: Banden
-#                 entity: sensor.citroen_banden
-#                 value_1: 3 months
-#                 value_2: 6 months
-#                 value_3: 9 months
-#             - !include
-#               - '../../../user/templates/check-button.yaml'
-#               - title: Wassen
-#                 entity: sensor.citroen_clean
-#                 value_1: 1 month
-#                 value_2: 3 months
-#                 value_3: 6 months
-#             - !include
-#               - '../../../user/templates/check-button.yaml'
-#               - title: Stofzuigen
-#                 entity: sensor.citroen_stof
-#                 value_1: 1 month
-#                 value_2: 3 months
-#                 value_3: 6 months
-#             - !include
-#               - '../../../user/templates/check-button.yaml'
-#               - title: Ruiten
-#                 entity: sensor.citroen_window
-#                 value_1: 1 month
-#                 value_2: 3 months
-#                 value_3: 6 months
 
-# - type: conditional
-#   conditions:
-#     - entity: input_select.person_1
-#       state: "Vehicle"
-#   card:
-#     type: custom:mod-card
-#     style: |
-#       ha-card {
-#         margin-left: 7px;
-#         margin-right: 7px;
-#       }
-#     card:
-#       type: vertical-stack
-#       cards:
-#         - !include
-#           - '../../../base/templates/other/title-text.yaml'
-#           - name: Other Information
-#         - type: entities
-#           style: |
-#             ha-card {
-#               border-radius: var(--border-radius);
-#               box-shadow: var(--box-shadow);
-#               font-family:  var(--font-family);
-#               font-size: 12px;
-#               opacity: 0.8;
-#             }
-#           entities:  
-#             - entity: sensor.euro_95_e10_advies
-#               name: Adviesprijs E10 (Euro 95) 
-#               icon: mdi:gas-station  
-#             - entity: sensor.car_wash
-#               name: Kan ik de auto wassen?
-#               icon: mdi:car-wash
 
-# - type: conditional
-#   conditions:
-#     - entity: input_select.person_1
-#       state: "Vehicle"
-#   card:
-#     type: custom:mod-card
-#     style: |
-#       ha-card {
-#         margin-left: 7px;
-#         margin-right: 7px;
-#       }
-#     card:
-#       type: vertical-stack
-#       cards:
-#         - !include
-#           - '../../../base/templates/other/title-text.yaml'
-#           - name: Help
-#         - type: entities
-#           style: |
-#             ha-card {
-#               border-radius: var(--border-radius);
-#               box-shadow: var(--box-shadow);
-#               font-family:  var(--font-family);
-#               font-size: 12px;
-#               opacity: 0.8;
-#             }
-#           entities:              
-#             - type: weblink
-#               style: |
-#                 a {
-#                   color: var(--primary-text-color) !important;
-#                 }
-#               name: ANWB Bellen
-#               url: tel:+31882692222
-#               icon: 'fal:phone'  
 
-# - type: conditional
-#   conditions:
-#     - entity: input_select.person_1
-#       state: "Overview"
-#   card:
-#     type: custom:mod-card
-#     style: |
-#       ha-card {
-#         margin-left: 7px;
-#         margin-right: 7px;
-#       }
-#     card:
-#       type: vertical-stack
-#       cards:
-#         - !include
-#           - '../../../base/templates/other/title-text.yaml'
-#           - name: Spotify Player
-#         - type: media-control
-#           style: |
-#             ha-card {
-#               border-radius: var(--border-radius);
-#               box-shadow: var(--box-shadow);
-#             }
-#           entity: media_player.spotify_stephanie_schings
-
-# - type: conditional
-#   conditions:
-#     - entity: input_select.person_1
-#       state: "Overview"
-#   card:
-#     type: custom:mod-card
-#     style: |
-#       ha-card {
-#         margin-left: 7px;
-#         margin-right: 7px;
-#       }
-#     card:
-#       type: vertical-stack
-#       cards:
-#         - !include
-#           - '../../../base/templates/other/title-text.yaml'
-#           - name: Playlists
-#         - type: 'custom:spotify-card'
-#           style: |
-#             ha-card {
-#               border-radius: var(--border-radius);
-#               box-shadow: var(--box-shadow);
-#               font-family: var(--font-family);
-#             }
-#           account: stephanie
-    
