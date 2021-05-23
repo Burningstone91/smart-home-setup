@@ -1,7 +1,7 @@
 {
   "domain": "monitor_docker",
   "name": "Monitor Docker",
-  "version": "1.8",
+  "version": "1.9",
   "documentation": "https://github.com/ualex73/monitor_docker",
   "issue_tracker": "https://github.com/ualex73/monitor_docker/issues",
   "requirements": ["aiodocker==0.19.1", "python-dateutil==2.8.1"],

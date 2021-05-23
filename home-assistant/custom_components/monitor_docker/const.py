@@ -8,11 +8,13 @@ CONTAINER = "container"
 CONF_CERTPATH = "certpath"
 CONF_CONTAINERS = "containers"
 CONF_RENAME = "rename"
+CONF_RETRY = "retry"
 CONF_SENSORNAME = "sensorname"
 CONF_SWITCHENABLED = "switchenabled"
 CONF_SWITCHNAME = "switchname"
 
 DEFAULT_NAME = "Docker"
+DEFAULT_RETRY = 60
 DEFAULT_SENSORNAME = "{name} {sensor}"
 DEFAULT_SWITCHNAME = "{name}"
 

@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import time
 import threading
 import voluptuous as vol
 
@@ -23,6 +24,7 @@ from .const import (
     CONF_CERTPATH,
     CONF_CONTAINERS,
     CONF_RENAME,
+    CONF_RETRY,
     CONF_SENSORNAME,
     CONF_SWITCHENABLED,
     CONF_SWITCHNAME,
@@ -30,6 +32,7 @@ from .const import (
     CONTAINER_INFO_ALLINONE,
     DOMAIN,
     DEFAULT_NAME,
+    DEFAULT_RETRY,
     DEFAULT_SENSORNAME,
     DEFAULT_SWITCHNAME,
     MONITORED_CONDITIONS_LIST,
@@ -56,6 +59,7 @@ DOCKER_SCHEMA = vol.Schema(
         vol.Optional(CONF_SWITCHENABLED, default=True): cv.boolean,
         vol.Optional(CONF_SWITCHNAME, default=DEFAULT_SWITCHNAME): cv.string,
         vol.Optional(CONF_CERTPATH, default=""): cv.string,
+        vol.Optional(CONF_RETRY, default=DEFAULT_RETRY): cv.positive_int,
     }
 )
 
@@ -79,7 +83,19 @@ async def async_setup(hass, config):
         # Create docker instance, it will have asyncio threads
         hass.data[DOMAIN][entry[CONF_NAME]] = {}
         hass.data[DOMAIN][entry[CONF_NAME]][CONFIG] = entry
-        hass.data[DOMAIN][entry[CONF_NAME]][API] = DockerAPI(hass, entry)
+
+        while True:
+            try:
+                hass.data[DOMAIN][entry[CONF_NAME]][API] = DockerAPI(hass, entry)
+            except Exception as err:
+                if entry[CONF_RETRY] == 0:
+                    raise
+                else:
+                    _LOGGER.error("%s", err)
+                    _LOGGER.error("Retry in %d seconds", entry[CONF_RETRY])
+                    time.sleep(entry[CONF_RETRY])
+            else:
+                break
 
         # Now run forever in this separated thread
         loop.run_forever()

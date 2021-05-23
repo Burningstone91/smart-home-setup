@@ -34,11 +34,20 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     async def async_restart(parm):
 
         cname = parm.data[ATTR_NAME]
-        if cname in config[CONF_CONTAINERS]:
+        if len(config[CONF_CONTAINERS]) == 0:
+            api = hass.data[DOMAIN][name][API]
+            if api.get_container(cname):
+                await api.get_container(cname).restart()
+            else:
+                _LOGGER.error("Service restart failed, container '%s'does not exist", cname)
+        elif cname in config[CONF_CONTAINERS]:
             _LOGGER.debug("Trying to restart container '%s'", cname)
 
             api = hass.data[DOMAIN][name][API]
-            await api.get_container(cname).restart()
+            if api.get_container(cname):
+                await api.get_container(cname).restart()
+            else:
+                _LOGGER.error("Service restart failed, container '%s'does not exist", cname)
         else:
             _LOGGER.error("Service restart failed, container '%s' is not configured", cname)
 

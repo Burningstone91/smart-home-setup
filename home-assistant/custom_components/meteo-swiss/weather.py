@@ -72,9 +72,23 @@ class MeteoSwissWeather(WeatherEntity):
         try:
             return float(self._condition[0]['prestas0'])
         except:
-            _LOGGER.debug("Error converting pressure %s"%self._condition[0]['prestas0'])
+            _LOGGER.debug("Error converting pressure (qfe) %s"%self._condition[0]['prestas0'])
+            return None
+    @property
+    def pressure_qff(self):
+        try:
+            return float(self.condition[0]['pp0qffs0'])
+        except:
+            _LOGGER.debug("Error converting pressure (qff) %s"%self._condition[0]['pp0qffs0'])
             return None
 
+    @property
+    def pressure_qnh(self):
+        try:
+            return float(self.condition[0]['pp0qnhs0'])
+        except:
+            _LOGGER.debug("Error converting pressure (qnh) %s"%self._condition[0]['pp0qnhs0'])
+            return None
     @property
     def state(self):
         symbolId = self._forecastData["data"]["current"]['weather_symbol_id']

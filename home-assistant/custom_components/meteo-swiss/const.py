@@ -113,5 +113,19 @@ SENSOR_TYPES = {
         SENSOR_TYPE_ICON: "mdi:gauge",
         SENSOR_TYPE_CLASS: None,
         SENSOR_DATA_ID: "prestas0"
+    },
+    "pressure_qff": {
+        SENSOR_TYPE_NAME: "pressure_qff",
+        SENSOR_TYPE_UNIT: PRESSURE_HPA,
+        SENSOR_TYPE_ICON: "mdi:gauge",
+        SENSOR_TYPE_CLASS: None,
+        SENSOR_DATA_ID: "pp0qffs0"
+    },
+    "pressure_qnh": {
+        SENSOR_TYPE_NAME: "pressure_qnh",
+        SENSOR_TYPE_UNIT: PRESSURE_HPA,
+        SENSOR_TYPE_ICON: "mdi:gauge",
+        SENSOR_TYPE_CLASS: None,
+        SENSOR_DATA_ID: "pp0qnhs0"
     }
 }

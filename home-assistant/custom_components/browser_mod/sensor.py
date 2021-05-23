@@ -1,14 +1,19 @@
-import logging
 from datetime import datetime
 
 from homeassistant.const import STATE_UNAVAILABLE
 
 from .helpers import setup_platform, BrowserModEntity
 
-PLATFORM = 'sensor'
+PLATFORM = "sensor"
+
 
 async def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     return setup_platform(hass, config, async_add_devices, PLATFORM, BrowserModSensor)
+
+
+async def async_setup_entry(hass, config_entry, async_add_entities):
+    await async_setup_platform(hass, {}, async_add_entities)
+
 
 class BrowserModSensor(BrowserModEntity):
     domain = PLATFORM
@@ -30,8 +35,8 @@ class BrowserModSensor(BrowserModEntity):
     @property
     def device_state_attributes(self):
         return {
-                "type": "browser_mod",
-                "last_seen": self.last_seen,
-                "deviceID": self.deviceID,
-                **self.data
-                }
+            "type": "browser_mod",
+            "last_seen": self.last_seen,
+            "deviceID": self.deviceID,
+            **self.data,
+        }
