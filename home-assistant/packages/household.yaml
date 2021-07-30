@@ -35,6 +35,15 @@ group:
       - sensor.chore_clean_ears
       - sensor.chore_clean_food_bowl
       - sensor.chore_cut_claws
+      - sensor.chore_clean_siphon
+      - sensor.chore_clean_tumble_dryer
+      - sensor.chore_clean_wardrobe
+      - sensor.chore_declutter_wardrobe
+      - sensor.chore_dispose_bottles
+      - sensor.chore_clean_grill
+      - sensor.chore_clean_mirror
+
+
 
 automation:
 # Notify on household task due
@@ -189,3 +198,18 @@ homeassistant:
       friendly_name: Napf reinigen
     sensor.chore_cut_claws:
       friendly_name: Baghira Krallen schneiden
+    sensor.chore_clean_siphon:
+      friendly_name: Siphon reinigen
+    sensor.chore_clean_tumble_dryer:
+      friendly_name: Tumbler reinigen
+    sensor.chore_clean_wardrobe:
+      friendly_name: Kleiderschrank reinigen
+    sensor.chore_declutter_wardrobe:
+      friendly_name: Kleider ausmisten
+    sensor.chore_dispose_bottles:
+      friendly_name: Flaschen entsorgen
+    sensor.chore_clean_grill:
+      friendly_name: Grill reinigen
+    sensor.chore_clean_mirror:
+      friendly_name: Spiegel reinigen
+
