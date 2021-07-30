@@ -40,6 +40,8 @@ from homeassistant.components.light import (
     is_on,
     COLOR_MODE_RGB,
     COLOR_MODE_RGBW,
+    COLOR_MODE_HS,
+    COLOR_MODE_XY,
     COLOR_MODE_COLOR_TEMP,
     COLOR_MODE_BRIGHTNESS,
     ATTR_SUPPORTED_COLOR_MODES,
@@ -393,6 +395,12 @@ def _supported_features(hass: HomeAssistant, light: str):
         # comment https://github.com/basnijholt/adaptive-lighting/issues/112#issuecomment-836944011
         supported.add("brightness")
     if COLOR_MODE_RGBW in supported_color_modes:
+        supported.add("color")
+        supported.add("brightness")  # see above url
+    if COLOR_MODE_XY in supported_color_modes:
+        supported.add("color")
+        supported.add("brightness")  # see above url
+    if COLOR_MODE_HS in supported_color_modes:
         supported.add("color")
         supported.add("brightness")  # see above url
     if COLOR_MODE_COLOR_TEMP in supported_color_modes:
@@ -1042,7 +1050,10 @@ class SunLightSettings:
         def _replace_time(date: datetime.datetime, key: str) -> datetime.datetime:
             time = getattr(self, f"{key}_time")
             date_time = datetime.datetime.combine(date, time)
-            utc_time = self.time_zone.localize(date_time).astimezone(dt_util.UTC)
+            try:  # HA ≤2021.05, https://github.com/basnijholt/adaptive-lighting/issues/128
+                utc_time = self.time_zone.localize(date_time).astimezone(dt_util.UTC)
+            except AttributeError: # HA ≥2021.06
+                utc_time = date_time.replace(tzinfo=dt_util.DEFAULT_TIME_ZONE).astimezone(dt_util.UTC)
             return utc_time
 
         location = self.astral_location
