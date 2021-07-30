@@ -22,6 +22,8 @@ var extendStatics = function(d, b) {
 };
 
 function __extends(d, b) {
+    if (typeof b !== "function" && b !== null)
+        throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
     extendStatics(d, b);
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -144,19 +146,31 @@ function __read(o, n) {
     return ar;
 }
 
+/** @deprecated */
 function __spread() {
     for (var ar = [], i = 0; i < arguments.length; i++)
         ar = ar.concat(__read(arguments[i]));
     return ar;
 }
 
+/** @deprecated */
 function __spreadArrays() {
     for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
     for (var r = Array(s), k = 0, i = 0; i < il; i++)
         for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
             r[k] = a[j];
     return r;
-};
+}
+
+function __spreadArray(to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || from);
+}
 
 function __await(v) {
     return this instanceof __await ? (this.v = v, this) : new __await(v);
@@ -211,19 +225,17 @@ function __importDefault(mod) {
     return (mod && mod.__esModule) ? mod : { default: mod };
 }
 
-function __classPrivateFieldGet(receiver, privateMap) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to get private field on non-instance");
-    }
-    return privateMap.get(receiver);
+function __classPrivateFieldGet(receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 }
 
-function __classPrivateFieldSet(receiver, privateMap, value) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to set private field on non-instance");
-    }
-    privateMap.set(receiver, value);
-    return value;
+function __classPrivateFieldSet(receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 }
 
 /**
@@ -1578,7 +1590,7 @@ const defaultTemplateProcessor = new DefaultTemplateProcessor();
 // This line will be used in regexes to search for lit-html usage.
 // TODO(justinfagnani): inject version number at build time
 if (typeof window !== 'undefined') {
-    (window['litHtmlVersions'] || (window['litHtmlVersions'] = [])).push('1.3.0');
+    (window['litHtmlVersions'] || (window['litHtmlVersions'] = [])).push('1.4.1');
 }
 /**
  * Interprets a template literal as an HTML template that can efficiently
@@ -1908,6 +1920,7 @@ const defaultConverter = {
                 return value === null ? null : Number(value);
             case Object:
             case Array:
+                // Type assert to adhere to Bazel's "must type assert JSON parse" rule.
                 return JSON.parse(value);
         }
         return value;
@@ -2472,8 +2485,29 @@ class UpdatingElement extends HTMLElement {
      *       await this._myChild.updateComplete;
      *     }
      *   }
+     * @deprecated Override `getUpdateComplete()` instead for forward
+     *     compatibility with `lit-element` 3.0 / `@lit/reactive-element`.
      */
     _getUpdateComplete() {
+        return this.getUpdateComplete();
+    }
+    /**
+     * Override point for the `updateComplete` promise.
+     *
+     * It is not safe to override the `updateComplete` getter directly due to a
+     * limitation in TypeScript which means it is not possible to call a
+     * superclass getter (e.g. `super.updateComplete.then(...)`) when the target
+     * language is ES5 (https://github.com/microsoft/TypeScript/issues/338).
+     * This method should be overridden instead. For example:
+     *
+     *   class MyElement extends LitElement {
+     *     async getUpdateComplete() {
+     *       await super.getUpdateComplete();
+     *       await this._myChild.updateComplete;
+     *     }
+     *   }
+     */
+    getUpdateComplete() {
         return this._updatePromise;
     }
     /**
@@ -2657,12 +2691,24 @@ function property(options) {
  *
  * Properties declared this way must not be used from HTML or HTML templating
  * systems, they're solely for properties internal to the element. These
- * properties may be renamed by optimization tools like closure compiler.
+ * properties may be renamed by optimization tools like the Closure Compiler.
  * @category Decorator
+ * @deprecated `internalProperty` has been renamed to `state` in lit-element
+ *     3.0. Please update to `state` now to be compatible with 3.0.
  */
 function internalProperty(options) {
     return property({ attribute: false, hasChanged: options === null || options === void 0 ? void 0 : options.hasChanged });
 }
+/**
+ * Declares a private or protected property that still triggers updates to the
+ * element when it changes.
+ *
+ * Properties declared this way must not be used from HTML or HTML templating
+ * systems, they're solely for properties internal to the element. These
+ * properties may be renamed by optimization tools like the Closure Compiler.
+ * @category Decorator
+ */
+const state = (options) => internalProperty(options);
 /**
  * A property decorator that converts a class property into a getter that
  * executes a querySelector on the element's renderRoot.
@@ -2702,7 +2748,8 @@ function query(selector, cache) {
             configurable: true,
         };
         if (cache) {
-            const key = typeof name === 'symbol' ? Symbol() : `__${name}`;
+            const prop = name !== undefined ? name : protoOrDescriptor.key;
+            const key = typeof prop === 'symbol' ? Symbol() : `__${prop}`;
             descriptor.get = function () {
                 if (this[key] === undefined) {
                     (this[key] =
@@ -2914,9 +2961,10 @@ function queryAssignedNodes(slotName = '', flatten = false, selector = '') {
                 let nodes = slot && slot.assignedNodes({ flatten });
                 if (nodes && selector) {
                     nodes = nodes.filter((node) => node.nodeType === Node.ELEMENT_NODE &&
-                        node.matches ?
-                        node.matches(selector) :
-                        legacyMatches.call(node, selector));
+                        // tslint:disable-next-line:no-any testing existence on older browsers
+                        (node.matches ?
+                            node.matches(selector) :
+                            legacyMatches.call(node, selector)));
                 }
                 return nodes;
             },
@@ -3024,7 +3072,7 @@ const css = (strings, ...values) => {
 // This line will be used in regexes to search for LitElement usage.
 // TODO(justinfagnani): inject version number at build time
 (window['litElementVersions'] || (window['litElementVersions'] = []))
-    .push('2.4.0');
+    .push('2.5.1');
 /**
  * Sentinal value used to avoid calling lit-html's render function when
  * subclasses do not implement `render`
@@ -3124,7 +3172,7 @@ class LitElement extends UpdatingElement {
      * @returns {Element|DocumentFragment} Returns a node into which to render.
      */
     createRenderRoot() {
-        return this.attachShadow({ mode: 'open' });
+        return this.attachShadow(this.constructor.shadowRootOptions);
     }
     /**
      * Applies styling to the element shadowRoot using the [[`styles`]]
@@ -3231,6 +3279,8 @@ LitElement['finalized'] = true;
  * @nocollapse
  */
 LitElement.render = render$1;
+/** @nocollapse */
+LitElement.shadowRootOptions = { mode: 'open' };
 
 function deepcopy(value) {
   if (!(!!value && typeof value == 'object')) {
@@ -3248,7 +3298,7 @@ function deepcopy(value) {
   return result;
 }
 
-const CARD_VERSION = '1.3.0';
+const CARD_VERSION = '1.3.1';
 
 /* eslint no-console: 0 */
 console.info(`%c  CONFIG-TEMPLATE-CARD  \n%c  Version ${CARD_VERSION}         `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
@@ -3286,14 +3336,13 @@ let ConfigTemplateCard = class ConfigTemplateCard extends LitElement {
         if (this._config) {
             const oldHass = changedProps.get('hass');
             if (oldHass) {
-                let changed = false;
-                this._config.entities.forEach(entity => {
-                    changed =
-                        changed ||
-                            Boolean(this.hass &&
-                                oldHass.states[this._evaluateTemplate(entity)] !== this.hass.states[this._evaluateTemplate(entity)]);
-                });
-                return changed;
+                for (const entity of this._config.entities) {
+                    const evaluatedTemplate = this._evaluateTemplate(entity);
+                    if (Boolean(this.hass && oldHass.states[evaluatedTemplate] !== this.hass.states[evaluatedTemplate])) {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
         return true;
