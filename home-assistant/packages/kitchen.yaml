@@ -34,6 +34,9 @@ utility_meter:
   energy_daily_dishwasher:
     source: sensor.energy_dishwasher
     cycle: daily
+    tariffs:
+      - Hochtarif
+      - Niedertarif
   energy_quarterly_dishwasher:
     source: sensor.energy_dishwasher
     cycle: quarterly
