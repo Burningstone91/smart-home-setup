@@ -1,0 +1,151 @@
+energy:
+
+input_number:
+  electricity_price_peak:
+    name: Strompreis HT kWh
+    min: 0
+    max: 2
+    step: 0.01
+  electricity_price_off_peak:
+    name: Strompreis NT kWh
+    min: 0
+    max: 2
+    step: 0.01
+
+sensor:
+  # Current Electricity Price
+  - platform: template
+    sensors:
+      electricity_price:
+        device_class: monetary
+        friendly_name: Strompreis
+        unit_of_measurement: CHF
+        value_template: >
+          {% set peak_price = states('input_number.electricity_price_peak') %}
+          {% set off_peak_price = states('input_number.electricity_price_off_peak') %}
+          {% set current_tarriff = states('utility_meter.energy_daily_dishwasher') %}
+          {% if current_tarriff == 'Hochtarif' %}
+            {{ peak_price }}
+          {% else %}
+            {{ off_peak_price }}
+          {% endif %}
+  # Hours office lights on
+  - platform: history_stats
+    name: Office lights on today
+    entity_id: light.office
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+  # Hours bedroom ceiling lights on
+  - platform: history_stats
+    name: Bedroom Ceiling lights on today
+    entity_id: light.bedroom_ceiling
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+  # Hours bedroom bed lights on
+  - platform: history_stats
+    name: Bedroom Bed lights on today
+    entity_id: light.bedroom_bed
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+  # Hours dressroom lights on
+  - platform: history_stats
+    name: Dressroom lights on today
+    entity_id: light.dressroom
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+  # Hours livingroom lights on
+  - platform: history_stats
+    name: Livingroom lights on today
+    entity_id: light.livingroom
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=0, minute=0, second=0) }}"
+    end: "{{ now() }}"
+  # Lights Energy Consumption today
+  - platform: template
+    sensors:
+      energy_daily_lights:
+        friendly_name: Stromverbrauch Licht Heute
+        device_class: energy
+        unit_of_measurement: kWh
+        value_template: >
+          {% set office = states('sensor.office_lights_on_today')|float * 3 *0.007 %}
+          {% set bedroom_ceiling = states('sensor.office_lights_on_today')|float * 3 * 0.007 %}
+          {% set bedroom_bed = states('sensor.office_lights_on_today')|float * 0.005 %}
+          {% set dressroom = states('sensor.office_lights_on_today')|float * 3 * 0.007 %}
+          {% set livingroom = states('sensor.office_lights_on_today')|float * 2 * 0.007 %}
+          {{ office + bedroom_ceiling + bedroom_bed + dressroom + livingroom }}
+
+automation:
+  # Set Electricity Tariff
+  - id: set_tariffs
+    alias: Stromtarif Update
+    mode: single
+    trigger:
+      - platform: time
+        at: "07:00:00"
+        id: PeakStart
+      - platform: time
+        at: "20:00:00"
+        id: WeekdayPeakEnd
+      - platform: time
+        at: "13:00:00"
+        id: SaturdayPeakEnd
+    action:
+      - choose:
+          # Sunday -> Off Peak
+          - conditions:
+              - "{{ now().weekday() == 6 }}"
+            sequence:
+              - service: utility_meter.select_tariff
+                target:
+                  entity_id: utility_meter.energy_daily_dishwasher
+                data:
+                  tariff: Niedertarif
+          # Peak Start -> Peak
+          - conditions:
+              - "{{ trigger.id == 'PeakStart' }}"
+            sequence:
+              - service: utility_meter.select_tariff
+                target:
+                  entity_id: utility_meter.energy_daily_dishwasher
+                data:
+                  tariff: Hochtarif
+          # Mon-Fri Peak End -> Off Peak
+          - conditions:
+              - "{{ now().weekday() != 5 }}"
+              - "{{ trigger.id == 'WeekdayPeakEnd' }}"
+            sequence:
+              - service: utility_meter.select_tariff
+                target:
+                  entity_id: utility_meter.energy_daily_dishwasher
+                data:
+                  tariff: Niedertarif
+          # Saturday Peak End -> Off Peak
+          - conditions:
+              - "{{ now().weekday() == 5 }}"
+              - "{{ trigger.id == 'SaturdayPeakEnd' }}"
+            sequence:
+              - service: utility_meter.select_tariff
+                target:
+                  entity_id: utility_meter.energy_daily_dishwasher
+                data:
+                  tariff: Niedertarif
+
+
+homeassistant:
+  customize:
+    sensor.energy_daily_lights:
+      last_reset: "2021-07-30T00:00:00+00:00"
+      state_class: measurement
+    sensor.energy_daily_lights_cost:
+      friendly_name: Licht Kosten Heute
+      unit_of_measurement: CHF

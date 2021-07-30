@@ -25,6 +25,7 @@ recorder:
       - sensor.db_size*
       - sensor.power*
       - sensor.energy*
+      - sensor.*lights_on_today
     entities:
       - sensor.location_phone_dimitri
       - sensor.network_throughput_in_ha
