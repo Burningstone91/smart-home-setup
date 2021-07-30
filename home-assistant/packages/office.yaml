@@ -23,7 +23,7 @@ binary_sensor:
           {% set motion = is_state('binary_sensor.motion_office', 'on') %}
           {% set deskhim = is_state('device_tracker.desktop_dimitri', 'home') %}
           {% set deskher = is_state('device_tracker.desktop_sabrina', 'home') %}
-          {% set laptopwork = is_state('device_tracker.laptop_work', 'home') %}
+          {% set laptopwork = is_state('device_tracker.laptop_work_dimitri', 'home') %}
           {{ motion or deskhim or deskher or laptopwork }}
         delay_off:
           minutes: 15
