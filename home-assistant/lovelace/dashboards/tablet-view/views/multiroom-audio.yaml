@@ -94,7 +94,7 @@ cards:
           height: 40%
           width: 50%
           top: 20%
-          left: 75%
+          left: 25%
         state:
           - value: paused
             styles:

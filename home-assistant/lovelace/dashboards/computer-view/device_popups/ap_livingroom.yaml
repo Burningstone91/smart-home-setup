@@ -1,0 +1,21 @@
+type: vertical-stack
+cards:
+  - type: entities
+    show_header_toggle: false
+
+    entities:
+      - entity: sensor.model_ap_livingroom
+        name: Model
+        icon: mdi:information-outline
+
+      - entity: sensor.firmware_ap_livingroom
+        name: Firmware
+        icon: mdi:information-outline
+
+      - entity: sensor.firmware_upgrade_ap_livingroom
+        name: Updates
+        icon: mdi:download-circle
+
+      - entity: sensor.uptime_ap_livingroom
+        name: Uptime
+        icon: mdi:history

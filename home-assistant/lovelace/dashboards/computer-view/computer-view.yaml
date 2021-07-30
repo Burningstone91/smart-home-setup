@@ -1,6 +1,7 @@
 #views: !include_dir_list ./views/
 views:
   - !include ./views/server.yaml
+  - !include ./views/systems.yaml
   - !include ./views/network.yaml
   - !include ./views/backups.yaml
   - !include ./views/unifi-device-trackers.yaml

@@ -1,0 +1,300 @@
+####################################################
+#                                                  #
+#               Multiroom Audio                    #
+#                                                  #
+####################################################
+title: multiroom-audio
+path: multiroom-audio
+panel: true
+icon: mdi:speaker
+badges: []
+cards:
+  - type: picture-elements
+    image: /local/wallpaper/overlay_ipad.svg
+    style: |
+      ha-card {
+        --ha-card-background: none !important;
+        box-shadow: none !important;
+      } 
+    elements:
+      ####################################################
+      #      Multiroom and Player Selection (Top)        #
+      ####################################################
+      # Player selector
+      ## Livingroom
+      - type: 'custom:button-card'
+        aspect_ratio: 1/1
+        entity: input_select.current_media_player
+        icon: mdi:sofa
+        show_label: false
+        show_name: false
+        show_state: false
+        tap_action:
+          action: call-service
+          service: input_select.select_option
+          service_data:
+            entity_id: input_select.current_media_player
+            option: "Wohnzimmer"
+        style:
+          height: 2%
+          width: 2%
+          top: 2%
+          left: 4%
+          transform: 'translate(-50%, -50%) scale(4, 4)'
+        styles:
+          card:
+            - padding: 0px
+            - background-color: var(--card-background-off)
+            - box-shadow: none
+      ## Office
+      - type: 'custom:button-card'
+        aspect_ratio: 1/1
+        entity: input_select.current_media_player
+        icon: mdi:desk
+        show_label: false
+        show_name: false
+        show_state: false
+        tap_action:
+          action: call-service
+          service: input_select.select_option
+          service_data:
+            entity_id: input_select.current_media_player
+            option: "Büro"
+        style:
+          height: 2%
+          width: 2%
+          top: 2%
+          left: 10%
+          transform: 'translate(-50%, -50%) scale(4, 4)'
+        styles:
+          card:
+            - padding: 0px
+            - background-color: var(--card-background-off)
+            - box-shadow: none
+      ## Balcony
+      - type: 'custom:button-card'
+        aspect_ratio: 1/1
+        entity: input_select.current_media_player
+        icon: mdi:grill
+        show_label: false
+        show_name: false
+        show_state: false
+        tap_action:
+          action: call-service
+          service: input_select.select_option
+          service_data:
+            entity_id: input_select.current_media_player
+            option: "Balkon"
+        style:
+          height: 2%
+          width: 2%
+          top: 2%
+          left: 16%
+          transform: 'translate(-50%, -50%) scale(4, 4)'
+        styles:
+          card:
+            - padding: 0px
+            - background-color: var(--card-background-off)
+            - box-shadow: none
+      ## Bedroom
+      - type: 'custom:button-card'
+        aspect_ratio: 1/1
+        entity: input_select.current_media_player
+        icon: mdi:bed-outline
+        show_label: false
+        show_name: false
+        show_state: false
+        tap_action:
+          action: call-service
+          service: input_select.select_option
+          service_data:
+            entity_id: input_select.current_media_player
+            option: "Schlafzimmer"
+        style:
+          height: 2%
+          width: 2%
+          top: 2%
+          left: 22%
+          transform: 'translate(-50%, -50%) scale(4, 4)'
+        styles:
+          card:
+            - padding: 0px
+            - background-color: var(--card-background-off)
+            - box-shadow: none
+      # Selected Player
+      - type: state-label
+        entity: input_select.current_media_player
+        tap_action:
+          action: none
+        style:
+          top: 3.5%
+          left: 50%
+          transform: 'translate(-50%, -50%) scale(1.6, 1.6)'
+      # Multiroom Control
+      - type: icon
+        icon: mdi:speaker
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/0
+        style:
+          top: 4%
+          left: 70%
+          transform: 'translate(-50%, -50%) scale(1.9, 1.9)'
+      #####################################################
+      #                                                   #
+      #                   Livingroom                      #
+      #                                                   #
+      #####################################################
+      - type: conditional
+        conditions:
+          - entity: input_select.current_media_player
+            state: "Wohnzimmer"
+        elements:
+          ####################################################
+          #            Media Player (Right Side)             #
+          ####################################################
+          # Background
+          - type: 'custom:button-card'
+            aspect_ratio: 2/3
+            entity: media_player.mpd_livingroom
+            show_icon: false
+            show_label: false
+            show_last_changed: false
+            show_entity_picture: true
+            show_name: false
+            show_state: false
+            tap_action:
+              action: none
+            style:
+              height: 89%
+              width: 50%
+              top: 52%
+              left: 25%
+            state:
+              - value: paused
+                styles:
+                  entity_picture:
+                    - filter: grayscale(100%) blur(16px)
+                    - transition: all 0.5s ease
+            styles:
+              card:
+                - padding: 0px
+                - background-color: var(--card-background-off)
+              entity_picture:
+                - height: 90%
+                - width: 100%
+                - position: absolute
+                - filter: blur(16px)
+                - transition: all 0.5s ease
+          # Album Art
+          - type: custom:vertical-stack-in-card
+            style:
+              left: 42%
+              top: 40%
+              width: 75%
+              '--mini-media-player-accent-color': 'blue'
+            cards:
+              - type: custom:mini-media-player
+                entity: media_player.mpd_livingroom
+                artwork: full-cover
+                tap_action:
+                  action: none
+                hide:
+                  name: true
+                  info: true
+                  volume: true
+                  source: true
+                  controls: true
+                  power: true
+                  icon: true
+                  progress: true
+                style: |
+                  ha-card {
+                    height: 54%;
+                    width: 54%;
+                    margin-top: 10%;
+                  }
+          # Song Title
+          - type: custom:vertical-stack-in-card
+            style:
+              left: 25%
+              top: 76%
+              width: 50%
+            cards:
+              - type: markdown
+                content: >
+                  <h3>{{ state_attr('media_player.mpd_livingroom', 'media_title') }}</h3>
+                style: |
+                  ha-card {
+                    font-size: 13pt;
+                    font-weight: bold;
+                    color: white;
+                    text-align: center;
+                  }
+          # Artist
+          - type: custom:vertical-stack-in-card
+            style:
+              left: 25%
+              top: 80%
+              width: 50%
+            cards:
+              - type: markdown
+                content: >
+                  <h3>{{ state_attr('media_player.mpd_livingroom', 'media_artist') }}</h3>
+                style: |
+                  ha-card {
+                    font-size: 11pt;
+                    color: gray;
+                    text-align: center;
+                  }
+          # Media Controls
+          - type: custom:vertical-stack-in-card
+            style:
+              left: 40%
+              top: 80%
+              width: 80%
+              height: 80%
+            cards:
+              - type: custom:mini-media-player
+                entity: media_player.mpd_livingroom
+                artwork: none
+                tap_action:
+                  action: none
+                hide:
+                  name: true
+                  info: true
+                  volume: true
+                  source: true
+                  controls: false
+                  shuffle: false
+                  power: true
+                  icon: true
+                  progress: true
+                style: |
+                  ha-card {
+                    height: 54%;
+                    width: 54%;
+                    margin-top: 10%;
+                  }
+          ####################################################
+          #           Media Browser (Right Side)             #
+          ####################################################
+          - type: custom:vertical-stack-in-card
+            style:
+              top: 55%
+              left: 75%
+              width: 50%
+              height: 95%
+              '--ha-card-box-shadow': 'none'
+            cards:
+              # Media Browser
+              - type: custom:mod-card
+                style: |
+                  ha-card {
+                    background: rgba(0, 0, 0, 1);
+                    border-radius: 20px;
+                  }
+                card:
+                  type: iframe
+                  url: http://10.10.40.6:6682/iris/discover/categories
+                  aspect_ratio: 136.2%

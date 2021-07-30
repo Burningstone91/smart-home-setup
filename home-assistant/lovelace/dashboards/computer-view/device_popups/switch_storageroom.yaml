@@ -1,0 +1,21 @@
+type: vertical-stack
+cards:
+  - type: entities
+    show_header_toggle: false
+
+    entities:
+      - entity: sensor.model_switch_storageroom
+        name: Model
+        icon: mdi:information-outline
+
+      - entity: sensor.firmware_switch_storageroom
+        name: Firmware
+        icon: mdi:information-outline
+
+      - entity: sensor.firmware_upgrade_switch_storageroom
+        name: Updates
+        icon: mdi:download-circle
+
+      - entity: sensor.uptime_switch_storageroom
+        name: Uptime
+        icon: mdi:history

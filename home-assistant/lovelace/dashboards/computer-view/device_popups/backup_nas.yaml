@@ -1,0 +1,208 @@
+type: vertical-stack
+cards:
+  - type: entities
+    show_header_toggle: false
+    card_mod:
+      class: add-header
+      style: |
+        mini-graph-card {
+          margin: -22.7px -18px -6px -7px;
+          border: none;
+          box-shadow: none;
+        }
+        .footer {
+          overflow: visible !important;
+        }
+    entities:
+      # Model
+      - entity: sensor.model_backup_nas
+        name: Model
+        icon: mdi:information-outline
+      # IP Address
+      - type: attribute
+        entity: device_tracker.backup_nas
+        name: IP
+        attribute: ip
+        icon: mdi:ip-network
+      # MAC
+      - type: attribute
+        entity: device_tracker.backup_nas
+        name: MAC
+        attribute: mac
+        icon: mdi:information-outline
+      # Firmware
+      - entity: sensor.firmware_backup_nas
+        name: Firmware
+        icon: mdi:information-outline
+      # Updates
+      - entity: binary_sensor.backup_nas_update_available
+        name: Updates
+        icon: mdi:download-circle
+      # Security Status
+      - entity: binary_sensor.security_status_backup_nas
+        name: Security Status
+        icon: mdi:security
+      # Uptime
+      - entity: sensor.uptime_backup_nas
+        name: Uptime
+        icon: mdi:history
+      # CPU Load
+      - type: custom:bar-card
+        width: 50%
+        height: 2em
+        decimal: 0
+        unit_of_measurement: '%'
+        entity_row: true
+        positions:
+          name: outside
+          indicator: 'off'
+        entities:
+          - entity: sensor.cpu_load_backup_nas
+            name: Processor
+            icon: mdi:memory
+            severity:
+              - color: rgb(26,204,147,0.33)
+                from: 0
+                to: 10
+              - color: rgb(206,133,0,0.60)
+                from: 11
+                to: 40
+              - color: rgb(163,0,0,0.60)
+                from: 40
+                to: 150
+        style: |
+          ha-card {
+            margin-left: 0.9%;
+          }
+      # Temperature
+      - type: custom:bar-card
+        width: 50%
+        height: 2em
+        decimal: 0
+        entity_row: true
+        icon: mdi:thermometer
+        positions:
+          name: outside
+          indicator: 'off'
+        entities:
+          - entity: sensor.temperature_backup_nas
+            name: Temp
+            severity:
+              - color: rgb(26,204,147,0.33)
+                from: 0
+                to: 69.9
+              - color: rgb(206,133,0,0.60)
+                from: 70
+                to: 85
+              - color: rgb(163,0,0,0.60)
+                from: 85
+                to: 150
+        style: |
+          ha-card {
+            margin-left: 0.9%;
+          }
+      # RAM
+      - type: custom:bar-card
+        width: 50%
+        height: 2em
+        decimal: 0
+        entity_row: true
+        positions:
+          name: outside
+          indicator: 'off'
+        entities:
+          - entity: sensor.ram_use_pct_backup_nas
+            name: RAM
+            severity:
+              - color: rgb(26,204,147,0.33)
+                from: 0
+                to: 69.9
+              - color: rgb(206,133,0,0.60)
+                from: 70
+                to: 85
+              - color: rgb(163,0,0,0.60)
+                from: 85
+                to: 150
+        style: |
+          ha-card {
+            margin-left: 0.9%;
+          }
+      # Disk Use
+      - type: custom:bar-card
+        width: 50%
+        height: 2em
+        decimal: 0
+        entity_row: true
+        positions:
+          name: outside
+          indicator: 'off'
+        entities:
+          - entity: sensor.disk_use_pct_backup_nas
+            name: Disk
+            severity:
+              - color: rgb(26,204,147,0.33)
+                from: 0
+                to: 69.9
+              - color: rgb(206,133,0,0.60)
+                from: 70
+                to: 85
+              - color: rgb(163,0,0,0.60)
+                from: 85
+                to: 150
+        style: |
+          ha-card {
+            margin-left: 0.9%;
+          }
+      # Network Up/Down
+      - type: custom:hui-element
+        card_type: horizontal-stack
+        cards:
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  box-shadow: none;
+                }
+            entities:
+              - entity: sensor.network_down_backup_nas
+                name: 'IN'
+                icon: mdi:arrow-down-bold
+                card_mod:
+                  style: >
+                    :host {
+                      --paper-item-icon-color: green;
+                    }
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  box-shadow: none;
+                }
+            entities:
+              - entity: sensor.network_up_backup_nas
+                name: 'OUT'
+                icon: mdi:arrow-up-bold
+                card_mod:
+                  style: >
+                    :host {
+                      --paper-item-icon-color: #385581;
+                    }
+    footer:
+      type: custom:mini-graph-card
+      entities:
+        - color: green
+          entity: sensor.network_down_backup_nas
+        - color: '#385581'
+          entity: sensor.network_up_backup_nas
+      align_state: left
+      group: false
+      points_per_hour: 15
+      line_width: 3
+      line_height: 10
+      hour24: true
+      hours_to_show: 12
+      show:
+        {fill: fade, icon: false, name: false, state: false, 
+        name_adaptive_color: true, labels: hover, legend: false}
+      tap_action:
+        action: none

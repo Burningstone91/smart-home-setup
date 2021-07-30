@@ -40,6 +40,4 @@
                   sensor_name: chore_cut_claws
                   warning_before: 1
                   cycle_days: 21
-
           - !include ../../../base/includes/gap.yaml
-    

@@ -15,9 +15,9 @@ show_name: false
 show_state: false
 show_label: false
 tap_action:
-  action: call-service
-  service: browser_mod.popup
-  service_data:
+  action: fire-dom-event
+  browser_mod:
+    command: popup
     title: ' '
     style:
       .: |

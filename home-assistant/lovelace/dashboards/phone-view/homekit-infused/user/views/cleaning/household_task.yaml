@@ -1,247 +1,335 @@
 # House
-- type: horizontal-stack
+- type: vertical-stack
   cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: picture
-      image: /local/household_tasks/haus.jpg
-      style: |
-        ha-card {
-          height: 140px;
-        }
-    - !include ../../../base/includes/gap.yaml
-- type: horizontal-stack
-  cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: 'custom:vertical-stack-in-card'
+
+    - type: horizontal-stack
       cards:
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Abstauben
-            sensor_name: chore_clean_dust
-            warning_before: 1
-            cycle_days: 7
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Staubsaugen
-            sensor_name: chore_vacuum_clean
-            warning_before: 1
-            cycle_days: 7
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Boden nass reinigen
-            sensor_name: chore_clean_floor_wet
-            warning_before: 1
-            cycle_days: 30
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Boden einölen
-            sensor_name: chore_oil_floor
-            warning_before: 5
-            cycle_days: 180
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Entkalken
-            sensor_name: chore_dechalk
-            warning_before: 1
-            cycle_days: 7
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Rollos reinigen
-            sensor_name: chore_clean_covers
-            warning_before: 2
-            cycle_days: 30
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Vorhänge reinigen
-            sensor_name: chore_clean_curtains
-            warning_before: 5
-            cycle_days: 90
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Fensterbänke reinigen
-            sensor_name: chore_clean_window_frames
-            warning_before: 2
-            cycle_days: 30
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Fenster reinigen
-            sensor_name: chore_clean_windows
-            warning_before: 5
-            cycle_days: 90
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Möbel pflegen
-            sensor_name: chore_clean_furniture
-            warning_before: 5
-            cycle_days: 90
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Schränke reinigen
-            sensor_name: chore_clean_cupboards
-            warning_before: 10
-            cycle_days: 365
-    - !include ../../../base/includes/gap.yaml
-# Kitchen
-- type: horizontal-stack
-  cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: picture
-      image: /local/household_tasks/kueche.png
-      style: |
-        ha-card {
-          height: 140px;
-        }
-    - !include ../../../base/includes/gap.yaml
-- type: horizontal-stack
-  cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: 'custom:vertical-stack-in-card'
+        - !include ../../../base/includes/gap.yaml
+        - type: picture
+          image: /local/household_tasks/haus_aussen.jpg
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
       cards:
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Backofen reinigen
-            sensor_name: chore_clean_oven
-            warning_before: 5
-            cycle_days: 90
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Kühlschrank reinigen
-            sensor_name: chore_clean_fridge
-            warning_before: 5
-            cycle_days: 90
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Kühlschrank abtauen
-            sensor_name: chore_defrost_fridge
-            warning_before: 5
-            cycle_days: 180
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Dampfabzug reinigen
-            sensor_name: chore_clean_steam_exhaust
-            warning_before: 5
-            cycle_days: 90
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Geschirrspüler reinigen
-            sensor_name: chore_clean_dishwasher
-            warning_before: 1
-            cycle_days: 30
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Kaffeemaschine reinigen
-            sensor_name: chore_clean_coffe_machine
-            warning_before: 1
-            cycle_days: 30
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Lebensmittel prüfen
-            sensor_name: chore_check_food_fridge
-            warning_before: 1
-            cycle_days: 7
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Putzlappen wechseln
-            sensor_name: chore_change_cloths
-            warning_before: 1
-            cycle_days: 7
-    - !include ../../../base/includes/gap.yaml
-# Bathroom
-- type: horizontal-stack
-  cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: picture
-      image: /local/household_tasks/bad.png
-      style: |
-        ha-card {
-          height: 140px;
-        }
-    - !include ../../../base/includes/gap.yaml
-- type: horizontal-stack
-  cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: 'custom:vertical-stack-in-card'
+        - !include ../../../base/includes/gap.yaml
+        - type: 'custom:vertical-stack-in-card'
+          cards:
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Abstauben
+                sensor_name: chore_clean_dust
+                warning_before: 1
+                cycle_days: 7
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Staubsaugen
+                sensor_name: chore_vacuum_clean
+                warning_before: 1
+                cycle_days: 7
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Boden nass reinigen
+                sensor_name: chore_clean_floor_wet
+                warning_before: 1
+                cycle_days: 30
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Boden einölen
+                sensor_name: chore_oil_floor
+                warning_before: 5
+                cycle_days: 180
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Fensterbänke reinigen
+                sensor_name: chore_clean_window_frames
+                warning_before: 2
+                cycle_days: 30
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Fenster reinigen
+                sensor_name: chore_clean_windows
+                warning_before: 5
+                cycle_days: 90
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Rollos reinigen
+                sensor_name: chore_clean_covers
+                warning_before: 2
+                cycle_days: 90
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Vorhänge reinigen
+                sensor_name: chore_clean_curtains
+                warning_before: 5
+                cycle_days: 365
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Entkalken
+                sensor_name: chore_dechalk
+                warning_before: 1
+                cycle_days: 7
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Möbel pflegen
+                sensor_name: chore_clean_furniture
+                warning_before: 5
+                cycle_days: 90
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Schränke reinigen
+                sensor_name: chore_clean_cupboards
+                warning_before: 1
+                cycle_days: 365
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Briefkasten reinigen
+                sensor_name: chore_clean_mailbox
+                warning_before: 1
+                cycle_days: 365
+        - !include ../../../base/includes/gap.yaml
+    # Kitchen
+    - type: horizontal-stack
       cards:
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Bad reinigen
-            sensor_name: chore_clean_bath
-            warning_before: 1
-            cycle_days: 7
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Toilette reinigen
-            sensor_name: chore_clean_toilet
-            warning_before: 1
-            cycle_days: 7
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Handtücher wechseln
-            sensor_name: chore_change_towels
-            warning_before: 1
-            cycle_days: 14
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Luftfilter reinigen
-            sensor_name: chore_clean_air_filter
-            warning_before: 2
-            cycle_days: 30
-    - !include ../../../base/includes/gap.yaml
-# Bedroom
-- type: horizontal-stack
-  cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: picture
-      image: /local/household_tasks/schlafzimmer.jpg
-      style: |
-        ha-card {
-          height: 140px;
-        }
-    - !include ../../../base/includes/gap.yaml
-- type: horizontal-stack
-  cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: 'custom:vertical-stack-in-card'
+        - !include ../../../base/includes/gap.yaml
+        - type: picture
+          image: /local/household_tasks/kueche.png
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
       cards:
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Bettwäsche wechseln
-            sensor_name: chore_change_bed_sheets
-            warning_before: 1
-            cycle_days: 14
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Matratze wenden
-            sensor_name: chore_turn_mattress
-            warning_before: 2
-            cycle_days: 30
-    - !include ../../../base/includes/gap.yaml
-# Storageroom
-- type: horizontal-stack
-  cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: picture
-      image: /local/household_tasks/reduit.png
-      style: |
-        ha-card {
-          height: 140px;
-        }
-    - !include ../../../base/includes/gap.yaml
-- type: horizontal-stack
-  cards:
-    - !include ../../../base/includes/gap.yaml
-    - type: 'custom:vertical-stack-in-card'
+        - !include ../../../base/includes/gap.yaml
+        - type: 'custom:vertical-stack-in-card'
+          cards:
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Backofen reinigen
+                sensor_name: chore_clean_oven
+                warning_before: 5
+                cycle_days: 90
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Kühlschrank reinigen
+                sensor_name: chore_clean_fridge
+                warning_before: 5
+                cycle_days: 90
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Kühlschrank abtauen
+                sensor_name: chore_defrost_fridge
+                warning_before: 5
+                cycle_days: 365
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Dampfabzug reinigen
+                sensor_name: chore_clean_steam_exhaust
+                warning_before: 5
+                cycle_days: 90
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Flaschen entsorgen
+                sensor_name: chore_dispose_bottles
+                warning_before: 5
+                cycle_days: 30
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Geschirrspüler reinigen
+                sensor_name: chore_clean_dishwasher
+                warning_before: 1
+                cycle_days: 30
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Kaffeemaschine reinigen
+                sensor_name: chore_clean_coffe_machine
+                warning_before: 1
+                cycle_days: 30
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Lebensmittel prüfen
+                sensor_name: chore_check_food_fridge
+                warning_before: 1
+                cycle_days: 7
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Putzlappen wechseln
+                sensor_name: chore_change_cloths
+                warning_before: 1
+                cycle_days: 7
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Türklinken reinigen
+                sensor_name: chore_clean_door_handles
+                warning_before: 1
+                cycle_days: 7
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Türen abwaschen
+                sensor_name: chore_clean_doors
+                warning_before: 1
+                cycle_days: 180
+        - !include ../../../base/includes/gap.yaml
+    # Bathrooms
+    - type: horizontal-stack
       cards:
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Waschmaschine reinigen
-            sensor_name: chore_clean_wash_machine
-            warning_before: 1
-            cycle_days: 14
-        - !include
-          - ../../templates/household_task.yaml
-          - name: Vorräte prüfen
-            sensor_name: chore_check_food_stock
-            warning_before: 2
-            cycle_days: 30
-    - !include ../../../base/includes/gap.yaml    
+        - !include ../../../base/includes/gap.yaml
+        - type: picture
+          image: /local/household_tasks/bad.png
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: 'custom:vertical-stack-in-card'
+          cards:
+            
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Toilette reinigen
+                sensor_name: chore_clean_toilet
+                warning_before: 1
+                cycle_days: 7
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Handtücher wechseln
+                sensor_name: chore_change_towels
+                warning_before: 1
+                cycle_days: 7
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Bad reinigen
+                sensor_name: chore_clean_bath
+                warning_before: 1
+                cycle_days: 14
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Spiegel reinigen
+                sensor_name: chore_clean_mirror
+                warning_before: 1
+                cycle_days: 14
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Luftfilter reinigen
+                sensor_name: chore_clean_air_filter
+                warning_before: 2
+                cycle_days: 30
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Siphon reinigen
+                sensor_name: chore_clean_siphon
+                warning_before: 2
+                cycle_days: 365
+        - !include ../../../base/includes/gap.yaml
+    # Bedroom
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: picture
+          image: /local/household_tasks/schlafzimmer.jpg
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: 'custom:vertical-stack-in-card'
+          cards:
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Bettwäsche wechseln
+                sensor_name: chore_change_bed_sheets
+                warning_before: 1
+                cycle_days: 14
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Matratze wenden
+                sensor_name: chore_turn_mattress
+                warning_before: 2
+                cycle_days: 30
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Kissen/Decken waschen
+                sensor_name: chore_clean_pillow_bedsheets
+                warning_before: 2
+                cycle_days: 365
+        - !include ../../../base/includes/gap.yaml
+    # Dressroom
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: picture
+          image: /local/household_tasks/ankleidezimmer.jpeg
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: 'custom:vertical-stack-in-card'
+          cards:
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Kleiderschrank reinigen
+                sensor_name: chore_clean_wardrobe
+                warning_before: 1
+                cycle_days: 180
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Kleider ausmisten
+                sensor_name: chore_declutter_wardrobe
+                warning_before: 1
+                cycle_days: 180
+        - !include ../../../base/includes/gap.yaml
+    # Garden
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: picture
+          image: /local/household_tasks/garten.jpg
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: 'custom:vertical-stack-in-card'
+          cards:
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Rasen mähen
+                sensor_name: chore_mow_lawn
+                warning_before: 1
+                cycle_days: 7
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Grill reinigen
+                sensor_name: chore_clean_grill
+                warning_before: 1
+                cycle_days: 90
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Grill Gas prüfen
+                sensor_name: chore_check_grill_gas
+                warning_before: 1
+                cycle_days: 365
+        - !include ../../../base/includes/gap.yaml
+    # Storageroom
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: picture
+          image: /local/household_tasks/reduit.png
+        - !include ../../../base/includes/gap.yaml
+    - type: horizontal-stack
+      cards:
+        - !include ../../../base/includes/gap.yaml
+        - type: 'custom:vertical-stack-in-card'
+          cards:
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Waschmaschine reinigen
+                sensor_name: chore_clean_wash_machine
+                warning_before: 1
+                cycle_days: 30
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Tumbler reinigen
+                sensor_name: chore_clean_tumble_dryer
+                warning_before: 2
+                cycle_days: 30
+            - !include
+              - ../../templates/household_task.yaml
+              - name: Vorräte prüfen
+                sensor_name: chore_check_food_stock
+                warning_before: 2
+                cycle_days: 90
+        - !include ../../../base/includes/gap.yaml    

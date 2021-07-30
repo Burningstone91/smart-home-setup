@@ -6,7 +6,7 @@
 title: backups
 path: backups
 panel: true
-icon: mdi:harddisk
+icon: mdi:nas
 badges: []
 cards:
   - type: vertical-stack
@@ -711,7 +711,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Drive 1 - 6TB</h3>
+                        <h3>Drive 1 - 4TB</h3>
                       </center>
                     style: |
                       ha-card {
@@ -1010,7 +1010,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Drive 2 - 6TB</h3>
+                        <h3>Drive 2 - 4TB</h3>
                       </center>
                     style: |
                       ha-card {

@@ -1,0 +1,41 @@
+type: vertical-stack
+cards:
+  - type: entities
+    show_header_toggle: false
+
+    entities:
+      - entity: sensor.model_switch_livingroom
+        name: Model
+        icon: mdi:information-outline
+
+      - entity: sensor.firmware_switch_livingroom
+        name: Firmware
+        icon: mdi:information-outline
+
+      - entity: sensor.firmware_upgrade_switch_livingroom
+        name: Updates
+        icon: mdi:download-circle
+
+      - entity: sensor.uptime_switch_livingroom
+        name: Uptime
+        icon: mdi:history
+
+  - type: custom:mini-graph-card
+    entities:
+      - entity: sensor.temperature_switch_livingroom
+        color: teal
+    align_state: left
+    group: false
+    points_per_hour: 15
+    name: Temperatur
+    line_width: 3
+    hour24: true
+    hours_to_show: 12
+    show:
+      {fill: fade, icon: false, labels: false, legend: false}
+    tap_action:
+      action: none
+    style: |
+      ha-card {
+        margin-top: -20px;
+      }

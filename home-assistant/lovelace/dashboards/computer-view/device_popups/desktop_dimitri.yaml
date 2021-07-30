@@ -1,0 +1,28 @@
+type: vertical-stack
+cards:
+  - type: entities
+    show_header_toggle: false
+    card_mod:
+      class: add-header
+      style: |
+        mini-graph-card {
+          margin: -22.7px -18px -6px -7px;
+          border: none;
+          box-shadow: none;
+        }
+        .footer {
+          overflow: visible !important;
+        }
+    entities:
+
+      - type: attribute
+        entity: device_tracker.desktop_dimitri
+        name: IP
+        attribute: ip
+        icon: mdi:ip-network
+
+      - type: attribute
+        entity: device_tracker.desktop_dimitri
+        name: MAC
+        attribute: mac
+        icon: mdi:information-outline

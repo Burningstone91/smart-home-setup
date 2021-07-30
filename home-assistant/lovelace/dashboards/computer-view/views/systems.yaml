@@ -1,0 +1,448 @@
+####################################################
+#                                                  #
+#                     Systems                      #
+#                                                  #
+####################################################
+title: systems
+path: systems
+panel: true
+icon: mdi:web
+badges: []
+cards:
+  - type: picture-elements
+    image: /local/wallpaper/home_network_diagram.png
+    elements:
+      # USG Router
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 36%
+          left: 9.5%
+          width: 10%
+          icon_bottom: 46%
+          icon_left: 88%
+          icon_size: 13%
+          aspect_ratio: 9/2
+          popup_title: USG Router
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.usg_router
+      # USW Switch Livingroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 57.3%
+          left: 14.6%
+          width: 17.5%
+          icon_bottom: 66%
+          icon_left: 92%
+          icon_size: 7.5%
+          aspect_ratio: 9/2
+          popup_title: Switch Wohnzimmer
+          popup_location: '../device_popups/switch_livingroom.yaml'
+          entity: device_tracker.switch_livingroom
+      # Main NAS
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 69.2%
+          left: 6.7%
+          width: 6%
+          icon_bottom: 69%
+          icon_left: 79%
+          icon_size: 20%
+          aspect_ratio: 7/5
+          popup_title: NAS
+          popup_location: '../device_popups/main_nas.yaml'
+          entity: device_tracker.nas
+      # NUC Server
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 79%
+          left: 6.4%
+          width: 5.8%
+          icon_bottom: 62%
+          icon_left: 79%
+          icon_size: 20%
+          aspect_ratio: 2/1
+          popup_title: Server
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.server_nuc
+      # Desktop Him
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 89.5%
+          left: 8.8%
+          width: 3.9%
+          icon_bottom: 75%
+          icon_left: 70%
+          icon_size: 31%
+          aspect_ratio: 5/7
+          popup_title: Desktop Dimitri
+          popup_location: '../device_popups/desktop_dimitri.yaml'
+          entity: device_tracker.desktop_dimitri
+      # Desktop Her
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 89.5%
+          left: 20%
+          width: 3.9%
+          icon_bottom: 75%
+          icon_left: 70%
+          icon_size: 31%
+          aspect_ratio: 5/7
+          popup_title: Desktop Sabrina
+          popup_location: '../device_popups/desktop_sabrina.yaml'
+          entity: device_tracker.desktop_sabrina
+      # Receiver Office
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 78.7%
+          left: 20.6%
+          width: 7.1%
+          icon_bottom: 58%
+          icon_left: 79%
+          icon_size: 17.5%
+          aspect_ratio: 2/1
+          popup_title: Verstärker Büro
+          popup_location: '../device_popups/receiver_office.yaml'
+          ###################### Replace with correct entity
+          entity: device_tracker.desktop_dimitri
+      # AP Office
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 71%
+          left: 38.5%
+          width: 4.8%
+          icon_bottom: 75%
+          icon_left: 75%
+          icon_size: 27%
+          aspect_ratio: 1/1
+          popup_title: Access Point Büro
+          popup_location: '../device_popups/ap_office.yaml'
+          ###################### Replace with correct entity
+          entity: device_tracker.desktop_dimitri
+      # Laptop Work
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 91%
+          left: 31.5%
+          width: 4.8%
+          icon_bottom: 75%
+          icon_left: 75%
+          icon_size: 27%
+          aspect_ratio: 1/1
+          popup_title: Laptop Arbeit
+          popup_location: '../device_popups/laptop_work.yaml'
+          entity: device_tracker.laptop_work_dimitri
+      # Room Assistant Pi Office
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 93.7%
+          left: 39.2%
+          width: 4%
+          icon_bottom: 62%
+          icon_left: 75%
+          icon_size: 27%
+          aspect_ratio: 3/2
+          popup_title: Room Assistant Pi Büro
+          popup_location: '../device_popups/pi_office.yaml'
+          entity: device_tracker.pi_office
+      # Music Pi Office
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 91.1%
+          left: 47.8%
+          width: 6%
+          icon_bottom: 62%
+          icon_left: 75%
+          icon_size: 19%
+          aspect_ratio: 3/2
+          popup_title: Musik Pi Büro
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.music_office
+      # Music Pi Bedroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 91.1%
+          left: 53.3%
+          width: 6%
+          icon_bottom: 62%
+          icon_left: 75%
+          icon_size: 19%
+          aspect_ratio: 3/2
+          popup_title: Musik Pi Schlafzimmer
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.music_bedroom
+      # USW Switch Reduit
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 43.3%
+          left: 53.4%
+          width: 10.1%
+          icon_bottom: 66%
+          icon_left: 88%
+          icon_size: 11.8%
+          aspect_ratio: 3/1
+          popup_title: Switch Reduit
+          popup_location: '../device_popups/switch_storageroom.yaml'
+          entity: device_tracker.switch_storageroom
+      # Backup NAS
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 33.3%
+          left: 60.8%
+          width: 4.7%
+          icon_bottom: 66%
+          icon_left: 71%
+          icon_size: 25%
+          aspect_ratio: 4/3
+          popup_title: Backup NAS
+          popup_location: '../device_popups/backup_nas.yaml'
+          entity: device_tracker.backup_nas
+      # Receiver Livingroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 25.1%
+          left: 60.8%
+          width: 7.1%
+          icon_bottom: 68%
+          icon_left: 83%
+          icon_size: 16%
+          aspect_ratio: 4/2
+          popup_title: Verstärker Wohnzimmer
+          popup_location: '../device_popups/receiver_livingroom.yaml'
+          entity: device_tracker.receiver_livingroom
+      # Media Pi Livingroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 17.8%
+          left: 60.6%
+          width: 4.8%
+          icon_bottom: 63%
+          icon_left: 70%
+          icon_size: 24%
+          aspect_ratio: 5/3
+          popup_title: Kodi Wohnzimmer
+          popup_location: '../device_popups/kodi_livingroom.yaml'
+          entity: device_tracker.kodi_livingroom
+      # ZigBee/Z-Wave Pi Livingroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 10.8%
+          left: 60.6%
+          width: 4.7%
+          icon_bottom: 63%
+          icon_left: 70%
+          icon_size: 25%
+          aspect_ratio: 5/3
+          popup_title: ZigBee/Z-Wave Pi
+          popup_location: '../device_popups/pi_zigbee_zwave.yaml'
+          entity: device_tracker.pi_zigbee_zwave
+      # AP Livingroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 55.8%
+          left: 70.4%
+          width: 5.2%
+          icon_bottom: 75%
+          icon_left: 75%
+          icon_size: 25%
+          aspect_ratio: 1/1
+          popup_title: Access Point Wohnzimmer
+          popup_location: '../device_popups/ap_livingroom.yaml'
+          entity: device_tracker.ap_livingroom
+      # Nintendo Switch
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 47.5%
+          left: 83.8%
+          width: 6.2%
+          icon_bottom: 58%
+          icon_left: 78%
+          icon_size: 19.5%
+          aspect_ratio: 2/1
+          popup_title: Nintendo Switch
+          popup_location: '../device_popups/nintendo_switch.yaml'
+          entity: device_tracker.nintendo_switch
+      # Music Pi Balcony
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 47.6%
+          left: 89.3%
+          width: 4.5%
+          icon_bottom: 66%
+          icon_left: 74%
+          icon_size: 26%
+          aspect_ratio: 3/2
+          popup_title: Musik Pi Balkon
+          popup_location: '../device_popups/usg_router.yaml'
+          ###################### Replace with correct entity
+          entity: device_tracker.desktop_dimitri
+      # HEOS Speaker Bedroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 55.5%
+          left: 83.8%
+          width: 4.8%
+          icon_bottom: 58%
+          icon_left: 71%
+          icon_size: 26%
+          aspect_ratio: 4/3
+          popup_title: Boxen Schlafzimmer
+          popup_location: '../device_popups/receiver_office.yaml'
+          entity: device_tracker.musik_schlafzimmer
+      # Room Assistant Pi Livingroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 73.7%
+          left: 76.2%
+          width: 4.4%
+          icon_bottom: 58%
+          icon_left: 71%
+          icon_size: 30%
+          aspect_ratio: 3/2
+          popup_title: Room Assistant Pi Wohnzimmer
+          popup_location: '../device_popups/pi_livingroom.yaml'
+          entity: device_tracker.pi_livingroom
+      # Room Assistant Pi Dressroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 73.7%
+          left: 81.8%
+          width: 4.4%
+          icon_bottom: 58%
+          icon_left: 71%
+          icon_size: 30%
+          aspect_ratio: 3/2
+          popup_title: Room Assistant Pi Ankleidezimmer
+          popup_location: '../device_popups/pi_dressroom.yaml'
+          entity: device_tracker.pi_dressroom
+      # Room Assistant Pi Bathroom Small
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 73.7%
+          left: 87.4%
+          width: 4.4%
+          icon_bottom: 58%
+          icon_left: 71%
+          icon_size: 30%
+          aspect_ratio: 3/2
+          popup_title: Room Assistant Pi Kleines Bad
+          popup_location: '../device_popups/pi_bathroomsmall.yaml'
+          entity: device_tracker.pi_bathroomsmall
+      # Room Assistant Pi Balcony
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 73.7%
+          left: 92.8%
+          width: 4.4%
+          icon_bottom: 58%
+          icon_left: 71%
+          icon_size: 30%
+          aspect_ratio: 3/2
+          popup_title: Room Assistant Pi Balkon
+          popup_location: '../device_popups/pi_balcony.yaml'
+          ###################### Replace with correct entity
+          entity: device_tracker.pi_bathroomsmall
+      # Plug Dishwasher
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 81.5%
+          left: 76.6%
+          width: 3.3%
+          icon_bottom: 68%
+          icon_left: 62%
+          icon_size: 40%
+          aspect_ratio: 4/5
+          popup_title: Plug Geschirsspüler
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.plug_dishwasher
+      # Vacuum Livingroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 81.7%
+          left: 81.9%
+          width: 4.9%
+          icon_bottom: 73%
+          icon_left: 73%
+          icon_size: 26%
+          aspect_ratio: 1/1
+          popup_title: Staubsauger
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.vacuum_livingroom
+      # Remote Livingroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 82.1%
+          left: 87.5%
+          width: 3.1%
+          icon_bottom: 76%
+          icon_left: 51%
+          icon_size: 40%
+          aspect_ratio: 2/3
+          popup_title: Fernbedienung Wohnzimmer
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.remote_livingroom
+      # Bed Sensor Bedroom
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 81.5%
+          left: 92.9%
+          width: 3.8%
+          icon_bottom: 68%
+          icon_left: 66%
+          icon_size: 30%
+          aspect_ratio: 1/1
+          popup_title: Bettsensor
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.bed_sensor_bedroom
+      # Laptop Dimitri
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 72.7%
+          left: 53.8%
+          width: 4.8%
+          icon_bottom: 75%
+          icon_left: 75%
+          icon_size: 27%
+          aspect_ratio: 1/1
+          popup_title: Laptop Dimitri
+          popup_location: '../device_popups/laptop_dimitri.yaml'
+          ###################### Replace with correct entity
+          entity: device_tracker.laptop_work_dimitri
+      # iPad
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 72.9%
+          left: 58.8%
+          width: 2.8%
+          icon_bottom: 75%
+          icon_left: 63%
+          icon_size: 41%
+          aspect_ratio: 2/3
+          popup_title: iPad
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.ipad
+      # Phone Him
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 64.5%
+          left: 58.8%
+          width: 2.8%
+          icon_bottom: 70%
+          icon_left: 58%
+          icon_size: 41%
+          aspect_ratio: 4/5
+          popup_title: Handy Dimitri
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.phone_dimitri_unifi
+      # Phone Her
+      - !include
+        - '../device_popups/network_button.yaml'
+        - top: 64.5%
+          left: 53.9%
+          width: 2.8%
+          icon_bottom: 70%
+          icon_left: 58%
+          icon_size: 41%
+          aspect_ratio: 4/5
+          popup_title: Handy Sabrina
+          popup_location: '../device_popups/usg_router.yaml'
+          entity: device_tracker.phone_sabrina_unifi

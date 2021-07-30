@@ -11,13 +11,22 @@ badges: []
 cards:
   - type: vertical-stack
     cards:
+      # Recently triggerd automations
+      - type: markdown
+        content: |
+          |D|H|M||Name|
+          |----:|----:|----:|:--:|:----|
+          {% for state in states.automation
+            |selectattr('attributes.last_triggered')
+            |sort(attribute='attributes.last_triggered', reverse=true) -%}
+            {%- set t = now() - state.attributes.last_triggered -%}
+            {%- set days = t.days if t.days > 0 else '&nbsp;' -%}
+            {%- set hrs = t.seconds//3600 %}
+            {%- set hrs = hrs if hrs > 0 else '&nbsp;' -%}
+            |{{days}}|{{hrs}}|{{(t.seconds//60)%60}}||_{{state.name}}_|
+          {% endfor %}
+      # Presence
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 
@@ -30,13 +39,8 @@ cards:
               - entity: automation.haus_prasenzstatus_bestimmen
               - entity: input_select.presence_state_house
               - entity: automation.alles_ausschalten_wenn_alle_gegangen_sind
+      # Sleep
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 
@@ -48,13 +52,8 @@ cards:
               - entity: input_select.sleep_state_dimitri
               - entity: input_select.sleep_state_dimitri
               - entity: input_boolean.sleep_mode
+      # Alarm System
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 
@@ -72,13 +71,8 @@ cards:
               - entity: alert.water_leak_detected
               - entity: alert.alarm_triggered
               - entity: alert.nobody_home_and_alarm_disarmed
+      # Light
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 
@@ -100,13 +94,8 @@ cards:
               - entity: automation.licht_schalter_ankleidezimmer
               - entity: automation.fernbedienung_dimitri
               - entity: automation.fernbedienung_sabrina
+      # Systems
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 
@@ -127,13 +116,8 @@ cards:
               - entity: automation.benachrichtigung_bei_unsicherem_nas
               - entity: automation.benachrichtigung_wenn_festplatten_temperatur_hoch_ist
               - entity: automation.benachrichtigung_bei_nas_festplatten_crash
+      # Climate
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 
@@ -143,13 +127,8 @@ cards:
               - entity: automation.benachrichtigung_wenn_ein_fenster_oder_eine_ture_zu_lange_offen_ist
               - entity: automation.benachrichtigung_wenn_ein_fenster_oder_eine_ture_offen_ist_bei_regen
               - entity: automation.entfeucher_aus_einschalten_wenn_das_fenster_geoffnet_geschlossen_wird
+      # Household chores
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 
@@ -158,13 +137,8 @@ cards:
             entities:
               - entity: automation.benachrichtigung_wenn_eine_haushaltsaufgabe_bald_fallig_ist
               - entity: automation.markiere_aufgabe_als_erledigt_und_bedanke_bei_benutzer
+      # Home Cinema
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 
@@ -175,13 +149,8 @@ cards:
               - entity: automation.pause_play_bei_anruf
               - entity: automation.licht_szenen_heimkino
               - entity: script.set_home_cinema_lights
+      # Multiroom Audio
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 
@@ -189,13 +158,8 @@ cards:
               label: Multiroom Audio
             entities:
               - entity: automation.verstarker_wohnzimmer_fur_musik
+      # Appliances
       - type: entities
-        # style: |
-        #     ha-card {
-        #       color: teal;
-        #       width: 200px;
-        #       margin-left: 105px;
-        #     }
         entities:
           - type: custom:fold-entity-row
             head: 

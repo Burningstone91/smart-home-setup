@@ -79,7 +79,7 @@ variables:
             result.color = colors["error"];
             result.icon = "mdi:alert-circle"
           }
-          result.days_left = result.days_left + (result.days_left == 1 ? " Tag verbleibt" : " Tage verbleiben");
+          result.days_left = result.days_left + (result.days_left == 1 ? " Tag übrig" : " Tage übrig");
 
         } else {
           result.label = "Klicken zum Erledigen";
@@ -95,7 +95,7 @@ tap_action:
         if (!states['{{entity}}'])
           return 'Entität {{entity}} wird erstellt.'
         else
-          return 'Möchten sie diese Aufgabe wirklich als erledigt markieren?'
+          return '{{name}} wirklich als erledigt markieren?'
       ]]]
   action: call-service
   service: mqtt.publish

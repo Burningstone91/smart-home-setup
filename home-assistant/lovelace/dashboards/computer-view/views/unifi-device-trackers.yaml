@@ -369,7 +369,7 @@ cards:
                     - ../../../templates/button_network.yaml
                     - name: Laptop Arbeit
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
-                      entity: device_tracker.laptop_work
+                      entity: device_tracker.laptop_work_dimitri
                       entity_picture: /local/system_monitoring/laptop_dimitri.png
                       size: 27%
       ####################################################
@@ -625,7 +625,7 @@ cards:
                     - ../../../templates/button_network.yaml
                     - name: Verstärker Büro
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
-                      entity: device_tracker.receiver_livingroom
+                      entity: device_tracker.receiver_office
                       entity_picture: /local/system_monitoring/yamaha_stereo.png
                       size: 45%
               
@@ -689,7 +689,7 @@ cards:
               ####################################################
               - type: vertical-stack
                 cards:
-                  # Receiver Bedroom
+                  # Music Pi Bedroom
                   - !include ../../../templates/gap-height.yaml
                   - !include ../../../templates/gap-height.yaml
                   - !include
@@ -697,6 +697,18 @@ cards:
                     - name: Volumio Schlafzimmer
                       label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
                       entity: device_tracker.music_bedroom
+                      entity_picture: /local/system_monitoring/pi_zero_w_dac.png
+                      size: 35%
+              - type: vertical-stack
+                cards:
+                  # Music Pi Office
+                  - !include ../../../templates/gap-height.yaml
+                  - !include ../../../templates/gap-height.yaml
+                  - !include
+                    - ../../../templates/button_network.yaml
+                    - name: Volumio Büro
+                      label: "[[[ if (typeof(entity) === 'undefined') return; if ('ip' in entity.attributes) { return 'IP: ' + entity.attributes.ip } ]]]"
+                      entity: device_tracker.music_office
                       entity_picture: /local/system_monitoring/pi_zero_w_dac.png
                       size: 35%
               - type: vertical-stack
@@ -714,9 +726,6 @@ cards:
                       entity: device_tracker.nintendo_switch
                       entity_picture: /local/system_monitoring/nintendo_switch.png
                       size: 35%
-              - type: vertical-stack
-                cards:
-                  - !include ../../../templates/empty-button.yaml
               - type: vertical-stack
                 cards:
                   - !include ../../../templates/empty-button.yaml

@@ -1,0 +1,109 @@
+type: vertical-stack
+cards:
+  - type: entities
+    show_header_toggle: false
+    card_mod:
+      class: add-header
+      style: |
+        mini-graph-card {
+          margin: -22.7px -18px -6px -7px;
+          border: none;
+          box-shadow: none;
+        }
+        .footer {
+          overflow: visible !important;
+        }
+    entities:
+
+      - entity: sensor.firmware_usg
+        name: Firmware
+        icon: mdi:information-outline
+
+      - entity: sensor.firmware_upgrade_usg_router
+        name: Updates
+        icon: mdi:download-circle
+
+      - entity: sensor.uptime_usg
+        name: Uptime
+        icon: mdi:history
+
+      - type: custom:bar-card
+        width: 50%
+        height: 2em
+        decimal: 0
+        unit_of_measurement: '%'
+        entity_row: true
+        positions:
+          name: outside
+          indicator: 'off'
+        entities:
+          - entity: sensor.cpu_load_usg
+            name: Processor
+            icon: mdi:memory
+            severity:
+              - color: rgb(26,204,147,0.33)
+                from: 0
+                to: 10
+              - color: rgb(206,133,0,0.60)
+                from: 11
+                to: 40
+              - color: rgb(163,0,0,0.60)
+                from: 40
+                to: 150
+        style: |
+          ha-card {
+            margin-left: 0.9%;
+          }
+
+      - type: custom:hui-element
+        card_type: horizontal-stack
+        cards:
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  box-shadow: none;
+                }
+            entities:
+              - entity: sensor.wan_in_usg_mbps
+                name: 'IN'
+                icon: mdi:arrow-down-bold
+                card_mod:
+                  style: >
+                    :host {
+                      --paper-item-icon-color: green;
+                    }
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  box-shadow: none;
+                }
+            entities:
+              - entity: sensor.wan_out_usg_mbps
+                name: 'OUT'
+                icon: mdi:arrow-up-bold
+                card_mod:
+                  style: >
+                    :host {
+                      --paper-item-icon-color: #385581;
+                    }
+    footer:
+      type: custom:mini-graph-card
+      entities:
+        - color: green
+          entity: sensor.wan_in_usg_mbps
+        - color: '#385581'
+          entity: sensor.wan_out_usg_mbps
+      align_state: left
+      group: false
+      points_per_hour: 15
+      line_width: 3
+      line_height: 10
+      hour24: true
+      hours_to_show: 12
+      show:
+        {fill: fade, icon: false, name: false, state: false, 
+        name_adaptive_color: true, labels: hover, legend: false}
+      tap_action:
+        action: none

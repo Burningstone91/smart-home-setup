@@ -1,0 +1,52 @@
+# lovelace_gen
+
+# card
+type: custom:button-card
+aspect_ratio: {{ aspect_ratio|default('1/1') }}
+styles:
+  grid:
+    - position: relative
+  custom_fields:
+    notification:
+      - color: >
+          [[[
+            if (states['{{ entity }}'].state == 'home')
+              return "green";
+            return "red";
+          ]]]
+      - position: absolute
+      - left: {{ icon_left }}
+      - bottom: {{ icon_bottom }}
+      - width: {{ icon_size }}
+      - line-height: 100%
+custom_fields:
+  notification: >
+    [[[
+      if (states['{{ entity }}'].state == 'home')
+        return `<ha-icon icon="mdi:check-circle"></ha-icon>`
+      return `<ha-icon icon="mdi:alert"></ha-icon>`
+    ]]]
+style:
+  top: {{ top }}
+  left: {{ left }}
+  width: {{ width }}
+  --ha-card-background: "rgba(0, 0, 0, 0.0)"
+  --ha-card-box-shadow: 'none'
+tap_action:
+  action: fire-dom-event
+  browser_mod:
+    command: popup
+    title: {{ popup_title }}
+    deviceID:
+      - this
+    card: !include {{ popup_location }}
+    style:
+      .: |
+        :host .content {
+          width: 500px;
+        }
+      $: |
+        .mdc-dialog .mdc-dialog__container .mdc-dialog__surface {
+          width: 100%;
+          border-radius: 30px;
+        }
