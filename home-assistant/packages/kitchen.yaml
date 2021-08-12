@@ -31,15 +31,12 @@ input_select:
 
 # Utility Meter Dishwasher
 utility_meter:
-  energy_daily_dishwasher:
-    source: sensor.energy_dishwasher
-    cycle: daily
-    tariffs:
-      - Hochtarif
-      - Niedertarif
   energy_quarterly_dishwasher:
     source: sensor.energy_dishwasher
     cycle: quarterly
+    tariffs:
+      - Hochtarif
+      - Niedertarif
 
 automation:
   # Determine Dishwasher State
