@@ -1,0 +1,19 @@
+{
+    "codeowners": [
+        "@bramstroker"
+    ],
+    "dependencies": [
+        "hue",
+        "fan",
+        "switch",
+        "binary_sensor",
+        "light"
+    ],
+    "documentation": "https://github.com/bramstroker/homeassistant-powercalc",
+    "domain": "powercalc",
+    "iot_class": "local_polling",
+    "issue_tracker": "https://github.com/bramstroker/homeassistant-powercalc/issues",
+    "name": "Power consumption",
+    "requirements": [],
+    "version": "v0.2.7"
+}
