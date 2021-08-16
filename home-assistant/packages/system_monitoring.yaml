@@ -27,29 +27,38 @@ monitor_docker:
       - esphome-dashboard
       - hass
       - hass-db
+      - mopidy_office
+      - mopidy_bedroom
+      - mopidy_livingroom
+      - mopidy_balcony
+      - mopidy_tts
       - mqtt
       - influxdb
       - grafana
       - portainer
-      - unifi-poller
       - swag
       - snapserver
+      - wud
     rename:
       appdaemon: AppDaemon
       esphome-dashboard: "ESPHome-Dashboard"
       hass: Home Assistant
       hass-db: Home Assistant DB
+      mopidy_office: Mopidy Büro
+      mopidy_bedroom: Mopidy Schlafzimmer
+      mopidy_livingroom: Mopidy Wohnzimmer
+      mopidy_balcony: Mopidy Balkon
+      mopidy_tts: Mopidy TTS
       mqtt: Mosquitto
       influxdb: InfluxDB
       grafana: Grafana
       portainer: Portainer
-      unifi-poller: "Unifi-Poller"
       swag: NGINX
       snapserver: Snapserver
+      wud: "What's up Docker"
     monitored_conditions:
       - version
       - status
-      - image
       - cpu_percentage
       - memory_percentage
 
@@ -130,16 +139,6 @@ sensor:
     beta: true
   - platform: version
     name: current_version_homeassistant
-  # AppDaemon
-  - platform: command_line
-    name: latest_version_appdaemon
-    command: >-
-      curl -L
-      -H "User-Agent: Home Assistant"
-      -H "Content-Type: application/json"
-      https://pypi.python.org/pypi/appdaemon/json
-    value_template: '{{ value_json.info.version }}'
-    scan_interval: 3600
   # Pi-hole
   ## Pi-hole Core
   - platform: rest
@@ -168,34 +167,6 @@ sensor:
     resource: http://10.10.0.19/admin/api.php?versions
     name: current_version_pihole_ftl
     value_template: "{{ value_json.FTL_current[1:] }}"
-  # Mosquitto
-  - platform: mqtt
-    state_topic: "docker-image-updates/mosquitto"
-    name: Update Mosquitto
-  # ESP Home
-  - platform: mqtt
-    state_topic: "docker-image-updates/esphome"
-    name: Update ESPHome
-  # Grafana
-  - platform: mqtt
-    state_topic: "docker-image-updates/grafana"
-    name: Update Grafana
-  # InfluxDB
-  - platform: mqtt
-    state_topic: "docker-image-updates/influxdb"
-    name: Update InfluxDB
-  # UniFi Poller
-  - platform: mqtt
-    state_topic: "docker-image-updates/unifi-poller"
-    name: Update UniFi Poller
-  # Portainer
-  - platform: mqtt
-    state_topic: "docker-image-updates/portainer"
-    name: Update Portainer
-  # Swag
-  - platform: mqtt
-    state_topic: "docker-image-updates/swag"
-    name: Update Swag
   # Proxmox
   - platform: command_line
     name: Version Proxmox VE 
@@ -292,14 +263,7 @@ sensor:
     host: 10.10.0.14
     community: 'public'
     baseoid: 1.3.6.1.4.1.41112.1.6.3.6.0
-  ## Firmware Upgrade Available
-  - platform: template
-    sensors:
-      firmware_upgrade_ap_livingroom:
-        friendly_name: Firmware Upgrade AP Wohnzimmer
-        value_template: >
-          {{ 'Update available' if state_attr('device_tracker.ap_livingroom', 'upgradable') == true else 'Up-to-date' }}
-  # Switch Livingroom
+# Switch Livingroom
   ## Temperature
   - platform: snmp
     name: Temperature Switch Livingroom
@@ -334,14 +298,7 @@ sensor:
     host: 10.10.0.6
     community: 'public'
     baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.13.0
-  ## Firmware Upgrade Available
-  - platform: template
-    sensors:
-      firmware_upgrade_switch_livingroom:
-        friendly_name: Firmware Upgrade Switch Wohnzimmer
-        value_template: >
-          {{ 'Update available' if state_attr('device_tracker.switch_livingroom', 'upgradable') == true else 'Up-to-date' }}
-  # Switch Storageroom
+# Switch Storageroom
   ## Uptime
   - platform: snmp
     name: Uptime Switch Storageroom
@@ -369,13 +326,6 @@ sensor:
     host: 10.10.0.10
     community: 'public'
     baseoid: 1.3.6.1.4.1.4413.1.1.1.1.1.13.0
-  ## Firmware Upgrade Available
-  - platform: template
-    sensors:
-      firmware_upgrade_switch_storageroom:
-        friendly_name: Firmware Upgrade Switch Reduit
-        value_template: >
-          {{ 'Update available' if state_attr('device_tracker.switch_storageroom', 'upgradable') == true else 'Up-to-date' }}
   # USG Router Livingroom
   ## CPU 1 min
   - platform: snmp
@@ -444,14 +394,7 @@ sensor:
     community: 'public'
     baseoid: 1.3.6.1.2.1.1.1.0
     value_template: "{{ '.'.join(value.split('.')[:3]) }}"
-  ## Firmware Upgrade Available
-  - platform: template
-    sensors:
-      firmware_upgrade_usg_router:
-        friendly_name: Firmware Upgrade USG Router
-        value_template: >
-          {{ 'Update available' if state_attr('device_tracker.usg_router', 'upgradable') == true else 'Up-to-date' }}
-  ## WAN In
+## WAN In
   - platform: snmp
     name: WAN In USG
     host: 10.10.0.1
@@ -509,7 +452,7 @@ sensor:
     resource: https://api.github.com/repos/dresden-elektronik/deconz-rest-plugin/releases/latest
     name: latest_version_deconz
     value_template: >
-      {{ value_json.tag_name.strip('_stable').lstrip('V').replace('_','.').replace('0','') }}
+      {{ value_json.tag_name.strip('_stable').lstrip('V').replace('_','.').replace('0','')[1:] }}
     scan_interval: 3600
   
   ######################
@@ -775,6 +718,25 @@ sensor:
       {%- set days = '{}d '.format(days) if days > 0 else '' %}
       {{ 'Less than 1 min' if time < 60 else days + hours + minutes }}
 
+template:
+  - binary_sensor:
+    ## Firmware Upgrade Switch Storageroom
+    - name: firmware_upgrade_switch_storageroom
+      state: >
+        {{ state_attr('device_tracker.switch_storageroom', 'upgradable') == true }}
+    ## Firmware Upgrade Switch Livingroom
+    - name: firmware_upgrade_switch_livingroom
+      state: >
+        {{ state_attr('device_tracker.switch_livingroom', 'upgradable') == true }}
+    ## Firmware Upgrade AP Livingroom
+    - name: firmware_upgrade_ap_livingroom
+      state: >
+        {{ state_attr('device_tracker.ap_livingroom', 'upgradable') == true }}
+    ## Firmware Upgrade Switch Storageroom
+    - name: firmware_upgrade_usg_router
+      state: >
+        {{ state_attr('device_tracker.usg_router', 'upgradable') == true }}
+
 #####################
 # Logger integration
 #####################  
@@ -817,19 +779,15 @@ automation:
     mode: parallel
     trigger:
       - platform: state
-        entity_id: 
-          - sensor.update_esphome
-          - sensor.update_mosquitto
-          - sensor.update_influxdb
-          - sensor.update_grafana
-          - sensor.update_portainer
-          - sensor.update_unifi_poller
-          - sensor.update_swag
-          - sensor.firmware_upgrade_usg_router
-          - sensor.firmware_upgrade_ap_livingroom
-          - sensor.firmware_upgrade_switch_livingroom
-          - sensor.firmware_upgrade_switch_storageroom
-        to: "Update available"
+        entity_id:
+          - binary_sensor.firmware_upgrade_usg_router
+          - binary_sensor.firmware_upgrade_ap_livingroom
+          - binary_sensor.firmware_upgrade_switch_livingroom
+          - binary_sensor.firmware_upgrade_switch_storageroom
+          - binary_sensor.backup_nas_update_available
+          - binary_sensor.nas_update_available
+        to: 'on'
+        id: UpdateBinary
       - platform: numeric_state
         entity_id: 
           - sensor.updates_pi_bathroomsmall
@@ -838,28 +796,64 @@ automation:
           - sensor.updates_pi_zigbee_zwave
           - sensor.updates_pi_office
           - sensor.hacs
-        above: 1
+        above: 0
+        id: UpdateNumber
       - platform: state
-        entity_id: 
-          - binary_sensor.backup_nas_update_available
-          - binary_sensor.nas_update_available
+        entity_id:
+          - binary_sensor.wud_container_cloud_calibre
+          - binary_sensor.wud_container_cloud_nextcloud
+          - binary_sensor.wud_container_local_appdaemon
+          - binary_sensor.wud_container_local_esphome_dashboard
+          - binary_sensor.wud_container_local_grafana
+          - binary_sensor.wud_container_local_hass
+          - binary_sensor.wud_container_local_influxdb
+          - binary_sensor.wud_container_local_mqtt
+          - binary_sensor.wud_container_local_portainer
+          - binary_sensor.wud_container_local_swag
+          - binary_sensor.wud_container_local_wud
         to: 'on'
-      - platform: template
-        value_template: >
-          {{ states('sensor.latest_version_deconz') > states('sensor.current_version_deconz') or
-              states('sensor.latest_version_homeassistant') > states('sensor.current_version_homeassistant') or
-              states('sensor.latest_version_pihole_core') > states('sensor.current_version_pihole_core') or
-              states('sensor.latest_version_pihole_ftl') > states('sensor.current_version_pihole_ftl') or
-              states('sensor.latest_version_pihole_web') > states('sensor.current_version_pihole_web') }}
+        id: UpdateVersion
+      # - platform: template
+      #   value_template: >
+      #     {{ states('sensor.latest_version_deconz') > states('sensor.current_version_deconz') or
+      #         states('sensor.latest_version_pihole_core') > states('sensor.current_version_pihole_core') or
+      #         states('sensor.latest_version_pihole_ftl') > states('sensor.current_version_pihole_ftl') or
+      #         states('sensor.latest_version_pihole_web') > states('sensor.current_version_pihole_web') }}
+      #   id: UpdateBinary
     condition:
       - "{{ trigger.from_state.state != trigger.to_state.state }}"
       - "{{ trigger.from_state.state not in ['unavailable', 'unknown', 'None'] }}"
       - "{{ trigger.to_state.state not in ['unavailable', 'unknown', 'None'] }}"
     action:
-      - service: notify.mobile_app_phone_dimitri
-        data:
-          title: "{{ trigger.to_state.name }}"
-          message: "📥 Update verfügbar"
+      - variables:
+          id: "{{ trigger.id }}"
+          name: "{{ trigger.to_state.name }}"
+          state: "{{ trigger.to_state.state }}"
+      - choose:
+          - conditions:
+              - "{{ id == UpdateBinary }}"
+            sequence:
+              - service: notify.mobile_app_phone_dimitri
+                data:
+                  title: "{{ name }}"
+                  message: "📥 Update verfügbar"
+          - conditions:
+              - "{{ id == UpdateNumber }}"
+            sequence:
+              - service: notify.mobile_app_phone_dimitri
+                data:
+                  title: "{{ name }}"
+                  message: >
+                    📥 Es {{'ist' if state|int == 1 else 'sind' }} {{ trigger.to_state.state }} 
+                    Update{{'s' if state|int == 1 else ''}} verfügbar.
+          - conditions:
+              - "{{ id == UpdateVersion }}"
+            sequence:
+              - service: notify.mobile_app_phone_dimitri
+                data:
+                  title: "{{ name }}"
+                  message: >
+                    📥 Neue Version {{ state_attr(trigger.entity_id, 'result_tag') }} ist verfügbar.
   
   # Notify on low battery level
   - id: notify_on_low_battery_level
@@ -936,7 +930,7 @@ automation:
         data:
           title: "Hohe CPU Last!"
           message: >
-            Die CPU Last für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist seit 2 Stunden über 60%!
+            Die CPU Last für {{ trigger.to_state.name }} ist seit 2 Stunden über 60%!
           data:
             channel: System
   
@@ -950,13 +944,18 @@ automation:
           - sensor.disk_use_pct_ha
           - sensor.disk_use_pct_nas
           - sensor.disk_use_pct_backup_nas
+          - sensor.disk_use_pct_pi_bathroomsmall
+          - sensor.disk_use_pct_pi_livingroom
+          - sensor.disk_use_pct_pi_office
+          - sensor.disk_use_pct_pi_dressroom
+          - sensor.disk_use_pct_pi_zigbee_zwave
         above: 95
     action:
       - service: notify.mobile_app_phone_dimitri
         data:
           title: "Speicher fast voll!"
           message: >
-            💽 Der Speicher für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist 95% voll!
+            💽 Der Speicher für {{ trigger.to_state.name }} ist 95% voll!
           data:
             channel: System
 
@@ -1018,7 +1017,7 @@ automation:
         data:
           title: "Hohe CPU Temperatur!"
           message: >
-            🌡️Die CPU Temperatur für {{ state_attr(trigger.to_state.entity_id, 'friendly_name') }} ist seit 2 Stunden über 70°!
+            🌡️Die CPU Temperatur für {{ trigger.to_state.name }} ist seit 2 Stunden über 70°!
           data:
             channel: Notfall
             priority: high
@@ -1234,7 +1233,7 @@ automation:
           - binary_sensor.door_livingroom
           - binary_sensor.door_main
           - binary_sensor.window_bathroomlarge
-          # - binary_sensor.window_office
+          - binary_sensor.window_office
           - binary_sensor.window_dressroom
           - binary_sensor.window_bedroom
           - binary_sensor.window_kitchen

@@ -212,12 +212,12 @@ cards:
                       **HOME ASSISTANT VM**<br>
                       **RAM:** 4GB<br>
                       **SSD:** 64GB<br>
-                      **OS:** Ubuntu 18.04.3 LTS<br>
+                      **OS:** Ubuntu 20.04.2 LTS<br>
                       **Uptime:**
                       {{ states('sensor.uptime_home_assistant_vm') }}<br>
                       **Heart Beat:**
                       {{ states('sensor.home_assistant_heartbeat') }}<br>
-                      **Letztes Backup:**
+                      **Last Backup:**
                       {{ states('sensor.last_backup_home_assistant_vm') }}
                     style: |
                       ha-card {
@@ -505,7 +505,7 @@ cards:
                       </center>
                     style: |
                       ha-card {
-                        margin-top: 160px;
+                        margin-top: 300px;
                         margin-left: 2.5px;
                       }
                   # Version
@@ -683,8 +683,10 @@ cards:
                       <center>
                         <h5>Uptime:
                         {{ states('sensor.docker_mqtt_status') }}<br>
-                        Software:
-                        {{ states('sensor.update_mosquitto') }}<br></h5>
+                        Current:
+                        {{ state_attr('binary_sensor.wud_container_local_mqtt', 'image_tag_value') }}<br>
+                        Latest:
+                        {{ state_attr('binary_sensor.wud_container_local_mqtt', 'result_tag') }}</h5>
                       </center>
                     style: |
                       ha-card {
@@ -803,7 +805,7 @@ cards:
                       </center>
                     style: |
                       ha-card {
-                        margin-top: -40px;
+                        margin-top: -20px;
                       }
                   # Updates
                   - type: markdown
@@ -811,14 +813,15 @@ cards:
                       <center>
                         <h5>Uptime:
                         {{ states('sensor.docker_swag_status') }}<br>
-                        Software:
-                        {{ states('sensor.update_swag') }}<br>
-                        </h5>
+                        Current:
+                        {{ state_attr('binary_sensor.wud_container_local_swag', 'image_tag_value') }}<br>
+                        Latest:
+                        {{ state_attr('binary_sensor.wud_container_local_swag', 'result_tag') }}</h5>
                       </center>
                     style: |
                       ha-card {
                         color: teal;
-                        margin-top: -44px;
+                        margin-top: -24px;
                       }
                   # CPU
                   - type: custom:bar-card
@@ -909,7 +912,133 @@ cards:
                           margin-top: -130px;
                           margin-right: 30px;
                           padding-left: 5px;
-                        }    
+                        }
+              ####################################################
+              #                Mopidy Bedroom                    #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3><a href="http://10.10.40.6:6681/iris/">Mopidy Bedroom</a></h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="70" src="/local/system_monitoring/mopidy.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -40px;
+                      }
+                  # Updates
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_mopidy_bedroom_status') }}<br></h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -44px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_bedroom_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_bedroom_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
               - type: vertical-stack
                 cards:
               ####################################################
@@ -919,7 +1048,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>InFluxDB</h3>
+                        <h3><a href="http://10.10.40.6:8086">InfluxDB</a></h3>
                       </center>
                     style: |
                       ha-card {
@@ -942,8 +1071,10 @@ cards:
                       <center>
                         <h5>Uptime:
                         {{ states('sensor.docker_influxdb_status') }}<br>
-                        Software:
-                        {{ states('sensor.update_influxdb') }}<br><br></h5>
+                        Current:
+                        {{ state_attr('binary_sensor.wud_container_local_influxdb', 'image_tag_value') }}<br>
+                        Latest:
+                        {{ state_attr('binary_sensor.wud_container_local_influxdb', 'result_tag') }}</h5>
                       </center>
                     style: |
                       ha-card {
@@ -1047,7 +1178,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Grafana</h3>
+                        <h3><a href="http://10.10.40.6:3000">Grafana</a></h3>
                       </center>
                     style: |
                       ha-card {
@@ -1070,8 +1201,10 @@ cards:
                       <center>
                         <h5>Uptime:
                         {{ states('sensor.docker_grafana_status') }}<br>
-                        Software:
-                        {{ states('sensor.update_grafana') }}<br></h5>
+                        Current:
+                        {{ state_attr('binary_sensor.wud_container_local_grafana', 'image_tag_value') }}<br>
+                        Latest:
+                        {{ state_attr('binary_sensor.wud_container_local_grafana', 'result_tag') }}</h5>
                       </center>
                     style: |
                       ha-card {
@@ -1167,7 +1300,263 @@ cards:
                           margin-top: -130px;
                           margin-right: 30px;
                           padding-left: 5px;
-                        }  
+                        }
+              ####################################################
+              #                What's up Docker                  #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3><a href="http://10.10.40.6:3005">What's up Docker</a></h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="70" src="/local/system_monitoring/wud_logo.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -40px;
+                      }
+                  # Updates
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_wud_status') }}<br>
+                        Current:
+                        {{ state_attr('binary_sensor.wud_container_local_wud', 'image_tag_value') }}<br>
+                        Latest:
+                        {{ state_attr('binary_sensor.wud_container_local_wud', 'result_tag') }}</h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -44px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_wud_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_wud_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+              ####################################################
+              #                Mopidy Livingroom                 #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3><a href="http://10.10.40.6:6682/iris/">Mopidy Livingroom</a></h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="70" src="/local/system_monitoring/mopidy.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -40px;
+                      }
+                  # Updates
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_mopidy_livingroom_status') }}<br></h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -44px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_livingroom_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_livingroom_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }    
               - type: vertical-stack
                 cards:
               ####################################################
@@ -1177,7 +1566,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>AppDaemon</h3>
+                        <h3><a href="http://10.10.40.6:5050">AppDaemon</a></h3>
                       </center>
                     style: |
                       ha-card {
@@ -1201,9 +1590,9 @@ cards:
                         <h5>Uptime:
                         {{ states('sensor.docker_appdaemon_status') }}<br>
                         Current:
-                        {{ states('sensor.docker_appdaemon_image').split(':')[1] }}<br>
+                        {{ state_attr('binary_sensor.wud_container_local_appdaemon', 'image_tag_value') }}<br>
                         Latest:
-                        {{ states('sensor.latest_version_appdaemon') }}</h5>
+                        {{ state_attr('binary_sensor.wud_container_local_appdaemon', 'result_tag') }}</h5>
                       </center>
                     style: |
                       ha-card {
@@ -1307,7 +1696,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>ESP Home Dashboard</h3>
+                        <h3><a href="http://10.10.40.6:6052">ESPHome Dashboard</a></h3>
                       </center>
                     style: |
                       ha-card {
@@ -1330,8 +1719,10 @@ cards:
                       <center>
                         <h5>Uptime:
                         {{ states('sensor.docker_esphome_dashboard_status') }}<br>
-                        Software:
-                        {{ states('sensor.update_esphome') }}<br></h5>
+                        Current:
+                        {{ state_attr('binary_sensor.wud_container_local_esphome_dashboard', 'image_tag_value') }}<br>
+                        Latest:
+                        {{ state_attr('binary_sensor.wud_container_local_esphome_dashboard', 'result_tag') }}</h5>
                       </center>
                     style: |
                       ha-card {
@@ -1428,6 +1819,258 @@ cards:
                           margin-right: 30px;
                           padding-left: 5px;
                         }
+              ####################################################
+              #                   Snapserver                     #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3>Snapserver</h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="70" src="/local/system_monitoring/snapcast.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -40px;
+                      }
+                  # Updates
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_snapserver_status') }}<br><br><br></h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -44px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_snapserver_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_snapserver_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+              ####################################################
+              #                Mopidy Balcony                    #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3><a href="http://10.10.40.6:6684/iris/">Mopidy Balcony</a></h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="70" src="/local/system_monitoring/mopidy.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -40px;
+                      }
+                  # Updates
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_mopidy_balcony_status') }}<br></h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -44px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_balcony_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_balcony_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }    
               - type: vertical-stack
                 cards:
               ####################################################
@@ -1565,7 +2208,7 @@ cards:
                   - type: markdown
                     content: >
                       <center>
-                        <h3>Portainer</h3>
+                        <h3><a href="http://10.10.40.6:9000">Portainer</a></h3>
                       </center>
                     style: |
                       ha-card {
@@ -1588,8 +2231,10 @@ cards:
                       <center>
                         <h5>Uptime:
                         {{ states('sensor.docker_portainer_status') }}<br>
-                        Software:
-                        {{ states('sensor.update_portainer') }}<br></h5>
+                        Current:
+                        {{ state_attr('binary_sensor.wud_container_local_portainer', 'image_tag_value') }}<br>
+                        Latest:
+                        {{ state_attr('binary_sensor.wud_container_local_portainer', 'result_tag') }}</h5>
                       </center>
                     style: |
                       ha-card {
@@ -1686,3 +2331,255 @@ cards:
                           margin-right: 30px;
                           padding-left: 5px;
                         }
+              ####################################################
+              #                Mopidy Office                     #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3><a href="http://10.10.40.6:6683/iris/">Mopidy Office</a></h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="70" src="/local/system_monitoring/mopidy.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -40px;
+                      }
+                  # Updates
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_mopidy_office_status') }}<br><br><br></h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -44px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_office_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_office_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+              ####################################################
+              #                   Mopidy TTS                     #
+              ####################################################
+                  # Title
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h3><a href="http://10.10.40.6:6680/iris/">Mopidy TTS</a></h3>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -75px;
+                      }
+                  # Image
+                  - type: markdown
+                    content: >
+                      <center>
+                        <img width="70" src="/local/system_monitoring/mopidy.png">
+                      </center>
+                    style: |
+                      ha-card {
+                        margin-top: -40px;
+                      }
+                  # Updates
+                  - type: markdown
+                    content: >
+                      <center>
+                        <h5>Uptime:
+                        {{ states('sensor.docker_mopidy_tts_status') }}<br></h5>
+                      </center>
+                    style: |
+                      ha-card {
+                        color: teal;
+                        margin-top: -44px;
+                      }
+                  # CPU
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_tts_cpu
+                        name: CPU
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 10
+                          - color: rgb(206,133,0,0.60)
+                            from: 11
+                            to: 25
+                          - color: rgb(163,0,0,0.60)
+                            from: 26
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -97.5px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -50px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -97.5px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }
+                  # RAM
+                  - type: custom:bar-card
+                    positions:
+                      name: outside
+                      value: outside
+                      indicator: 'off'
+                      icon: 'off'
+                    height: 15px
+                    width: 80%
+                    entities:
+                      - entity: sensor.docker_mopidy_tts_memory_percent
+                        name: RAM
+                        severity:
+                          - color: rgb(26,204,147,0.33)
+                            from: 0
+                            to: 69.9
+                          - color: rgb(206,133,0,0.60)
+                            from: 70
+                            to: 85
+                          - color: rgb(163,0,0,0.60)
+                            from: 85
+                            to: 150
+                    style: |
+                      ha-card {
+                        --paper-item-icon-color: rgb(47,186,229);
+                        border-radius: 2.5px;
+                        height: 40px;
+                      }
+                        bar-card-name	 {
+                          margin-top: -130px;
+                          margin-left: 40px;
+                        }
+                        bar-card-backgroundbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-currentbar	 {
+                          margin-top: -67.5px;
+                          border-radius: 2.5px;
+                        }
+                        bar-card-value	 {
+                          margin-top: -130px;
+                          margin-right: 30px;
+                          padding-left: 5px;
+                        }    

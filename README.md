@@ -2364,88 +2364,88 @@ FTL Latest:
 Restart Home Assistant.
 
 #### Docker Containers
-To monitor the whether the docker containers use the latest available image, I use a shell script I wrote. It doesn't work for all containers (couldn't get it to work with ozwdaemon) and my shell script skills are pretty basic.
+To monitor the whether the docker containers use the latest available image, I use a docker container called [What's Up Docker](https://fmartinou.github.io/whats-up-docker/#/) or short WUD. It sends the data through MQTT and the binary sensors will be added automatically to Home Assistant, without any further configuration.
 
-The script checks the digest of the local image and compares it to the digest in the remote repository.
-The script publishes “Error” if the local or the remote digest can not be found, it publishes “Update available” if the local digest is not equal to the remote digest and it publishes “Up-to-Date” if the local digest matches the remote digest.
-This script needs to be put on the host machine running the docker stack.
-
-```bash
-#!/bin/bash
-# Example usage:
-# ./check_docker_latest.sh check_docker_list.txt
-
-IMAGES="$1"
-
-LINES=$(cat $IMAGES)
-
-for LINE in $LINES
-do
-    NAME=$(echo $LINE | cut -f1 -d,)
-    REMOTE_IMAGE=$(echo $LINE | cut -f2 -d,)
-    LOCAL_IMAGE=$(echo $LINE | cut -f3 -d,)
-    # Get token
-    token=$(curl --silent "https://auth.docker.io/token?scope=repository:$REMOTE_IMAGE:pull&service=registry.docker.io" | jq -r '.token')
-    # Get remote checksum
-    digest=$(curl --silent -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
-            -H "Authorization: Bearer $token" \
-            "https://registry.hub.docker.com/v2/$REMOTE_IMAGE/manifests/latest" | jq -r '.config.digest')
-    # Get local checksum
-    local_digest=$(docker images -q --no-trunc $LOCAL_IMAGE:latest)
-    # Check remote against local checksum
-    if [[ $digest != sha256* ]] || [[ $local_digest != sha256* ]]; then
-           payload="Error"
-    elif [ "$digest" != "$local_digest" ] ; then
-           payload="Update available"
-    else
-           payload="Up-to-date"
-    fi
-    # publish result to MQTT
-    mosquitto_pub -h localhost -t "docker-image-updates/$NAME" -m "$payload" -u "username" -P "password" -r
-done
-```
-You need to replace “username” and “password” with your credentials to log in to the MQTT broker in the second last line.
-The shell script takes a .txt file as an input to configure the containers to be checked.
-
-Here's the example from my system:
-
-```
-mosquitto,library/eclipse-mosquitto,eclipse-mosquitto
-esphome,esphome/esphome,esphome/esphome
-grafana,grafana/grafana,grafana/grafana
-influxdb,library/influxdb,influxdb
-unifi-poller,golift/unifi-poller,golift/unifi-poller
-portainer,portainer/portainer,portainer/portainer
-```
-Each line represents one image. Each line has three values separated by a comma, the first value is the name of the MQTT topic that the info will be published to, the second value is the remote repository and the third value is the local repository.
-
-E.g. for InfluxDB
-I choose influxdb as the MQTT topic name. The remote repository can be found here 1 in the section "Quick reference (cont.) under the title “image-updates” -> **library/influxdb**. The local repository is what I defined in docker-compose in the field “image”-> **influxdb**
+Create a new directory called "wud" on the level where the home-assistant and appdaemon directories are located to store the data.
+Add the following to docker-compose.yml to configure the WUD docker container:
 
 ```yaml
-influxdb:
-    container_name: influxdb
+  wud:
+    container_name: wud
     environment:
-      - INFLUXDB_DB=smart_home
-      - INFLUXDB_ADMIN_USER=username
-      - INFLUXDB_ADMIN_PASSWORD=supersecretpassword
-    image: influxdb:latest
-    ports:
-      - "8086:8086"
+      - WUD_TRIGGER_MQTT_MOSQUITTO_URL=mqtt://mqtt-server-ip:1883
+      - WUD_TRIGGER_MQTT_MOSQUITTO_USER=yourmqttusername
+      - WUD_TRIGGER_MQTT_MOSQUITTO_PASSWORD=yoursupersecretmqttpassword
+      - WUD_TRIGGER_MQTT_MOSQUITTO_HASS_ENABLED=true
+      - WUD_WATCHER_LOCAL_SOCKET=/var/run/docker.sock
+      - WUD_WATCHER_LOCAL_WATCHBYDEFAULT=false
+    image: fmartinou/whats-up-docker:5.2.0
     restart: unless-stopped
+    ports:
+      - "3005:3000"
     volumes:
-      - ./influxdb:/var/lib/influxdb
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./wud:/store
+```
+
+I stopped using the latest tag, and started using version tags instead for my docker containers. This makes me more conscious about updating my containers and avoids running into updates with breaking changes, when running `docker-compose pull`. This led to some headaches in the past with e.g. InfluxDB and Mosquitto. 
+
+I don't watch all containers by default, as I have some self-built ones and some containers on a registery that is not supported by What's Up Docker. Instead I add labels to the containers I want to watch and also to only watch for dot versions such as 2.2.5. I add the following lines:
+
+```yaml
+labels: 
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.watch=true
+```
+Here's an example for Grafana:
+
+```yaml
+  grafana:
+    container_name: grafana
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=secretusername
+      - GF_SECURITY_ADMIN_PASSWORD=supersecretpassword
+    image: grafana/grafana:8.1.1
+    labels: 
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.watch=true
+    restart: unless-stopped
+    user: "1000"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/var/lib/grafana
       - /etc/localtime:/etc/localtime:ro
 ```
 
-Now on the Home Assistant side we can use the [MQTT sensor integration](https://www.home-assistant.io/integrations/sensor.mqtt/). 
+I also have some containers running on other machines than Home Assistant. These can also be watched with wud. First you need to enable the docker remote API:
 
-Add the following in the `sensor:` section of the system_monitoring.yaml file (e.g. for InfluxDB):
+1. SSH into the remote machine running the docker stack you want to watch.
+2. Edit the docker service file:
+`nano /lib/systemd/system/docker.service`
+3. Find the line which starts with `ExecStart` and change it to:
+`ExecStart=/usr/bin/dockerd -H=fd:// -H=tcp://0.0.0.0:2375`
+4. Save the modified file.
+5. Reload the docker daemon with `sudo systemctl daemon-reload`
+6. Restart docker with `sudo service docker restart`
+7. Test with sending the below command from another machine:
+`curl http://ip-of-docker-machine:2375/images/json`
+8. In case of success a JSON formatted string should be returned, containing various information about the containers on this machine.
+
+Now add the following to the wud docker configuration to include the remote host:
+
 ```yaml
-  - platform: mqtt
-    state_topic: "docker-image-updates/influxdb"
-    name: Update InfluxDB
+environment:
+    - WUD_WATCHER_CLOUD_HOST=ip-of-remote-docker-host
+    - WUD_WATCHER_CLOUD_PORT=2375
+    - WUD_WATCHER_CLOUD_WATCHBYDEFAULT=false
 ```
+Again add the labels to the containers you want to watch on the remote host.
+
+In case of success, you should now have one binary sensor per container you are watching. The binary sensor is `on` when a new version is available. The attribute `image_tag_value` shows the current version and the attribute `result_tag` shows the latest version available. We'll use these sensors later in the automation, which notifies about updates available.
 
 ### Synology NAS
 #### Statistics
@@ -2817,7 +2817,6 @@ Create a new directory called "influxdb" on the level where the home-assistant a
 Add the following to docker-compose.yml to configure the influxdb docker container:
 
 ```yaml
-InfluxDB
   influxdb:
     container_name: influxdb 
     environment:
@@ -3908,10 +3907,3 @@ The logic is as follows:
 I don't have an automation (yet) to detected the dishwasher has been emptied, as there is no place to put a door sensor that is not disturbing to look at.
 </p>
 </details>
-
-
-
-
-
-
-

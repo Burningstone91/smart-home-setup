@@ -2,9 +2,12 @@ version: "3"
 services:
   appdaemon:
     container_name: appdaemon
-    image: acockburn/appdaemon:4.0.8
     depends_on:
       - hass
+    image: acockburn/appdaemon:4.0.8
+    labels: 
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.watch=true
     ports:
       - "5050:5050"
     restart: unless-stopped
@@ -14,7 +17,10 @@ services:
 
   esphome-dashboard:
     container_name: esphome-dashboard
-    image: esphome/esphome:latest
+    image: esphome/esphome:1.20.4
+    labels: 
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.watch=true
     network_mode: host
     restart: unless-stopped
     volumes: 
@@ -28,7 +34,10 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=secretusername
       - GF_SECURITY_ADMIN_PASSWORD=supersecretpassword
-    image: grafana/grafana:latest
+    image: grafana/grafana:8.1.1
+    labels: 
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.watch=true
     restart: unless-stopped
     user: "1000"
     ports:
@@ -39,7 +48,7 @@ services:
 
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:2021.8.0b4
+    image: homeassistant/home-assistant:2021.8.6
     network_mode: host
     restart: unless-stopped
     volumes:
@@ -65,7 +74,10 @@ services:
 
   influxdb:
     container_name: influxdb
-    image: influxdb:latest
+    image: influxdb:2.0.8
+    labels: 
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.watch=true
     ports:
       - "8086:8086"
     restart: unless-stopped
@@ -153,7 +165,10 @@ services:
 
   mqtt:
     container_name: mqtt
-    image: eclipse-mosquitto
+    image: eclipse-mosquitto:2.0.11
+    labels: 
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.watch=true
     ports:
       - "1883:1883"
       - "9001:9001"
@@ -167,7 +182,10 @@ services:
 
   portainer:
     container_name: portainer
-    image: "portainer/portainer:latest"
+    image: portainer/portainer:2.6.2
+    labels: 
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.watch=true
     ports:
       - "9000:9000"
       - "8000:8000"
@@ -206,7 +224,10 @@ services:
       - URL=yourdomain.com
       - VALIDATION=http
       - EMAIL=yourmail@address.com
-    image: ghcr.io/linuxserver/swag
+    image: linuxserver/swag:version-1.18.0
+    labels:
+      - wud.watch=true
+      - wud.tag.include=^version-\d+\.\d+\.\d+$$
     networks:
       default:
         ipv4_address: 172.19.0.132
@@ -217,6 +238,33 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./swag:/config
+
+  wud:
+    container_name: wud
+    environment:
+      - WUD_TRIGGER_MQTT_MOSQUITTO_URL=mqtt://ip-of-mqtt-broker:1883
+      - WUD_TRIGGER_MQTT_MOSQUITTO_USER=yourmqttusername
+      - WUD_TRIGGER_MQTT_MOSQUITTO_PASSWORD=yoursupersecretmqttpassword
+      - WUD_TRIGGER_MQTT_MOSQUITTO_HASS_ENABLED=true
+      - WUD_WATCHER_LOCAL_SOCKET=/var/run/docker.sock
+      - WUD_WATCHER_LOCAL_WATCHBYDEFAULT=false
+      - WUD_WATCHER_CLOUD_HOST=10.10.10.14
+      - WUD_WATCHER_CLOUD_PORT=2375
+      - WUD_WATCHER_CLOUD_WATCHBYDEFAULT=false
+      - WUD_WATCHER_INVESTMENT_HOST=10.10.10.16
+      - WUD_WATCHER_INVESTMENT_PORT=2375
+      - WUD_WATCHER_INVESTMENT_WATCHBYDEFAULT=false
+    image: fmartinou/whats-up-docker:5.2.0
+    labels: 
+      - wud.tag.include=^\d+\.\d+\.\d+$$
+      - wud.watch=true
+    restart: unless-stopped
+    ports:
+      - "3005:3000"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./wud:/store
 
 networks:
   default:
