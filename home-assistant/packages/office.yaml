@@ -28,6 +28,31 @@ binary_sensor:
         delay_off:
           minutes: 15
 
+sensor:
+  # Custom Integration Powercalc
+  ## Power consumption lights
+  - platform: powercalc
+    name: power_light_office_ceiling_1
+    entity_id: light.office_ceiling_1
+    linear:
+      min_power: 0.5
+      max_power: 5
+    standby_usage: 0.2
+  - platform: powercalc
+    name: power_light_office_ceiling_2
+    entity_id: light.office_ceiling_2
+    linear:
+      min_power: 0.5
+      max_power: 5
+    standby_usage: 0.2
+  - platform: powercalc
+    name: power_light_office_ceiling_3
+    entity_id: light.office_ceiling_3
+    linear:
+      min_power: 0.5
+      max_power: 5
+    standby_usage: 0.2
+
 automation:
   # Turn lights on (if not already on) when motion is detected and lux below threshold
   - id: motion_light_on_office

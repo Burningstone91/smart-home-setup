@@ -18,6 +18,32 @@ binary_sensor:
         delay_off:
           minutes: 10
 
+sensor:
+  # Custom Integration Powercalc
+  ## Power consumption lights
+  - platform: powercalc
+    name: power_light_bedroom_ceiling_1
+    entity_id: light.bedroom_ceiling_1
+    manufacturer: signify
+    model: LCT010
+  - platform: powercalc
+    name: power_light_bedroom_ceiling_2
+    entity_id: light.bedroom_ceiling_2
+    manufacturer: signify
+    model: LCT010
+  - platform: powercalc
+    name: power_light_bedroom_ceiling_3
+    entity_id: light.bedroom_ceiling_3
+    manufacturer: signify
+    model: LCT010
+  - platform: powercalc
+    name: power_light_bedroom_bed
+    entity_id: light.bedroom_bed
+    linear:
+      min_power: 0.5
+      max_power: 20
+    standby_usage: 0.4
+
 automation:
   # Turn lights on (if not already on) when motion is detected
   # Sleep Mode Enabled -> Turn on light strip under the bed

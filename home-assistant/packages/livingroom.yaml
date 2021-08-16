@@ -24,6 +24,57 @@ binary_sensor:
         delay_off:
           minutes: 10
 
+sensor:
+  # Custom Integration Powercalc
+  ## Power consumption lights
+  - platform: powercalc
+    name: power_light_livingroom_floor_front
+    entity_id: light.livingroom_floor_front
+    manufacturer: signify
+    model: LCT010
+  - platform: powercalc
+    name: power_light_livingroom_floor_back
+    entity_id: light.livingroom_floor_back
+    manufacturer: signify
+    model: LCT010
+  ## Power consumption beamer
+  - platform: powercalc
+    name: power_beamer
+    entity_id: sensor.current_activity_livingroom
+    fixed:
+      states_power:
+        Fernsehen: 364
+        Nintendo Switch: 364
+        Musik: 0.4
+        Filme/Serien: 364
+        PowerOff: 0.4
+  ## Power consumption AV Receiver
+  - platform: powercalc
+    name: power_receiver_livingroom
+    entity_id: media_player.receiver_livingroom
+    fixed:
+      states_power:
+        on: 500
+        off: 2.7
+  # Convert power (W) to energy (kWh) for beamer
+  - platform: integration
+    source: sensor.power_beamer
+    name: energy_beamer
+    unit_prefix: k
+    round: 2
+  # Convert power (W) to energy (kWh) for AV Receiver
+  - platform: integration
+    source: sensor.power_receiver_livingroom
+    name: energy_receiver_livingroom
+    unit_prefix: k
+    round: 2
+
+template:
+  - sensor:
+      # Current activity of harmony remote
+      - name: current activity livingroom
+        state: "{{ state_attr('remote.wohnzimmer', 'current_activity') }}"
+
 automation:
   # Turn lights on (if not already on) when motion is detected
   - id: motion_light_on_livingroom
@@ -117,3 +168,8 @@ homeassistant:
       friendly_name: Temperatur Sensor Wohnzimmer
     sensor.battery_level_remote_light_livingroom:
       friendly_name: Remote Licht Wohnzimmer
+    # Energy Sensors
+    sensor.energy_beamer:
+      friendly_name: Konsum Beamer
+    sensor.energy_receiver_livingroom:
+      friendly_name: Konsum Verstärker Wohnzimmer
