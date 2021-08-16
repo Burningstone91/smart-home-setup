@@ -19,7 +19,7 @@ cards:
         name: Firmware
         icon: mdi:information-outline
 
-      - entity: sensor.firmware_upgrade_usg_router
+      - entity: binary_sensor.firmware_upgrade_usg_router
         name: Updates
         icon: mdi:download-circle
 

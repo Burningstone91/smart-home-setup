@@ -12,7 +12,7 @@ cards:
         name: Firmware
         icon: mdi:information-outline
 
-      - entity: sensor.firmware_upgrade_switch_storageroom
+      - entity: binary_sensor.firmware_upgrade_switch_storageroom
         name: Updates
         icon: mdi:download-circle
 
