@@ -52,10 +52,9 @@ sensor:
   - platform: powercalc
     name: power_receiver_livingroom
     entity_id: media_player.receiver_livingroom
+    standby_usage: 2.7
     fixed:
-      states_power:
-        on: 500
-        off: 2.7
+      power: 500
   # Convert power (W) to energy (kWh) for beamer
   - platform: integration
     source: sensor.power_beamer

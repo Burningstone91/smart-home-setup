@@ -1,4 +1,8 @@
 {
+    "after_dependencies": [
+        "integration",
+        "utility_meter"
+    ],
     "codeowners": [
         "@bramstroker"
     ],
@@ -7,7 +11,8 @@
         "fan",
         "switch",
         "binary_sensor",
-        "light"
+        "light",
+        "template"
     ],
     "documentation": "https://github.com/bramstroker/homeassistant-powercalc",
     "domain": "powercalc",
@@ -15,5 +20,5 @@
     "issue_tracker": "https://github.com/bramstroker/homeassistant-powercalc/issues",
     "name": "Power consumption",
     "requirements": [],
-    "version": "v0.2.7"
+    "version": "v0.6.0"
 }

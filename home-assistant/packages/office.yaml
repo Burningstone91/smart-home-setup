@@ -32,26 +32,13 @@ sensor:
   # Custom Integration Powercalc
   ## Power consumption lights
   - platform: powercalc
-    name: power_light_office_ceiling_1
-    entity_id: light.office_ceiling_1
+    name: power_light_office
+    entity_id: light.office
+    multiply_factor: 3
     linear:
       min_power: 0.5
       max_power: 5
-    standby_usage: 0.2
-  - platform: powercalc
-    name: power_light_office_ceiling_2
-    entity_id: light.office_ceiling_2
-    linear:
-      min_power: 0.5
-      max_power: 5
-    standby_usage: 0.2
-  - platform: powercalc
-    name: power_light_office_ceiling_3
-    entity_id: light.office_ceiling_3
-    linear:
-      min_power: 0.5
-      max_power: 5
-    standby_usage: 0.2
+    standby_usage: 0.6
 
 automation:
   # Turn lights on (if not already on) when motion is detected and lux below threshold

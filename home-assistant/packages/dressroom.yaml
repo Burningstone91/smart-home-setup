@@ -15,20 +15,11 @@ sensor:
   # Custom Integration Powercalc
   ## Power consumption lights
   - platform: powercalc
-    name: power_light_dressroom_ceiling_1
-    entity_id: light.dressroom_ceiling_1
+    name: power_light_dressroom
+    entity_id: light.dressroom
     manufacturer: signify
     model: LCT010
-  - platform: powercalc
-    name: power_light_dressroom_ceiling_2
-    entity_id: light.dressroom_ceiling_2
-    manufacturer: signify
-    model: LCT010
-  - platform: powercalc
-    name: power_light_dressroom_ceiling_3
-    entity_id: light.dressroom_ceiling_3
-    manufacturer: signify
-    model: LCT010
+    multiply_factor: 3
 
 automation:
   # Turn lights on (if not already on) when motion is detected

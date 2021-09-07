@@ -14,6 +14,10 @@ input_number:
     max: 2
     step: 0.01
 
+# Powercalc General Settings
+powercalc:
+  create_energy_sensors: false
+
 sensor:
   # Convert power (W) to energy (kWh) 
   - platform: integration
@@ -29,10 +33,10 @@ template:
         device_class: power
         unit_of_measurement: W
         state: >
-          {% set office = states('sensor.power_light_office_ceiling_1')|float + states('sensor.power_light_office_ceiling_2')|float + states('sensor.power_light_office_ceiling_3')|float %}
-          {% set bedroom_ceiling = states('sensor.power_light_bedroom_ceiling_1')|float + states('sensor.power_light_bedroom_ceiling_2')|float + states('sensor.power_light_bedroom_ceiling_3')|float  %}
+          {% set office = states('sensor.power_light_office')|float %}
+          {% set bedroom_ceiling = states('sensor.power_light_bedroom_ceiling')|float %}
           {% set bedroom_bed = states('sensor.power_light_bedroom_bed')|float %}
-          {% set dressroom = states('sensor.power_light_dressroom_ceiling_1')|float + states('sensor.power_light_dressroom_ceiling_2')|float + states('sensor.power_light_dressroom_ceiling_3')|float %}
+          {% set dressroom = states('sensor.power_light_dressroom')|float %}
           {% set livingroom = states('sensor.power_light_livingroom_floor_front')|float + states('sensor.power_light_livingroom_back')|float %}
           {{ office + bedroom_ceiling + bedroom_bed + dressroom + livingroom }}
       # Current Electricity Tariff
