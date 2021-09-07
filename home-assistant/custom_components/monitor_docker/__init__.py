@@ -23,6 +23,7 @@ from .const import (
     API,
     CONF_CERTPATH,
     CONF_CONTAINERS,
+    CONF_MEMORYCHANGE,
     CONF_RENAME,
     CONF_RETRY,
     CONF_SENSORNAME,
@@ -60,6 +61,7 @@ DOCKER_SCHEMA = vol.Schema(
         vol.Optional(CONF_SWITCHNAME, default=DEFAULT_SWITCHNAME): cv.string,
         vol.Optional(CONF_CERTPATH, default=""): cv.string,
         vol.Optional(CONF_RETRY, default=DEFAULT_RETRY): cv.positive_int,
+        vol.Optional(CONF_MEMORYCHANGE, default=100): cv.positive_int,
     }
 )
 

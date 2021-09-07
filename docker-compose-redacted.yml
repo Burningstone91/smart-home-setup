@@ -4,7 +4,7 @@ services:
     container_name: appdaemon
     depends_on:
       - hass
-    image: acockburn/appdaemon:4.0.8
+    image: acockburn/appdaemon:4.1.0
     labels: 
       - wud.tag.include=^\d+\.\d+\.\d+$$
       - wud.watch=true
@@ -17,7 +17,7 @@ services:
 
   esphome-dashboard:
     container_name: esphome-dashboard
-    image: esphome/esphome:1.20.4
+    image: esphome/esphome:2021.8.2
     labels: 
       - wud.tag.include=^\d+\.\d+\.\d+$$
       - wud.watch=true
@@ -34,7 +34,7 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=secretusername
       - GF_SECURITY_ADMIN_PASSWORD=supersecretpassword
-    image: grafana/grafana:8.1.1
+    image: grafana/grafana:8.1.2
     labels: 
       - wud.tag.include=^\d+\.\d+\.\d+$$
       - wud.watch=true
@@ -48,7 +48,7 @@ services:
 
   hass:
     container_name: hass
-    image: homeassistant/home-assistant:2021.8.6
+    image: homeassistant/home-assistant:2021.9.4
     network_mode: host
     restart: unless-stopped
     volumes:
@@ -165,7 +165,7 @@ services:
 
   mqtt:
     container_name: mqtt
-    image: eclipse-mosquitto:2.0.11
+    image: eclipse-mosquitto:2.0.12
     labels: 
       - wud.tag.include=^\d+\.\d+\.\d+$$
       - wud.watch=true
@@ -182,7 +182,7 @@ services:
 
   portainer:
     container_name: portainer
-    image: portainer/portainer:2.6.2
+    image: portainer/portainer:1.24.2
     labels: 
       - wud.tag.include=^\d+\.\d+\.\d+$$
       - wud.watch=true
@@ -254,7 +254,7 @@ services:
       - WUD_WATCHER_INVESTMENT_HOST=10.10.10.16
       - WUD_WATCHER_INVESTMENT_PORT=2375
       - WUD_WATCHER_INVESTMENT_WATCHBYDEFAULT=false
-    image: fmartinou/whats-up-docker:5.2.0
+    image: fmartinou/whats-up-docker:5.4.0
     labels: 
       - wud.tag.include=^\d+\.\d+\.\d+$$
       - wud.watch=true

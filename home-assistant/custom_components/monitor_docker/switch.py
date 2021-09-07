@@ -39,7 +39,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             if api.get_container(cname):
                 await api.get_container(cname).restart()
             else:
-                _LOGGER.error("Service restart failed, container '%s'does not exist", cname)
+                _LOGGER.error(
+                    "Service restart failed, container '%s'does not exist", cname
+                )
         elif cname in config[CONF_CONTAINERS]:
             _LOGGER.debug("Trying to restart container '%s'", cname)
 
@@ -47,9 +49,13 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             if api.get_container(cname):
                 await api.get_container(cname).restart()
             else:
-                _LOGGER.error("Service restart failed, container '%s'does not exist", cname)
+                _LOGGER.error(
+                    "Service restart failed, container '%s'does not exist", cname
+                )
         else:
-            _LOGGER.error("Service restart failed, container '%s' is not configured", cname)
+            _LOGGER.error(
+                "Service restart failed, container '%s' is not configured", cname
+            )
 
     if discovery_info is None:
         return
@@ -94,11 +100,14 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
     async_add_entities(switches, True)
 
-    #platform = entity_platform.current_platform.get()
-    #platform.async_register_entity_service(SERVICE_RESTART, {}, "async_restart")
-    hass.services.async_register(DOMAIN, SERVICE_RESTART, async_restart, schema=SERVICE_RESTART_SCHEMA)
+    # platform = entity_platform.current_platform.get()
+    # platform.async_register_entity_service(SERVICE_RESTART, {}, "async_restart")
+    hass.services.async_register(
+        DOMAIN, SERVICE_RESTART, async_restart, schema=SERVICE_RESTART_SCHEMA
+    )
 
     return True
+
 
 class DockerContainerSwitch(SwitchEntity):
     def __init__(self, container, prefix, cname, alias, name_format):
@@ -155,7 +164,7 @@ class DockerContainerSwitch(SwitchEntity):
         # Call event callback for possible information available
         self.event_callback()
 
-    def event_callback(self, remove=False):
+    def event_callback(self, name="", remove=False):
         """Callback for update of container information."""
 
         if remove:

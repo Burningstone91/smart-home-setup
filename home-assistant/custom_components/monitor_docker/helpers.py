@@ -29,6 +29,7 @@ from .const import (
     ATTR_VERSION_OS_TYPE,
     COMPONENTS,
     CONF_CERTPATH,
+    CONF_MEMORYCHANGE,
     CONTAINER,
     CONTAINER_STATS_CPU_PERCENTAGE,
     CONTAINER_STATS_1CPU_PERCENTAGE,
@@ -165,7 +166,10 @@ class DockerAPI:
 
             # Create our Docker Container API
             self._containers[cname] = DockerContainerAPI(
-                self._api, cname, self._interval
+                self._api,
+                cname,
+                self._interval,
+                memChange=self._config[CONF_MEMORYCHANGE],
             )
 
         hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, self._monitor_stop)
@@ -269,6 +273,10 @@ class DockerAPI:
 
                             # We also need to rename the internal name
                             self._containers[cname].set_name(cname)
+
+                            # We also should remove entities, rename does not work
+                            self._containers[cname].remove_entities()
+
                         else:
                             _LOGGER.error(
                                 "%s: Event rename container doesn't exist in list?",
@@ -317,7 +325,11 @@ class DockerAPI:
 
         # Create our Docker Container API
         self._containers[cname] = DockerContainerAPI(
-            self._api, cname, self._interval, False
+            self._api,
+            cname,
+            self._interval,
+            atInit=False,
+            memChange=self._config[CONF_MEMORYCHANGE],
         )
 
         # We should wait until container is attached
@@ -488,12 +500,13 @@ class DockerAPI:
 class DockerContainerAPI:
     """Docker Container API abstraction."""
 
-    def __init__(self, api, name, interval, atInit=True):
+    def __init__(self, api, name, interval, atInit=True, memChange=100):
         self._api = api
         self._name = name
         self._interval = interval
         self._busy = False
         self._atInit = atInit
+        self._memChange = memChange
         self._task = None
         self._subscribers = []
         self._cpu_old = {}
@@ -501,6 +514,10 @@ class DockerContainerAPI:
         self._network_error = 0
         self._memory_error = 0
         self._cpu_error = 0
+        self._memory_prev = None
+        self._memory_prev_breach = False
+        self._memory_percent_prev = None
+        self._memory_percent_prev_breach = False
 
         self._info = {}
         self._stats = {}
@@ -712,12 +729,20 @@ class DockerContainerAPI:
         # Gather memory information
         memory_stats = {}
         try:
-            # Memory is in Bytes, convert to MBytes
-            memory_stats["usage"] = toMB(
-                raw["memory_stats"]["usage"] - raw["memory_stats"]["stats"]["cache"]
-            )
+            # Workaround for Debian 11 vs 10
+            if "cache" in raw["memory_stats"]["stats"]:
+                # Memory is in Bytes, convert to MBytes
+                memory_stats["usage"] = toMB(
+                    raw["memory_stats"]["usage"] - raw["memory_stats"]["stats"]["cache"]
+                )
+                memory_stats["max_usage"] = toMB(raw["memory_stats"]["max_usage"])
+            else:
+                memory_stats["usage"] = toMB(
+                    raw["memory_stats"]["usage"]
+                    - raw["memory_stats"]["stats"]["inactive_file"]
+                )
+
             memory_stats["limit"] = toMB(raw["memory_stats"]["limit"])
-            memory_stats["max_usage"] = toMB(raw["memory_stats"]["max_usage"])
             memory_stats["usage_percent"] = round(
                 float(memory_stats["usage"]) / float(memory_stats["limit"]) * 100.0,
                 PRECISION,
@@ -758,6 +783,57 @@ class DockerContainerAPI:
             memory_stats.get("usage", None),
             memory_stats.get("usage_percent", None),
         )
+
+        # Default value
+        mem_breach = False
+
+        # Try to figure out if we should report the memory value or not
+        if (
+            memory_stats.get("usage", None)
+            and self._memory_prev
+            and not self._memory_prev_breach
+        ):
+            mem_diff = abs((memory_stats["usage"] / self._memory_prev) - 1) * 100
+
+            if self._memChange < 100 and mem_diff >= self._memChange:
+                mem_breach = True
+
+            _LOGGER.debug(
+                "%s: Mem Diff: %s%%, Curr: %s, Prev: %s, Breach: %s",
+                self._name,
+                round(mem_diff, 3),
+                memory_stats.get("usage", None),
+                self._memory_prev,
+                mem_breach,
+            )
+
+        else:
+            self._memory_prev_breach = False
+
+        """
+        self._memory_prev = None 
+        self._memory_prev_breach = False
+        self._memory_percent_prev = None 
+        self._memory_percent_prev_breach = False
+        """
+
+        # Check if we should block the current value or not
+        if mem_breach and not self._memory_prev_breach:
+            _LOGGER.debug("%s: Memory breach %s%%", self._name, mem_breach)
+
+            # Store values into previous
+            tmp1 = self._memory_prev
+            tmp2 = self._memory_percent_prev
+            self._memory_prev = memory_stats.get("usage", None)
+            self._memory_prev_breach = mem_breach
+            self._memory_percent_prev = memory_stats.get("usage_percent", None)
+            memory_stats["usage"] = tmp1
+            memory_stats["usage_percent"] = tmp2
+        else:
+            # Store values into previous
+            self._memory_prev = memory_stats.get("usage", None)
+            self._memory_prev_breach = mem_breach
+            self._memory_percent_prev = memory_stats.get("usage_percent", None)
 
         # Gather network information, doesn't work in network=host mode
         network_stats = {}
@@ -843,6 +919,14 @@ class DockerContainerAPI:
                 "%s: Task (not running) can not be cancelled for container info/stats",
                 self._name,
             )
+
+    #############################################################
+    def rename_entities_containername(self):
+        if len(self._subscribers) > 0:
+            _LOGGER.debug("%s: Renaming entities for container", self._name)
+
+        for callback in self._subscribers:
+            callback(rename=True, name=self._name)
 
     #############################################################
     def remove_entities(self):

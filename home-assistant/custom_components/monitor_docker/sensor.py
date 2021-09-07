@@ -330,7 +330,7 @@ class DockerContainerSensor(Entity):
         # Call event callback for possible information available
         self.event_callback()
 
-    def event_callback(self, remove=False):
+    def event_callback(self, name="", remove=False):
         """Callback for update of container information."""
 
         if remove:
@@ -372,7 +372,11 @@ class DockerContainerSensor(Entity):
             elif self._var_id == CONTAINER_INFO_STATUS:
                 state = info.get(CONTAINER_INFO_STATUS)
                 self._state_extra = info.get(CONTAINER_INFO_STATE)
-            elif self._var_id in [CONTAINER_INFO_STATE, CONTAINER_INFO_IMAGE, CONTAINER_INFO_HEALTH]:
+            elif self._var_id in [
+                CONTAINER_INFO_STATE,
+                CONTAINER_INFO_IMAGE,
+                CONTAINER_INFO_HEALTH,
+            ]:
                 state = info.get(self._var_id)
             elif info.get(CONTAINER_INFO_STATE) == "running":
                 if self._var_id in CONTAINER_MONITOR_LIST:

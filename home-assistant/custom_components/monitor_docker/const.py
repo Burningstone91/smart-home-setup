@@ -7,6 +7,7 @@ CONTAINER = "container"
 
 CONF_CERTPATH = "certpath"
 CONF_CONTAINERS = "containers"
+CONF_MEMORYCHANGE = "memorychange"
 CONF_RENAME = "rename"
 CONF_RETRY = "retry"
 CONF_SENSORNAME = "sensorname"
