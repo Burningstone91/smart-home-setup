@@ -211,8 +211,11 @@ cards:
                     content: >
                       **HOME ASSISTANT VM**<br>
                       **RAM:** 4GB<br>
-                      **SSD:** 64GB<br>
-                      **OS:** Ubuntu 20.04.2 LTS<br>
+                      **SSD:** 128GB<br>
+                      **OS:** Ubuntu 
+                      {{ states('sensor.os_version_nuc') }}<br>
+                      **Updates:**
+                      {{ states('sensor.updates_nuc') }}<br>
                       **Uptime:**
                       {{ states('sensor.uptime_home_assistant_vm') }}<br>
                       **Heart Beat:**

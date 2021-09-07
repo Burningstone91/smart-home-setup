@@ -75,9 +75,10 @@ sensor:
       - time_date
       - time_utc
       - beat
-  ########################
-  # SystemMonitor for NUC
-  ########################
+  ####################
+  # Home Assistant VM
+  ####################
+  # SystemMonitor
   - platform: systemmonitor
     resources:
     - type: disk_use_percent
@@ -111,9 +112,10 @@ sensor:
     - type: last_boot   
     - type: ipv4_address
       arg: ens18
-  ##################
-  # Temperature NUC
-  ##################
+  ######
+  # NUC
+  ######
+  # Temperature
   - platform: command_line
     name: temperature_cpu_nuc
     command: 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -q root@10.10.5.10 cat /sys/class/thermal/thermal_zone3/temp'
@@ -787,7 +789,7 @@ automation:
           - binary_sensor.backup_nas_update_available
           - binary_sensor.nas_update_available
         to: 'on'
-        id: UpdateBinary
+        id: 'UpdateBinary'
       - platform: numeric_state
         entity_id: 
           - sensor.updates_pi_bathroomsmall
@@ -797,7 +799,7 @@ automation:
           - sensor.updates_pi_office
           - sensor.hacs
         above: 0
-        id: UpdateNumber
+        id: 'UpdateNumber'
       - platform: state
         entity_id:
           - binary_sensor.wud_container_cloud_calibre
@@ -812,7 +814,7 @@ automation:
           - binary_sensor.wud_container_local_swag
           - binary_sensor.wud_container_local_wud
         to: 'on'
-        id: UpdateVersion
+        id: 'UpdateVersion'
       # - platform: template
       #   value_template: >
       #     {{ states('sensor.latest_version_deconz') > states('sensor.current_version_deconz') or
@@ -831,14 +833,14 @@ automation:
           state: "{{ trigger.to_state.state }}"
       - choose:
           - conditions:
-              - "{{ id == UpdateBinary }}"
+              - "{{ id == 'UpdateBinary' }}"
             sequence:
               - service: notify.mobile_app_phone_dimitri
                 data:
                   title: "{{ name }}"
                   message: "📥 Update verfügbar"
           - conditions:
-              - "{{ id == UpdateNumber }}"
+              - "{{ id == 'UpdateNumber' }}"
             sequence:
               - service: notify.mobile_app_phone_dimitri
                 data:
@@ -847,7 +849,7 @@ automation:
                     📥 Es {{'ist' if state|int == 1 else 'sind' }} {{ trigger.to_state.state }} 
                     Update{{'s' if state|int == 1 else ''}} verfügbar.
           - conditions:
-              - "{{ id == UpdateVersion }}"
+              - "{{ id == 'UpdateVersion' }}"
             sequence:
               - service: notify.mobile_app_phone_dimitri
                 data:
