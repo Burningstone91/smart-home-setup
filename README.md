@@ -3035,7 +3035,7 @@ I use the following automation to turn of the dehumidifier when the window in th
 
 
 ## Household Tasks <a name="household-tasks" href="https://github.com/Burningstone91/smart-home-setup#household-tasks"></a>
-To keep track of the various tasks to be done around the house, I setup some sensors and automations to notify me and my wife about tasks that haven't been done for the predefined period. When one of us completed the task, he can push the "done" button in the automation. This will send a little "thank you" message to the person that did the task, clears the notification for the other person and sends a notification to the other person that the task has already been done. The sensor has an attribute that that tracks the user that marked the task as solved. 
+To keep track of the various tasks to be done around the house, I setup some sensors and automations to notify me and my wife about tasks that haven't been done for the predefined period. When one of us completes the task, he can push the "done" button in the automation. This will send a little "thank you" message to the person that did the task, clears the notification for the other person and sends a notification to the other person that the task has already been done. The sensor has an attribute that that tracks the user that marked the task as solved. 
 
 <details><summary>Step-by-step Guide</summary>
 <p>
@@ -3049,13 +3049,12 @@ The template requires [lovelace gen](https://github.com/thomasloven/hass-lovelac
 {% set entity = 'sensor.'+sensor_name %}
 
 type: 'custom:button-card'
-name: {{name}}
 entity: {{entity}}
+name: {{name}}
+icon: {{icon}}
 label: >
   [[[ return variables.var.label ]]]
 show_label: true
-icon: >
-  [[[ return variables.var.icon ]]]
 custom_fields:
   status: >
     [[[ return '<span style="display: inline-block; color: white; background: '+variables.var.color+'; padding: 0 5px; border-radius: 5px;">'+variables.var.days_left+'</span>' ]]]
@@ -3084,8 +3083,9 @@ variables:
       let result = {};
       result.label = "Aufgabe erstellen";
       result.color = colors["disabled"];
-      result.icon = "mdi:alert-plus";
       result.days_left = "";
+      let date;
+      let seconds;
       let timestamp;
       let time;
       let minutes;
@@ -3094,14 +3094,15 @@ variables:
       
       if (states['{{entity}}']) {
         if (entity.state != 'unknown') {
-          timestamp = parseInt(entity.state);
+          date = entity.state;
+          seconds = new Date(date);
+          timestamp = (seconds.getTime()) / 1000;
           time = (Date.now() / 1000) - timestamp;
           minutes = Math.floor(((time % 3600) / 60));
           hours = Math.floor(((time % 86400) / 3600));
           days = Math.floor((time / 86400));
           
           result.color = colors["success"];
-          result.icon = "mdi:checkbox-marked-circle-outline";
 
           // LAST TRIGGER
           if (time < 60)
@@ -3119,13 +3120,11 @@ variables:
           result.days_left = Math.round(((timestamp + ({{cycle_days|int}}*86400)) - (Date.now()/1000)) / 86400);
           if (result.days_left <= {{warning_before|int}}) {
             result.color = colors["warning"];
-            result.icon = "mdi:clock-alert";
           }
           if (result.days_left <= 0) {
             result.color = colors["error"];
-            result.icon = "mdi:alert-circle"
           }
-          result.days_left = result.days_left + (result.days_left == 1 ? " Tag verbleibt" : " Tage verbleiben");
+          result.days_left = result.days_left + (result.days_left == 1 ? " Tag übrig" : " Tage übrig");
 
         } else {
           result.label = "Klicken zum Erledigen";
@@ -3141,7 +3140,7 @@ tap_action:
         if (!states['{{entity}}'])
           return 'Entität {{entity}} wird erstellt.'
         else
-          return 'Möchten sie diese Aufgabe wirklich als erledigt markieren?'
+          return '{{name}} wirklich als erledigt markieren?'
       ]]]
   action: call-service
   service: mqtt.publish
@@ -3155,10 +3154,13 @@ tap_action:
       ]]]
     payload: >
       [[[
+        var timestamp = Date.now();
+        var time = new Date(timestamp).toISOString();
+
         if (!states['{{entity}}'])
           return '{ "name": "{{sensor_name}}", "state_topic": "homeassistant/sensor/{{sensor_name}}/state", "value_template": "\{\{ value_json.state \}\}", "device_class": "timestamp", "json_attributes_topic": "homeassistant/sensor/{{sensor_name}}/state", "json_attributes_template": "\{\{ value_json.attributes | tojson \}\}" }'
         else
-          return '{ "state":' + (Date.now() / 1000) + ', "attributes": { "cycle_days": {{cycle_days}}, "warning_before": {{warning_before}} } }'
+          return '{ "state":"' + time + '", "attributes": { "cycle_days": {{cycle_days}}, "warning_before": {{warning_before}} } }'
       ]]]
     retain: true
 
@@ -3172,6 +3174,7 @@ cards:
     - ../../templates/household_task.yaml
     - name: Change Bed Sheets
       sensor_name: chore_change_bed_sheets
+      icon: mdi:bed
       warning_before: 1
       cycle_days: 14
 ```

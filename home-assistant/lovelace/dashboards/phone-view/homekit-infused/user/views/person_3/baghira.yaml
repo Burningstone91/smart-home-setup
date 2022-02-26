@@ -14,30 +14,35 @@
       - type: horizontal-stack
         cards:
           - !include ../../../base/includes/gap.yaml
-          - type: 'custom:vertical-stack-in-card'
+          - type: custom:stack-in-card
+            mode: vertical
             cards:
               - !include
                 - ../../templates/household_task.yaml
                 - name: Fell bürsten
                   sensor_name: chore_clean_fur
+                  icon: mdi:dog-side
                   warning_before: 1
                   cycle_days: 7
               - !include
                 - ../../templates/household_task.yaml
                 - name: Ohren putzen
                   sensor_name: chore_clean_ears
+                  icon: mdi:ear-hearing
                   warning_before: 1
                   cycle_days: 7
               - !include
                 - ../../templates/household_task.yaml
                 - name: Napf reinigen
                   sensor_name: chore_clean_food_bowl
+                  icon: mdi:bowl-outline
                   warning_before: 1
                   cycle_days: 7
               - !include
                 - ../../templates/household_task.yaml
                 - name: Krallen schneiden
                   sensor_name: chore_cut_claws
+                  icon: mdi:paw
                   warning_before: 1
                   cycle_days: 21
           - !include ../../../base/includes/gap.yaml
